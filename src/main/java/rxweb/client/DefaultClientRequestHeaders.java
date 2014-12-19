@@ -35,27 +35,28 @@ public class DefaultClientRequestHeaders implements ClientRequestHeaders {
 			headers = new LinkedCaseInsensitiveMap<List<String>>(8, Locale.ENGLISH);
 
 	@Override
-	public void add(String name, String value) {
+	public ClientRequestHeaders add(String name, String value) {
 		List<String> values = headers.get(name);
 		if (values == null) {
 			values = new LinkedList<String>();
 			this.headers.put(name, values);
 		}
 		values.add(value);
+		return this;
 	}
 
 	@Override
-	public void add(String name, Iterable<String> values) {
+	public ClientRequestHeaders add(String name, Iterable<String> values) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public void addDateHeader(String name, Date value) {
+	public ClientRequestHeaders addDateHeader(String name, Date value) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public void clear() {
+	public ClientRequestHeaders clear() {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
@@ -116,59 +117,60 @@ public class DefaultClientRequestHeaders implements ClientRequestHeaders {
 	}
 
 	@Override
-	public void remove(String name) {
+	public ClientRequestHeaders remove(String name) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public void removeTransferEncodingChunked() {
+	public ClientRequestHeaders removeTransferEncodingChunked() {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public void set(String name, String value) {
+	public ClientRequestHeaders set(String name, String value) {
 		List<String> values = new LinkedList<String>();
 		values.add(value);
 		headers.put(name, values);
+		return this;
 	}
 
 	@Override
-	public void set(String name, Iterable<String> values) {
+	public ClientRequestHeaders set(String name, Iterable<String> values) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public void setContentLength(long length) {
+	public ClientRequestHeaders contentLength(long length) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public void setDate(Date value) {
+	public ClientRequestHeaders date(Date value) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public void setDateHeader(String name, Date value) {
+	public ClientRequestHeaders dateHeader(String name, Date value) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public void setDateHeader(String name, Iterable<Date> values) {
+	public ClientRequestHeaders dateHeader(String name, Iterable<Date> values) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public void setHost(String value) {
+	public ClientRequestHeaders host(String value) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public void setKeepAlive(boolean keepAlive) {
+	public ClientRequestHeaders keepAlive(boolean keepAlive) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public void setTransferEncodingChunked() {
+	public ClientRequestHeaders transferEncodingChunked() {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 }

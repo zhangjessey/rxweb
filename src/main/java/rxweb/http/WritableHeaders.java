@@ -21,36 +21,36 @@ import java.util.Date;
 /**
  * @author Sebastien Deleuze
  */
-public interface WritableHeaders {
+public interface WritableHeaders<T> {
 
-	public void add(String name, String value);
+	public T add(String name, String value);
 
-	public void add(String name, Iterable<String> values);
+	public T add(String name, Iterable<String> values);
 
-	public void addDateHeader(String name, Date value);
+	public T addDateHeader(String name, Date value);
 
-	public void clear();
+	public T clear();
 
-	public void remove(String name);
+	public T remove(String name);
 
-	public void removeTransferEncodingChunked();
+	public T removeTransferEncodingChunked();
 
-	public void set(String name, String value);
+	public T set(String name, String value);
 
-	public void set(String name, Iterable<String> values);
+	public T set(String name, Iterable<String> values);
 
-	public void setContentLength(long length);
+	public T contentLength(long length);
 
-	public void setDate(Date value);
+	public T date(Date value);
 
-	public void setDateHeader(String name, Date value);
+	public T dateHeader(String name, Date value);
 
-	public void setDateHeader(String name, Iterable<Date> values);
+	public T dateHeader(String name, Iterable<Date> values);
 
-	public void setHost(String value);
+	public T host(String value);
 
-	public void setKeepAlive(boolean keepAlive);
+	public T keepAlive(boolean keepAlive);
 
-	public void setTransferEncodingChunked();
+	public T transferEncodingChunked();
 
 }

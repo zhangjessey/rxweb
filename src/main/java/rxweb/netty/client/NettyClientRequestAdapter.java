@@ -22,16 +22,17 @@ import rxweb.client.ClientRequest;
 import rxweb.client.ClientRequestHeaders;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
+import rxweb.http.RequestHeaders;
 
 /**
  * @author Sebastien Deleuze
  */
 public class NettyClientRequestAdapter implements ClientRequest {
 
-	private final HttpClientRequest<ByteBuf> request;
+	private final HttpClientRequest<ByteBuf> nettyRequest;
 
-	public NettyClientRequestAdapter(HttpClientRequest<ByteBuf> request) {
-		this.request = request;
+	public NettyClientRequestAdapter(HttpClientRequest<ByteBuf> nettyRequest) {
+		this.nettyRequest = nettyRequest;
 	}
 
 	@Override
@@ -77,6 +78,12 @@ public class NettyClientRequestAdapter implements ClientRequest {
 	@Override
 	public ClientRequest addHeader(String name, String value) {
 		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	@Override
+	public ClientRequest accept(String value) {
+		this.header(RequestHeaders.ACCEPT, value);
+		return this;
 	}
 
 	@Override

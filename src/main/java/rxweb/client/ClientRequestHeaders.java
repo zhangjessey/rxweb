@@ -23,6 +23,6 @@ import rxweb.http.WritableHeaders;
 /**
  * @author Sebastien Deleuze
  */
-public interface ClientRequestHeaders extends RequestHeaders, WritableHeaders, ReadableHeaders {
+public interface ClientRequestHeaders extends RequestHeaders, WritableHeaders<ClientRequestHeaders>, ReadableHeaders {
 
 }

@@ -38,4 +38,6 @@ public interface ClientRequest extends Request, ContentWritter<ClientRequest> {
 
 	ClientRequest addHeader(String name, String value);
 
+	ClientRequest accept(String value);
+
 }

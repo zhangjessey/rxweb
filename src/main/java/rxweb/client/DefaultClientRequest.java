@@ -20,6 +20,7 @@ import io.netty.buffer.ByteBuf;
 import rxweb.http.AbstractRequest;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
+import rxweb.http.RequestHeaders;
 
 /**
  * @author Sebastien Deleuze
@@ -61,6 +62,12 @@ public class DefaultClientRequest extends AbstractRequest implements ClientReque
 	public ClientRequest addHeader(String name, String value) {
 		this.headers.add(name, value);
 		return null;
+	}
+
+	@Override
+	public ClientRequest accept(String value) {
+		this.header(RequestHeaders.ACCEPT, value);
+		return this;
 	}
 
 	@Override
