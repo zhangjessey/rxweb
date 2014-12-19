@@ -17,7 +17,7 @@
 package rxweb.server;
 
 import rx.Observable;
-import rxweb.http.ContentWritter;
+import rxweb.http.ContentWriter;
 import rxweb.http.Request;
 import rxweb.http.Response;
 import rxweb.http.Status;
@@ -26,7 +26,7 @@ import rxweb.http.Transfer;
 /**
  * @author Sebastien Deleuze
  */
-public interface ServerResponse extends Response, ContentWritter<ServerResponse> {
+public interface ServerResponse extends Response, ContentWriter<ServerResponse> {
 
 	Request getRequest();
 

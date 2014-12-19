@@ -16,7 +16,7 @@
 
 package rxweb.client;
 
-import rxweb.http.ContentWritter;
+import rxweb.http.ContentWriter;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.http.Request;
@@ -24,7 +24,7 @@ import rxweb.http.Request;
 /**
  * @author Sebastien Deleuze
  */
-public interface ClientRequest extends Request, ContentWritter<ClientRequest> {
+public interface ClientRequest extends Request, ContentWriter<ClientRequest> {
 
 	ClientRequestHeaders getHeaders();
 

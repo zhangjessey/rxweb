@@ -21,7 +21,7 @@ import io.netty.buffer.ByteBuf;
 /**
  * @author Sebastien Deleuze
  */
-public interface ContentWritter<T> {
+public interface ContentWriter<T> {
 
 	T write(ByteBuf content);
 
