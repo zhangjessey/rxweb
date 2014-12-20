@@ -16,31 +16,30 @@
 
 package rxweb;
 
-import java.nio.charset.Charset;
+import java.util.concurrent.ExecutionException;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.handler.codec.http.HttpMethod;
-import io.reactivex.netty.RxNetty;
-import io.reactivex.netty.protocol.http.client.HttpClient;
-import io.reactivex.netty.protocol.http.client.HttpClientRequest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
+import rxweb.client.DefaultClientRequest;
+import rxweb.http.Method;
 import rxweb.http.Status;
+import rxweb.netty.client.NettyClient;
 import rxweb.netty.server.NettyServer;
 
 /**
  * @author Sebastien Deleuze
  */
-public class ServerTests {
+public class ClientAndServerTests {
 
+	private Client client;
 	private Server server;
 
 	@Before
 	public void setup() {
 		server = new NettyServer();
+		client = new NettyClient("localhost", 8080);
 		server.start();
 	}
 
@@ -49,17 +48,15 @@ public class ServerTests {
 		server.stop();
 	}
 
+
 	@Test
-	public void server() {
+	// TODO Currently it produces the following error : Content stream is already disposed, maybe related to https://github.com/ReactiveX/RxNetty/issues/264
+	public void clientAndServer() throws ExecutionException, InterruptedException {
 
 		server.get("/test", (request, response) -> response.status(Status.OK).writeString("Hello World!").flush());
 
-		HttpClient<String, ByteBuf> client = RxNetty.<String, ByteBuf>newHttpClientBuilder("localhost", 8080).build();
-		HttpClientRequest<String> request = HttpClientRequest.create(HttpMethod.GET, "/test");
-		String result = client.submit(request).flatMap((response)
-				-> response.getContent().map((byteBuf)
-				-> byteBuf.toString(Charset.defaultCharset()))).toBlocking().single();
-
+		String result = client.execute(new DefaultClientRequest().uri("/test").method(
+				Method.GET)).get().getContentAsString().toBlocking().single();
 		Assert.assertEquals("Hello World!", result);
 	}
 

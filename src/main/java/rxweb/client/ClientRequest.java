@@ -16,7 +16,8 @@
 
 package rxweb.client;
 
-import rxweb.http.ContentWriter;
+import io.netty.buffer.ByteBuf;
+import rx.Observable;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.http.Request;
@@ -24,7 +25,7 @@ import rxweb.http.Request;
 /**
  * @author Sebastien Deleuze
  */
-public interface ClientRequest extends Request, ContentWriter<ClientRequest> {
+public interface ClientRequest extends Request {
 
 	ClientRequestHeaders getHeaders();
 
@@ -39,5 +40,11 @@ public interface ClientRequest extends Request, ContentWriter<ClientRequest> {
 	ClientRequest addHeader(String name, String value);
 
 	ClientRequest accept(String value);
+
+	ClientRequest contentSource(Observable<ByteBuf> value);
+
+	ClientRequest stringContentSource(Observable<String> value);
+
+	Observable<ByteBuf> getContentSource();
 
 }

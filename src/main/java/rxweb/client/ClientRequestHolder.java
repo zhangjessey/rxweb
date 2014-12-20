@@ -16,13 +16,13 @@
 
 package rxweb.client;
 
-import rx.Observable;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Sebastien Deleuze
  */
-public interface ClientHandler {
+public interface ClientRequestHolder extends ClientRequest {
 
-	void handle(ClientResponse response);
+	CompletableFuture<ClientResponse> execute();
 
 }

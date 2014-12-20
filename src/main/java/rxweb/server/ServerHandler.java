@@ -16,9 +16,7 @@
 
 package rxweb.server;
 
-import rx.Observable;
-import rxweb.http.Request;
-import rxweb.http.Response;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Handle the HTTP request to produce a response.
@@ -32,6 +30,6 @@ public interface ServerHandler {
 	 * @param response The response object providing functionality for modifying the response
 	 * @return The stream to be sent as response
 	 */
-	Observable<Void> handle(ServerRequest request, ServerResponse response);
+	CompletableFuture<Void> handle(ServerRequest request, ServerResponse response);
 
 }

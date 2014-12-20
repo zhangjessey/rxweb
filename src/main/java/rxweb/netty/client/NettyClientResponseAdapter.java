@@ -16,6 +16,9 @@
 
 package rxweb.netty.client;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import rx.Observable;
@@ -29,10 +32,10 @@ import rxweb.http.Transfer;
  */
 public class NettyClientResponseAdapter implements ClientResponse {
 
-	private final HttpClientResponse<ByteBuf> response;
+	private final HttpClientResponse<ByteBuf> nettyResponse;
 
 	public NettyClientResponseAdapter(HttpClientResponse<ByteBuf> response) {
-		this.response = response;
+		this.nettyResponse = response;
 	}
 
 	@Override
@@ -42,7 +45,7 @@ public class NettyClientResponseAdapter implements ClientResponse {
 
 	@Override
 	public Observable<ByteBuf> getContent() {
-		throw new UnsupportedOperationException("Not implemented yet");
+		return this.nettyResponse.getContent();
 	}
 
 	@Override
@@ -52,7 +55,7 @@ public class NettyClientResponseAdapter implements ClientResponse {
 
 	@Override
 	public Observable<String> getContentAsString() {
-		throw new UnsupportedOperationException("Not implemented yet");
+		return this.nettyResponse.getContent().map((content) -> content.toString(StandardCharsets.UTF_8));
 	}
 
 	@Override

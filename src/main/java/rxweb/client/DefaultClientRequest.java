@@ -16,7 +16,11 @@
 
 package rxweb.client;
 
+import java.nio.charset.StandardCharsets;
+
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import rx.Observable;
 import rxweb.http.AbstractRequest;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
@@ -28,6 +32,7 @@ import rxweb.http.RequestHeaders;
 public class DefaultClientRequest extends AbstractRequest implements ClientRequest {
 
 	protected ClientRequestHeaders headers;
+	protected Observable<ByteBuf> contentSource;
 
 	@Override
 	public ClientRequestHeaders getHeaders() {
@@ -71,18 +76,19 @@ public class DefaultClientRequest extends AbstractRequest implements ClientReque
 	}
 
 	@Override
-	public ClientRequest write(ByteBuf content) {
-		throw new UnsupportedOperationException("Not implemented yet");
+	public Observable<ByteBuf> getContentSource() {
+		return this.contentSource;
 	}
 
 	@Override
-	public ClientRequest writeString(String content) {
-		throw new UnsupportedOperationException("Not implemented yet");
+	public ClientRequest contentSource(Observable<ByteBuf> contentSource) {
+		this.contentSource = contentSource;
+		return this;
 	}
 
 	@Override
-	public ClientRequest write(Object content) {
-		throw new UnsupportedOperationException("Not implemented yet");
+	public ClientRequest stringContentSource(Observable<String> contentSource) {
+		this.contentSource =  contentSource.map(content -> Unpooled.copiedBuffer(content.getBytes(StandardCharsets.UTF_8)));
+		return null;
 	}
-
 }

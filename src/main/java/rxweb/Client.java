@@ -16,8 +16,11 @@
 
 package rxweb;
 
-import rxweb.client.ClientHandler;
+import java.util.concurrent.CompletableFuture;
+
 import rxweb.client.ClientRequest;
+import rxweb.client.ClientRequestHolder;
+import rxweb.client.ClientResponse;
 
 /**
  * TODO: look at Jetty client
@@ -25,14 +28,14 @@ import rxweb.client.ClientRequest;
  */
 public interface Client {
 
-	void get(final String uri, final ClientHandler handler);
+	CompletableFuture<ClientResponse> execute(final ClientRequest request);
 
-	void post(final String uri, final ClientHandler handler);
+	ClientRequestHolder get(final String uri);
 
-	void put(final String uri, final ClientHandler handler);
+	ClientRequestHolder post(final String uri);
 
-	void delete(final String uri, final ClientHandler handler);
+	ClientRequestHolder put(final String uri);
 
-	void request(final ClientRequest request, final ClientHandler handler);
+	ClientRequestHolder delete(final String uri);
 
 }

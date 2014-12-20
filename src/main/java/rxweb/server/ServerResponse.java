@@ -16,8 +16,9 @@
 
 package rxweb.server;
 
-import rx.Observable;
-import rxweb.http.ContentWriter;
+import java.util.concurrent.CompletableFuture;
+
+import io.netty.buffer.ByteBuf;
 import rxweb.http.Request;
 import rxweb.http.Response;
 import rxweb.http.Status;
@@ -26,7 +27,7 @@ import rxweb.http.Transfer;
 /**
  * @author Sebastien Deleuze
  */
-public interface ServerResponse extends Response, ContentWriter<ServerResponse> {
+public interface ServerResponse extends Response {
 
 	Request getRequest();
 
@@ -40,8 +41,16 @@ public interface ServerResponse extends Response, ContentWriter<ServerResponse> 
 
 	ServerResponse transfer(Transfer transfer);
 
-	Observable<Void> flush();
+	ServerResponse write(ByteBuf content);
 
-	Observable<Void> close();
+	ServerResponse write(Object content);
+
+	ServerResponse writeString(String content);
+
+	CompletableFuture<Void> flush();
+
+	CompletableFuture<Void> close();
+
+
 
 }

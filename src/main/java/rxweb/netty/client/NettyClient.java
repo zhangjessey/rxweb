@@ -16,37 +16,57 @@
 
 package rxweb.netty.client;
 
+import java.util.concurrent.CompletableFuture;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.handler.codec.http.HttpMethod;
+import io.reactivex.netty.RxNetty;
+import io.reactivex.netty.protocol.http.client.HttpClient;
+import io.reactivex.netty.protocol.http.client.HttpClientRequest;
+import io.reactivex.netty.protocol.http.client.HttpClientResponse;
 import rxweb.Client;
-import rxweb.client.ClientHandler;
+import rxweb.client.ClientRequestHolder;
 import rxweb.client.ClientRequest;
+import rxweb.client.ClientResponse;
+import rxweb.util.ObservableUtils;
 
 /**
  * @author Sebastien Deleuze
  */
 public class NettyClient implements Client {
 
+	HttpClient<ByteBuf, ByteBuf> nettyClient;
+
+	public NettyClient(String host, int port) {
+		this.nettyClient = RxNetty.<ByteBuf, ByteBuf>newHttpClientBuilder("localhost", 8080).build();
+	}
+
 	@Override
-	public void get(String uri, ClientHandler handler) {
+	public CompletableFuture<ClientResponse> execute(ClientRequest request) {
+		HttpClientRequest<ByteBuf> nettyRequest = HttpClientRequest.create(HttpMethod.valueOf(request.getMethod().getName()), request.getUri());
+		nettyRequest.withContentSource(request.getContentSource());
+		CompletableFuture<HttpClientResponse<ByteBuf>> nettyResponseFuture = ObservableUtils.fromSingleObservable(
+				this.nettyClient.submit(nettyRequest));
+		return nettyResponseFuture.thenApply(nettyResponse -> new NettyClientResponseAdapter(nettyResponse));
+	}
+
+	@Override
+	public ClientRequestHolder get(String uri) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public void post(String uri, ClientHandler handler) {
+	public ClientRequestHolder post(String uri) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public void put(String uri, ClientHandler handler) {
+	public ClientRequestHolder put(String uri) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public void delete(String uri, ClientHandler handler) {
-		throw new UnsupportedOperationException("Not implemented yet");
-	}
-
-	@Override
-	public void request(ClientRequest request, ClientHandler handler) {
+	public ClientRequestHolder delete(String uri) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 }

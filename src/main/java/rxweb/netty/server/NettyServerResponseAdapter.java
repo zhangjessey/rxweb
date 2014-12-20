@@ -16,11 +16,11 @@
 
 package rxweb.netty.server;
 
+import java.util.concurrent.CompletableFuture;
+
 import io.netty.buffer.ByteBuf;
-import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.reactivex.netty.protocol.http.server.HttpServerResponse;
-import rx.Observable;
 import rxweb.http.ResponseHeaders;
 import rxweb.http.Protocol;
 import rxweb.http.Request;
@@ -28,6 +28,7 @@ import rxweb.http.Status;
 import rxweb.http.Transfer;
 import rxweb.server.ServerResponse;
 import rxweb.server.ServerResponseHeaders;
+import rxweb.util.ObservableUtils;
 
 import org.springframework.util.Assert;
 
@@ -125,12 +126,12 @@ public class NettyServerResponseAdapter implements ServerResponse {
 	}
 
 	@Override
-	public Observable<Void> flush() {
-		return this.nettyResponse.flush();
+	public CompletableFuture<Void> flush() {
+		return ObservableUtils.fromVoidObservable(this.nettyResponse.flush());
 	}
 
 	@Override
-	public Observable<Void> close() {
-		return this.nettyResponse.close();
+	public CompletableFuture<Void> close() {
+		return ObservableUtils.fromVoidObservable(this.nettyResponse.close());
 	}
 }

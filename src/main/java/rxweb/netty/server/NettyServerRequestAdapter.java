@@ -32,17 +32,17 @@ import rxweb.server.ServerRequestHeaders;
  */
 public class NettyServerRequestAdapter implements ServerRequest {
 
-	private final HttpServerRequest<ByteBuf> request;
+	private final HttpServerRequest<ByteBuf> nettyRequest;
 	private final ServerRequestHeaders headers;
 
 	public NettyServerRequestAdapter(HttpServerRequest<ByteBuf> request) {
-		this.request = request;
-		this.headers = new NettyRequestHeadersAdapter(this.request.getHeaders());
+		this.nettyRequest = request;
+		this.headers = new NettyRequestHeadersAdapter(this.nettyRequest.getHeaders());
 	}
 
 	@Override
 	public Protocol getProtocol() {
-		HttpVersion version = this.request.getHttpVersion();
+		HttpVersion version = this.nettyRequest.getHttpVersion();
 		if (version.equals(HttpVersion.HTTP_1_0)) {
 			return Protocol.HTTP_1_0;
 		} else if (version.equals(HttpVersion.HTTP_1_1)) {
@@ -53,12 +53,12 @@ public class NettyServerRequestAdapter implements ServerRequest {
 
 	@Override
 	public String getUri() {
-		return this.request.getUri();
+		return this.nettyRequest.getUri();
 	}
 
 	@Override
 	public Method getMethod() {
-		return new Method(this.request.getHttpMethod().name());
+		return new Method(this.nettyRequest.getHttpMethod().name());
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class NettyServerRequestAdapter implements ServerRequest {
 
 	@Override
 	public Observable<ByteBuf> getContent() {
-		return this.request.getContent();
+		return this.nettyRequest.getContent();
 	}
 
 	@Override
@@ -78,8 +78,7 @@ public class NettyServerRequestAdapter implements ServerRequest {
 
 	@Override
 	public Observable<String> getContentAsString() {
-		// TODO Verify that it works
-		return this.request.getContent().map((content) -> new String(content.array(), StandardCharsets.UTF_8));
+		return this.nettyRequest.getContent().map((content) -> content.toString(StandardCharsets.UTF_8));
 	}
 
 }
