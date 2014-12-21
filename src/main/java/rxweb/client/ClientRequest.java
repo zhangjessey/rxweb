@@ -41,10 +41,18 @@ public interface ClientRequest extends Request {
 
 	ClientRequest accept(String value);
 
-	ClientRequest contentSource(Observable<ByteBuf> value);
+	ClientRequest rawContent(ByteBuf content);
 
-	ClientRequest stringContentSource(Observable<String> value);
+	ClientRequest rawSource(Observable<ByteBuf> value);
 
-	Observable<ByteBuf> getContentSource();
+	Observable<ByteBuf> getRawSource();
+
+	ClientRequest stringContent(String content);
+
+	ClientRequest stringSource(Observable<String> value);
+
+	ClientRequest content(Object content);
+
+	ClientRequest source(Observable<Object> value);
 
 }

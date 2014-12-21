@@ -44,7 +44,7 @@ public class NettyClient implements Client {
 	@Override
 	public CompletableFuture<ClientResponse> execute(ClientRequest request) {
 		HttpClientRequest<ByteBuf> nettyRequest = HttpClientRequest.create(HttpMethod.valueOf(request.getMethod().getName()), request.getUri());
-		nettyRequest.withContentSource(request.getContentSource());
+		nettyRequest.withContentSource(request.getRawSource());
 		CompletableFuture<HttpClientResponse<ByteBuf>> nettyResponseFuture = ObservableUtils.fromSingleObservable(
 				this.nettyClient.submit(nettyRequest));
 		return nettyResponseFuture.thenApply(nettyResponse -> new NettyClientResponseAdapter(nettyResponse));

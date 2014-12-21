@@ -56,7 +56,7 @@ public class ClientAndServerTests {
 		server.get("/test", (request, response) -> response.status(Status.OK).writeString("Hello World!"));
 
 		String result = client.execute(new DefaultClientRequest().uri("/test").method(
-				Method.GET)).get().getContentAsString().toBlocking().single();
+				Method.GET)).get().getStringContent().toBlocking().single();
 		Assert.assertEquals("Hello World!", result);
 	}
 

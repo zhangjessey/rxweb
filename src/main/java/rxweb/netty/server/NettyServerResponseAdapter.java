@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.reactivex.netty.protocol.http.server.HttpServerResponse;
+import rx.Observable;
 import rxweb.http.ResponseHeaders;
 import rxweb.http.Protocol;
 import rxweb.http.Request;
@@ -108,7 +109,7 @@ public class NettyServerResponseAdapter implements ServerResponse {
 	}
 
 	@Override
-	public CompletableFuture<Void> write(ByteBuf content) {
+	public CompletableFuture<Void> writeRaw(ByteBuf content) {
 		this.nettyResponse.writeBytes(content);
 		return this.flush();
 	}
@@ -122,6 +123,26 @@ public class NettyServerResponseAdapter implements ServerResponse {
 	@Override
 	public CompletableFuture<Void> write(Object content) {
 		// We need to use converts/transformers here
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	@Override
+	public ServerResponse rawSource(Observable<ByteBuf> value) {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	@Override
+	public Observable<ByteBuf> getRawSource() {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	@Override
+	public ServerResponse stringSource(Observable<String> value) {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	@Override
+	public ServerResponse source(Observable<Object> value) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 

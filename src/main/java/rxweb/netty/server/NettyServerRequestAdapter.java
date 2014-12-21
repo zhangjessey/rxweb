@@ -67,7 +67,7 @@ public class NettyServerRequestAdapter implements ServerRequest {
 	}
 
 	@Override
-	public Observable<ByteBuf> getContent() {
+	public Observable<ByteBuf> getRawContent() {
 		return this.nettyRequest.getContent();
 	}
 
@@ -77,7 +77,7 @@ public class NettyServerRequestAdapter implements ServerRequest {
 	}
 
 	@Override
-	public Observable<String> getContentAsString() {
+	public Observable<String> getStringContent() {
 		return this.nettyRequest.getContent().map((content) -> content.toString(StandardCharsets.UTF_8));
 	}
 

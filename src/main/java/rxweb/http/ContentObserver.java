@@ -25,11 +25,11 @@ import rx.Observable;
 public interface ContentObserver {
 
 	// TODO: need to create our own ByteBuf to avoid exposing Netty types in our API
-	Observable<ByteBuf> getContent();
+	Observable<ByteBuf> getRawContent();
 
 	<T> Observable<T> getContent(final Class<T> clazz);
 
 	// UTF-8 encoded
-	Observable<String> getContentAsString();
+	Observable<String> getStringContent();
 
 }

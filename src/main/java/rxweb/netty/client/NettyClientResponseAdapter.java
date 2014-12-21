@@ -16,7 +16,6 @@
 
 package rxweb.netty.client;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import io.netty.buffer.ByteBuf;
@@ -44,7 +43,7 @@ public class NettyClientResponseAdapter implements ClientResponse {
 	}
 
 	@Override
-	public Observable<ByteBuf> getContent() {
+	public Observable<ByteBuf> getRawContent() {
 		return this.nettyResponse.getContent();
 	}
 
@@ -54,7 +53,7 @@ public class NettyClientResponseAdapter implements ClientResponse {
 	}
 
 	@Override
-	public Observable<String> getContentAsString() {
+	public Observable<String> getStringContent() {
 		return this.nettyResponse.getContent().map((content) -> content.toString(StandardCharsets.UTF_8));
 	}
 

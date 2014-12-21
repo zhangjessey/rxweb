@@ -19,7 +19,7 @@ package rxweb.client;
 import java.nio.charset.StandardCharsets;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.PooledByteBufAllocator;
 import rx.Observable;
 import rxweb.http.AbstractRequest;
 import rxweb.http.Method;
@@ -76,19 +76,45 @@ public class DefaultClientRequest extends AbstractRequest implements ClientReque
 	}
 
 	@Override
-	public Observable<ByteBuf> getContentSource() {
+	public Observable<ByteBuf> getRawSource() {
 		return this.contentSource;
 	}
 
 	@Override
-	public ClientRequest contentSource(Observable<ByteBuf> contentSource) {
+	public ClientRequest rawSource(Observable<ByteBuf> contentSource) {
 		this.contentSource = contentSource;
 		return this;
 	}
 
 	@Override
-	public ClientRequest stringContentSource(Observable<String> contentSource) {
-		this.contentSource =  contentSource.map(content -> Unpooled.copiedBuffer(content.getBytes(StandardCharsets.UTF_8)));
-		return null;
+	public ClientRequest stringSource(Observable<String> contentSource) {
+		this.contentSource =  contentSource.map(content -> {
+			byte[] byteArray = content.getBytes(StandardCharsets.UTF_8);
+			return PooledByteBufAllocator.DEFAULT.buffer(byteArray.length).writeBytes(byteArray);
+		});
+		return this;
+	}
+
+	@Override
+	public ClientRequest rawContent(ByteBuf ByteBuf) {
+		this.contentSource = Observable.just(ByteBuf);
+		return this;
+	}
+
+	@Override
+	public ClientRequest stringContent(String content) {
+		byte[] byteArray = content.getBytes(StandardCharsets.UTF_8);
+		this.contentSource = Observable.just(PooledByteBufAllocator.DEFAULT.buffer(byteArray.length).writeBytes(byteArray));
+		return this;
+	}
+
+	@Override
+	public ClientRequest content(Object content) {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	@Override
+	public ClientRequest source(Observable<Object> value) {
+		throw new UnsupportedOperationException("Not implemented yet");
 	}
 }
