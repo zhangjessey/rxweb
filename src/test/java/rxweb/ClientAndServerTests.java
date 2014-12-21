@@ -53,7 +53,7 @@ public class ClientAndServerTests {
 	// TODO Currently it produces the following error : Content stream is already disposed, maybe related to https://github.com/ReactiveX/RxNetty/issues/264
 	public void clientAndServer() throws ExecutionException, InterruptedException {
 
-		server.get("/test", (request, response) -> response.status(Status.OK).writeString("Hello World!").flush());
+		server.get("/test", (request, response) -> response.status(Status.OK).writeString("Hello World!"));
 
 		String result = client.execute(new DefaultClientRequest().uri("/test").method(
 				Method.GET)).get().getContentAsString().toBlocking().single();

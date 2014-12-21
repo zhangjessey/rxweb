@@ -108,25 +108,24 @@ public class NettyServerResponseAdapter implements ServerResponse {
 	}
 
 	@Override
-	public ServerResponse write(ByteBuf content) {
+	public CompletableFuture<Void> write(ByteBuf content) {
 		this.nettyResponse.writeBytes(content);
-		return this;
+		return this.flush();
 	}
 
 	@Override
-	public ServerResponse writeString(String content) {
+	public CompletableFuture<Void> writeString(String content) {
 		this.nettyResponse.writeString(content);
-		return this;
+		return this.flush();
 	}
 
 	@Override
-	public ServerResponse write(Object content) {
+	public CompletableFuture<Void> write(Object content) {
 		// We need to use converts/transformers here
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
-	@Override
-	public CompletableFuture<Void> flush() {
+	private CompletableFuture<Void> flush() {
 		return ObservableUtils.fromVoidObservable(this.nettyResponse.flush());
 	}
 

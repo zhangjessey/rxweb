@@ -41,13 +41,11 @@ public interface ServerResponse extends Response {
 
 	ServerResponse transfer(Transfer transfer);
 
-	ServerResponse write(ByteBuf content);
+	CompletableFuture<Void> write(ByteBuf content);
 
-	ServerResponse write(Object content);
+	CompletableFuture<Void> write(Object content);
 
-	ServerResponse writeString(String content);
-
-	CompletableFuture<Void> flush();
+	CompletableFuture<Void> writeString(String content);
 
 	CompletableFuture<Void> close();
 
