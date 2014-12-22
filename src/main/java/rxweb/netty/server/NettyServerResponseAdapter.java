@@ -109,7 +109,7 @@ public class NettyServerResponseAdapter implements ServerResponse {
 	}
 
 	@Override
-	public CompletableFuture<Void> writeRaw(ByteBuf content) {
+	public CompletableFuture<Void> writeRaw(byte[] content) {
 		this.nettyResponse.writeBytes(content);
 		return this.flush();
 	}
@@ -127,12 +127,12 @@ public class NettyServerResponseAdapter implements ServerResponse {
 	}
 
 	@Override
-	public ServerResponse rawSource(Observable<ByteBuf> value) {
+	public ServerResponse rawSource(Observable<byte[]> value) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public Observable<ByteBuf> getRawSource() {
+	public Observable<byte[]> getRawSource() {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 

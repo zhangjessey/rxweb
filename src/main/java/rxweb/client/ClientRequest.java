@@ -16,7 +16,6 @@
 
 package rxweb.client;
 
-import io.netty.buffer.ByteBuf;
 import rx.Observable;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
@@ -41,11 +40,11 @@ public interface ClientRequest extends Request {
 
 	ClientRequest accept(String value);
 
-	ClientRequest rawContent(ByteBuf content);
+	ClientRequest rawContent(byte[] content);
 
-	ClientRequest rawSource(Observable<ByteBuf> value);
+	ClientRequest rawSource(Observable<byte[]> value);
 
-	Observable<ByteBuf> getRawSource();
+	Observable<byte[]> getRawSource();
 
 	ClientRequest stringContent(String content);
 

@@ -18,7 +18,6 @@ package rxweb.server;
 
 import java.util.concurrent.CompletableFuture;
 
-import io.netty.buffer.ByteBuf;
 import rx.Observable;
 import rxweb.http.Request;
 import rxweb.http.Response;
@@ -42,11 +41,11 @@ public interface ServerResponse extends Response {
 
 	ServerResponse transfer(Transfer transfer);
 
-	CompletableFuture<Void> writeRaw(ByteBuf content);
+	CompletableFuture<Void> writeRaw(byte[] content);
 
-	ServerResponse rawSource(Observable<ByteBuf> value);
+	ServerResponse rawSource(Observable<byte[]> value);
 
-	Observable<ByteBuf> getRawSource();
+	Observable<byte[]> getRawSource();
 
 	CompletableFuture<Void> writeString(String content);
 

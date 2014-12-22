@@ -18,8 +18,6 @@ package rxweb.client;
 
 import java.nio.charset.StandardCharsets;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.PooledByteBufAllocator;
 import rx.Observable;
 import rxweb.http.AbstractRequest;
 import rxweb.http.Method;
@@ -32,7 +30,7 @@ import rxweb.http.RequestHeaders;
 public class DefaultClientRequest extends AbstractRequest implements ClientRequest {
 
 	protected ClientRequestHeaders headers;
-	protected Observable<ByteBuf> contentSource;
+	protected Observable<byte[]> contentSource;
 
 	@Override
 	public ClientRequestHeaders getHeaders() {
@@ -76,35 +74,31 @@ public class DefaultClientRequest extends AbstractRequest implements ClientReque
 	}
 
 	@Override
-	public Observable<ByteBuf> getRawSource() {
+	public Observable<byte[]> getRawSource() {
 		return this.contentSource;
 	}
 
 	@Override
-	public ClientRequest rawSource(Observable<ByteBuf> contentSource) {
+	public ClientRequest rawSource(Observable<byte[]> contentSource) {
 		this.contentSource = contentSource;
 		return this;
 	}
 
 	@Override
 	public ClientRequest stringSource(Observable<String> contentSource) {
-		this.contentSource =  contentSource.map(content -> {
-			byte[] byteArray = content.getBytes(StandardCharsets.UTF_8);
-			return PooledByteBufAllocator.DEFAULT.buffer(byteArray.length).writeBytes(byteArray);
-		});
+		this.contentSource =  contentSource.map(content -> content.getBytes(StandardCharsets.UTF_8));
 		return this;
 	}
 
 	@Override
-	public ClientRequest rawContent(ByteBuf ByteBuf) {
-		this.contentSource = Observable.just(ByteBuf);
+	public ClientRequest rawContent(byte[] content) {
+		this.contentSource = Observable.just(content);
 		return this;
 	}
 
 	@Override
 	public ClientRequest stringContent(String content) {
-		byte[] byteArray = content.getBytes(StandardCharsets.UTF_8);
-		this.contentSource = Observable.just(PooledByteBufAllocator.DEFAULT.buffer(byteArray.length).writeBytes(byteArray));
+		this.contentSource = Observable.just(content.getBytes(StandardCharsets.UTF_8));
 		return this;
 	}
 

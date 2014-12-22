@@ -16,7 +16,6 @@
 
 package rxweb.http;
 
-import io.netty.buffer.ByteBuf;
 import rx.Observable;
 
 /**
@@ -24,8 +23,7 @@ import rx.Observable;
  */
 public interface ContentObserver {
 
-	// TODO: need to create our own ByteBuf to avoid exposing Netty types in our API
-	Observable<ByteBuf> getRawContent();
+	Observable<byte[]> getRawContent();
 
 	<T> Observable<T> getContent(final Class<T> clazz);
 

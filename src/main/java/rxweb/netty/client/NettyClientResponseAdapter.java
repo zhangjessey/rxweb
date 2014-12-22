@@ -27,8 +27,10 @@ import rxweb.http.Status;
 import rxweb.http.Transfer;
 
 /**
+ * TODO: Currently when reading content, it produces the following error : Content stream is already disposed, likely to be related to https://github.com/ReactiveX/RxNetty/issues/264
  * @author Sebastien Deleuze
  */
+
 public class NettyClientResponseAdapter implements ClientResponse {
 
 	private final HttpClientResponse<ByteBuf> nettyResponse;
@@ -43,8 +45,8 @@ public class NettyClientResponseAdapter implements ClientResponse {
 	}
 
 	@Override
-	public Observable<ByteBuf> getRawContent() {
-		return this.nettyResponse.getContent();
+	public Observable<byte[]> getRawContent() {
+		return this.nettyResponse.getContent().map(byteBuf -> byteBuf.array());
 	}
 
 	@Override

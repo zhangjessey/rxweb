@@ -67,8 +67,8 @@ public class NettyServerRequestAdapter implements ServerRequest {
 	}
 
 	@Override
-	public Observable<ByteBuf> getRawContent() {
-		return this.nettyRequest.getContent();
+	public Observable<byte[]> getRawContent() {
+		return this.nettyRequest.getContent().map(byteBuf -> byteBuf.array());
 	}
 
 	@Override
