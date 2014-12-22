@@ -17,7 +17,6 @@
 package rxweb.http;
 
 /**
- * 2 possible
  *
  * @author Sebastien Deleuze
  */
