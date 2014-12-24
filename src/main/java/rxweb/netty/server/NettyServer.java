@@ -50,8 +50,9 @@ public class NettyServer extends AbstractServer {
 			ServerRequest request = new NettyServerRequestAdapter(nettyRequest);
 			ServerResponse response = new NettyServerResponseAdapter(nettyResponse, request);
 			List<ServerHandler> handlers = this.handlerResolver.resolve(request);
+			// TODO: no control yet on the order of execution of these handlders since they are async by nature.
 			CompletableFuture<Void>[] handles = (CompletableFuture<Void>[])handlers.stream().map(handler -> handler.handle(request, response)).toArray();
-			// TODO Should we call response.close() explicitly of return an Observable is enough ?
+			// TODO: Should we call response.close() explicitly of return an Observable is enough ?
 			return ObservableUtils.toObservable(CompletableFuture.allOf(handles));
 		});
 		nettyServer.start();
