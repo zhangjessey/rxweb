@@ -19,7 +19,7 @@ package rxweb.http;
 /**
  * @author Sebastien Deleuze
  */
-public interface RequestHeaders {
+public interface RequestHeaders extends Headers {
 
 	/**
 	 * The HTTP {@code Accept} header field name.
