@@ -26,6 +26,9 @@ Implementation notes
   may have it [4]
 - RxJava 1.0 has no support for Java 8 streams, but RxJava 2.0 will have it [5]
 - RxJava is not natively compliant with ReactiveStreams, we need to use an extension [6]
+- Client require a small footprint and may be used in non Spring context. So should we make
+  the dependency on Spring Core Mandatory ? We just use a small subset so maybe we could build
+  a smaller version with just the classes we use as described in this SPR-10258 comment [7].
 
 
 - [1] https://github.com/netty/netty/pull/2547
@@ -34,5 +37,6 @@ Implementation notes
 - [4] https://github.com/ReactiveX/RxJava/issues/1594
 - [5] https://github.com/ReactiveX/RxJava/issues/1596
 - [6] https://github.com/ReactiveX/RxJavaReactiveStreams
+- [7] https://jira.spring.io/browse/SPR-10258?focusedCommentId=110154
 
 
