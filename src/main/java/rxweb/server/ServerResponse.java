@@ -16,9 +16,9 @@
 
 package rxweb.server;
 
-import java.util.concurrent.CompletableFuture;
-
-import rx.Observable;
+import reactor.io.buffer.Buffer;
+import reactor.rx.Promise;
+import reactor.rx.Stream;
 import rxweb.http.Request;
 import rxweb.http.Response;
 import rxweb.http.Status;
@@ -41,20 +41,20 @@ public interface ServerResponse extends Response {
 
 	ServerResponse transfer(Transfer transfer);
 
-	CompletableFuture<Void> writeRaw(byte[] content);
+	Promise<Void> writeRaw(Buffer content);
 
-	ServerResponse rawSource(Observable<byte[]> value);
+	ServerResponse rawSource(Stream<Buffer> value);
 
-	Observable<byte[]> getRawSource();
+	Stream<Buffer> getRawSource();
 
-	CompletableFuture<Void> writeString(String content);
+	Promise<Void> writeString(String content);
 
-	ServerResponse stringSource(Observable<String> value);
+	ServerResponse stringSource(Stream<String> value);
 
-	CompletableFuture<Void> write(Object content);
+	Promise<Void> write(Object content);
 
-	ServerResponse source(Observable<Object> value);
+	ServerResponse source(Stream<Object> value);
 
-	CompletableFuture<Void> close();
+	Promise<Void> close();
 
 }

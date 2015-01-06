@@ -20,14 +20,18 @@ import java.nio.charset.StandardCharsets;
 
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.client.HttpClientResponse;
-import rx.Observable;
+
+import org.reactivestreams.Publisher;
+import reactor.io.buffer.Buffer;
+import reactor.rx.Stream;
+import reactor.rx.Streams;
+import rx.RxReactiveStreams;
 import rxweb.client.ClientResponse;
 import rxweb.client.ClientResponseHeaders;
 import rxweb.http.Status;
 import rxweb.http.Transfer;
 
 /**
- * TODO: Currently when reading content, it produces the following error : Content stream is already disposed, likely to be related to https://github.com/ReactiveX/RxNetty/issues/264
  * @author Sebastien Deleuze
  */
 
@@ -45,18 +49,20 @@ public class NettyClientResponseAdapter implements ClientResponse {
 	}
 
 	@Override
-	public Observable<byte[]> getRawContent() {
-		return this.nettyResponse.getContent().map(byteBuf -> byteBuf.array());
+	public Stream<Buffer> getRawContent() {
+		Publisher<Buffer> publisher = RxReactiveStreams.toPublisher(this.nettyResponse.getContent().map(byteBuf -> Buffer.wrap(byteBuf.array())));
+		return Streams.create(publisher);
 	}
 
 	@Override
-	public <T> Observable<T> getContent(Class<T> clazz) {
+	public <T> Stream<T> getContent(Class<T> clazz) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public Observable<String> getStringContent() {
-		return this.nettyResponse.getContent().map((content) -> content.toString(StandardCharsets.UTF_8));
+	public Stream<String> getStringContent() {
+		Publisher<String> publisher = RxReactiveStreams.toPublisher(this.nettyResponse.getContent().map((content) -> content.toString(StandardCharsets.UTF_8)));
+		return Streams.create(publisher);
 	}
 
 	@Override

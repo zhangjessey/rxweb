@@ -25,7 +25,7 @@ import io.netty.buffer.ByteBufAllocator;
 public class JsonConverter implements Converter<Object> {
 
 	@Override
-	public ByteBuf call(Object o, ByteBufAllocator allocator) {
+	public ByteBuf apply(Object o, ByteBufAllocator allocator) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 }

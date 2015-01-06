@@ -16,19 +16,18 @@
 
 package rxweb;
 
-import java.util.concurrent.CompletableFuture;
-
+import reactor.rx.Promise;
 import rxweb.client.ClientRequest;
 import rxweb.client.ClientRequestHolder;
 import rxweb.client.ClientResponse;
 
 /**
- * TODO: look at Jetty client
  * @author Sebastien Deleuze
  */
 public interface Client {
 
-	CompletableFuture<ClientResponse> execute(final ClientRequest request);
+	// Return the client response as soon as headers has been received (we don't wait to have received the full body).
+	Promise<ClientResponse> execute(final ClientRequest request);
 
 	ClientRequestHolder get(final String uri);
 

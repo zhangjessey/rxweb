@@ -17,7 +17,6 @@
 package rxweb.netty.server;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.RxNetty;
@@ -25,13 +24,17 @@ import io.reactivex.netty.protocol.http.server.HttpServer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import rx.Observable;
+import rxweb.server.HandlerChain;
+import rxweb.server.Context;
 import rxweb.server.ServerHandler;
 import rxweb.server.AbstractServer;
 import rxweb.server.ServerRequest;
 import rxweb.server.ServerResponse;
-import rxweb.util.ObservableUtils;
 
 /**
+ * TODO: Replace RxNetty by Reactor + Netty, maybe https://github.com/pk11/reactor-http-demo/blob/master/src/main/java/com/github/pk11/rnio/HttpServer.java could help
  * @author Sebastien Deleuze
  */
 public class NettyServer extends AbstractServer {
@@ -42,20 +45,19 @@ public class NettyServer extends AbstractServer {
 
 	@Override
 	public void start() {
-		// TODO: We need to customize the PipelineConfigurator for the behavior we want.
-		// We want the handle to be called just after the request headers have been received
-		// It may depend on what kind of data we want to deal with (bytes, string or Object)
 		nettyServer = RxNetty.createHttpServer(port, (nettyRequest, nettyResponse) -> {
-			// TODO: need to create our own ByteBuf to avoid exposing Netty types in our API
 			ServerRequest request = new NettyServerRequestAdapter(nettyRequest);
 			ServerResponse response = new NettyServerResponseAdapter(nettyResponse, request);
 			List<ServerHandler> handlers = this.handlerResolver.resolve(request);
-			// TODO: Need to rework this part to execute handlers sequentially
-			// TODO: perhaps we should return CompletableFuture<Boolean> in order to know if we continue the handler chain
-			CompletableFuture<Void>[] handles = (CompletableFuture<Void>[])handlers.stream().map(handler -> handler.handle(request, response)).toArray();
-			CompletableFuture<Void> handle = CompletableFuture.allOf(handles);
-			// TODO: Should we call response.close() explicitly of return an Observable is enough ?
-			return ObservableUtils.toObservable(handle);
+			if(handlers.isEmpty()) {
+				return Observable.empty();
+			}
+			HandlerChain chain = new HandlerChain(handlers);
+			Context context = new Context(request, response, chain);
+			chain.next().handle(request, response, context);
+
+			// TODO: With the next() approach we have, I think we can't easily return the right Observable
+			return Observable.empty();
 		});
 		nettyServer.start();
 	}

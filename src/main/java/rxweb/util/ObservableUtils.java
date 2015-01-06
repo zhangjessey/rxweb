@@ -16,9 +16,7 @@
 
 package rxweb.util;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
+import reactor.rx.Promise;
 import rx.Observable;
 
 /**
@@ -27,43 +25,32 @@ import rx.Observable;
  */
 public class ObservableUtils {
 
-	public static <T> Observable<T> toObservable(CompletableFuture<T> future) {
-		return Observable.create(subscriber -> future.whenComplete((result, error) -> {
-			if (error != null) {
-				subscriber.onError(error);
-			}
-			else {
+	public static <T> Observable<T> toObservable(Promise<T> promise) {
+		return Observable.create(subscriber -> {
+			promise.onSuccess(result -> {
 				subscriber.onNext(result);
 				subscriber.onCompleted();
-			}
-		}));
+			});
+			promise.onError(subscriber::onError);
+		});
 	}
 
-	public static <T> CompletableFuture<List<T>> fromObservable(Observable<T> observable) {
-		final CompletableFuture<List<T>> future = new CompletableFuture<>();
+	public static Promise<Void> fromVoidObservable(Observable<Void> observable) {
+		final Promise<Void> promise = new Promise<>();
 		observable
-				.doOnError(future::completeExceptionally)
-				.toList()
-				.forEach(future::complete);
-		return future;
-	}
-
-	public static CompletableFuture<Void> fromVoidObservable(Observable<Void> observable) {
-		final CompletableFuture<Void> future = new CompletableFuture<>();
-		observable
-				.doOnError(future::completeExceptionally)
+				.doOnError(promise::onError)
 				.toList().map(voids -> (Void)null)
-				.single().forEach(future::complete);
-		return future;
+				.single().forEach(promise::onNext);
+		return promise;
 	}
 
-	public static <T> CompletableFuture<T> fromSingleObservable(Observable<T> observable) {
-		final CompletableFuture<T> future = new CompletableFuture<>();
+	public static <T> Promise<T> fromSingleObservable(Observable<T> observable) {
+		final Promise<T> promise = new Promise<>();
 		observable
-				.doOnError(future::completeExceptionally)
+				.doOnError(promise::onError)
 				.single()
-				.forEach(future::complete);
-		return future;
+				.forEach(promise::onNext);
+		return promise;
 	}
 
 }

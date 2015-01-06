@@ -16,16 +16,14 @@
 
 package rxweb.netty.client;
 
-import java.util.concurrent.CompletableFuture;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.CompositeByteBuf;
 import io.netty.handler.codec.http.HttpMethod;
 import io.reactivex.netty.RxNetty;
-import io.reactivex.netty.channel.ByteTransformer;
 import io.reactivex.netty.protocol.http.client.HttpClient;
 import io.reactivex.netty.protocol.http.client.HttpClientRequest;
-import io.reactivex.netty.protocol.http.client.HttpClientResponse;
+import reactor.rx.Promise;
 import rx.Observable;
 import rxweb.Client;
 import rxweb.client.ClientRequestHolder;
@@ -34,6 +32,7 @@ import rxweb.client.ClientResponse;
 import rxweb.util.ObservableUtils;
 
 /**
+ * TODO: Replace RxNetty by Reactor + Netty,
  * @author Sebastien Deleuze
  */
 public class NettyClient implements Client {
@@ -45,14 +44,14 @@ public class NettyClient implements Client {
 	}
 
 	@Override
-	public CompletableFuture<ClientResponse> execute(ClientRequest request) {
+	public Promise<ClientResponse> execute(ClientRequest request) {
 		HttpClientRequest<ByteBuf> nettyRequest = HttpClientRequest.create(HttpMethod.valueOf(request.getMethod().getName()), request.getUri());
 		if(request.getRawSource() != null) {
-			nettyRequest.withContentSource(request.getRawSource().flatMap(byteArray -> Observable
-					.just(ByteBufAllocator.DEFAULT.buffer(byteArray.length)
-							.writeBytes(byteArray))));
+			CompositeByteBuf compositeByteBuf = ByteBufAllocator.DEFAULT.compositeBuffer();
+			request.getRawSource().observe(byteArray -> compositeByteBuf.writeBytes(byteArray.asBytes()));
+			nettyRequest.withContentSource(Observable.just(compositeByteBuf));
 		};
-		CompletableFuture<ClientResponse> nettyResponseFuture =
+		Promise<ClientResponse> nettyResponseFuture =
 				ObservableUtils.fromSingleObservable(this.nettyClient.submit(nettyRequest).map(
 						nettyResponse -> new NettyClientResponseAdapter(nettyResponse)));
 		return nettyResponseFuture;

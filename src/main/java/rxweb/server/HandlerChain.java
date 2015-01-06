@@ -14,22 +14,31 @@
  * limitations under the License.
  */
 
-package rxweb.http;
+package rxweb.server;
 
-import reactor.io.buffer.Buffer;
-import reactor.rx.Stream;
+import java.util.Iterator;
+import java.util.List;
 
 /**
- * TODO: Maybe we should add some Promise<?> alternative that buffer and concatenates all the data emited
  * @author Sebastien Deleuze
  */
-public interface ContentObserver {
+public class HandlerChain implements Iterator<ServerHandler> {
 
-	Stream<Buffer> getRawContent();
+	private List<ServerHandler> handlers;
+	private Iterator<ServerHandler> handlerIterator;
 
-	<T> Stream<T> getContent(final Class<T> clazz);
+	public HandlerChain(List<ServerHandler> handlers) {
+		this.handlers = handlers;
+		this.handlerIterator = handlers.iterator();
+	}
 
-	// UTF-8 encoded
-	Stream<String> getStringContent();
+	@Override
+	public boolean hasNext() {
+		return this.handlerIterator.hasNext();
+	}
 
+	@Override
+	public ServerHandler next() {
+		return this.handlerIterator.next();
+	}
 }

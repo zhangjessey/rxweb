@@ -52,7 +52,7 @@ public class ServerTests {
 	@Test
 	public void server() {
 
-		server.get("/test", (request, response) -> response.status(Status.OK).writeString("Hello World!"));
+		server.get("/test", (request, response, context) -> response.status(Status.OK).writeString("Hello World!"));
 
 		HttpClient<String, ByteBuf> client = RxNetty.<String, ByteBuf>newHttpClientBuilder("localhost", 8080).build();
 		HttpClientRequest<String> request = HttpClientRequest.create(HttpMethod.GET, "/test");

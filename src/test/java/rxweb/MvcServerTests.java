@@ -16,7 +16,9 @@
 
 package rxweb;
 
-import rx.Observable;
+import reactor.rx.Stream;
+import reactor.rx.Streams;
+
 import rxweb.annotation.Mapping;
 
 import org.springframework.stereotype.Controller;
@@ -30,8 +32,8 @@ public class MvcServerTests {
 	public static class SampleController {
 
 		@Mapping("/")
-		public Observable<User> getUsers() {
-			return Observable.just(new User("Brian", "Clozel"), new User("Stéphane", "Nicoll"));
+		public Stream<User> getUsers() {
+			return Streams.just(new User("Brian", "Clozel"), new User("Stéphane", "Nicoll"));
 		}
 
 	}

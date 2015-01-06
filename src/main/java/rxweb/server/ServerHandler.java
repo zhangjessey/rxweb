@@ -16,11 +16,8 @@
 
 package rxweb.server;
 
-import java.util.concurrent.CompletableFuture;
-
 /**
  * Handle the HTTP request to produce a response.
- * TODO How to manage orders ? Dynamic handlers ?
  * @author Sebastien Deleuze
  */
 public interface ServerHandler {
@@ -28,8 +25,7 @@ public interface ServerHandler {
 	/**
 	 * @param request  The request object providing information about the HTTP request
 	 * @param response The response object providing functionality for modifying the response
-	 * @return The stream to be sent as response
 	 */
-	CompletableFuture<Void> handle(ServerRequest request, ServerResponse response);
+	void handle(final ServerRequest request, ServerResponse response, Context context);
 
 }

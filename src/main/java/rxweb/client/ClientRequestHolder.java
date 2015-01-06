@@ -16,13 +16,14 @@
 
 package rxweb.client;
 
-import java.util.concurrent.CompletableFuture;
+import reactor.rx.Promise;
 
 /**
  * @author Sebastien Deleuze
  */
 public interface ClientRequestHolder extends ClientRequest {
 
-	CompletableFuture<ClientResponse> execute();
+	// Return the client response as soon as headers has been received (we don't wait to have received the full body).
+	Promise<ClientResponse> execute();
 
 }

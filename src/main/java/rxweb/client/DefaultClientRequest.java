@@ -18,7 +18,9 @@ package rxweb.client;
 
 import java.nio.charset.StandardCharsets;
 
-import rx.Observable;
+import reactor.io.buffer.Buffer;
+import reactor.rx.Stream;
+import reactor.rx.Streams;
 import rxweb.http.AbstractRequest;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
@@ -30,7 +32,7 @@ import rxweb.http.RequestHeaders;
 public class DefaultClientRequest extends AbstractRequest implements ClientRequest {
 
 	protected ClientRequestHeaders headers;
-	protected Observable<byte[]> contentSource;
+	protected Stream<Buffer> contentSource;
 
 	@Override
 	public ClientRequestHeaders getHeaders() {
@@ -74,31 +76,32 @@ public class DefaultClientRequest extends AbstractRequest implements ClientReque
 	}
 
 	@Override
-	public Observable<byte[]> getRawSource() {
+	public Stream<Buffer> getRawSource() {
 		return this.contentSource;
 	}
 
 	@Override
-	public ClientRequest rawSource(Observable<byte[]> contentSource) {
+	public ClientRequest rawSource(Stream<Buffer> contentSource) {
 		this.contentSource = contentSource;
 		return this;
 	}
 
 	@Override
-	public ClientRequest stringSource(Observable<String> contentSource) {
-		this.contentSource =  contentSource.map(content -> content.getBytes(StandardCharsets.UTF_8));
+	public ClientRequest stringSource(Stream<String> contentSource) {
+		this.contentSource =  contentSource.map(content -> Buffer.wrap(
+				content.getBytes(StandardCharsets.UTF_8)));
 		return this;
 	}
 
 	@Override
-	public ClientRequest rawContent(byte[] content) {
-		this.contentSource = Observable.just(content);
+	public ClientRequest rawContent(Buffer content) {
+		this.contentSource = Streams.just(content);
 		return this;
 	}
 
 	@Override
 	public ClientRequest stringContent(String content) {
-		this.contentSource = Observable.just(content.getBytes(StandardCharsets.UTF_8));
+		this.contentSource = Streams.just(Buffer.wrap(content.getBytes(StandardCharsets.UTF_8)));
 		return this;
 	}
 
@@ -108,7 +111,7 @@ public class DefaultClientRequest extends AbstractRequest implements ClientReque
 	}
 
 	@Override
-	public ClientRequest source(Observable<Object> value) {
+	public ClientRequest source(Stream<Object> value) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 }

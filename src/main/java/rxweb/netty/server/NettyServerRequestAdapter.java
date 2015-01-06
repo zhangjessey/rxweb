@@ -21,7 +21,12 @@ import java.nio.charset.StandardCharsets;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpVersion;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
-import rx.Observable;
+
+import org.reactivestreams.Publisher;
+import reactor.io.buffer.Buffer;
+import reactor.rx.Stream;
+import reactor.rx.Streams;
+import rx.RxReactiveStreams;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.server.ServerRequest;
@@ -67,18 +72,20 @@ public class NettyServerRequestAdapter implements ServerRequest {
 	}
 
 	@Override
-	public Observable<byte[]> getRawContent() {
-		return this.nettyRequest.getContent().map(byteBuf -> byteBuf.array());
+	public Stream<Buffer> getRawContent() {
+		Publisher<Buffer> publisher = RxReactiveStreams.toPublisher(this.nettyRequest.getContent().map(byteBuf -> Buffer.wrap(byteBuf.array())));
+		return Streams.create(publisher);
 	}
 
 	@Override
-	public <T> Observable<T> getContent(Class<T> clazz) {
+	public <T> Stream<T> getContent(Class<T> clazz) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public Observable<String> getStringContent() {
-		return this.nettyRequest.getContent().map((content) -> content.toString(StandardCharsets.UTF_8));
+	public Stream<String> getStringContent() {
+		Publisher<String> publisher = RxReactiveStreams.toPublisher(this.nettyRequest.getContent().map((content) -> content.toString(StandardCharsets.UTF_8)));
+		return Streams.create(publisher);
 	}
 
 }

@@ -18,12 +18,11 @@ package rxweb.converter;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-
-import rx.functions.Func2;
+import reactor.fn.BiFunction;
 
 /**
  * @author Sebastien Deleuze
  */
-public interface Converter<S> extends Func2<S, ByteBufAllocator, ByteBuf> {
+public interface Converter<S> extends BiFunction<S, ByteBufAllocator, ByteBuf> {
 
 }

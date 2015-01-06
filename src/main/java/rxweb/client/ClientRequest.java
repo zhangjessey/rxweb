@@ -16,7 +16,8 @@
 
 package rxweb.client;
 
-import rx.Observable;
+import reactor.io.buffer.Buffer;
+import reactor.rx.Stream;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.http.Request;
@@ -40,18 +41,18 @@ public interface ClientRequest extends Request {
 
 	ClientRequest accept(String value);
 
-	ClientRequest rawContent(byte[] content);
+	ClientRequest rawContent(Buffer content);
 
-	ClientRequest rawSource(Observable<byte[]> value);
+	ClientRequest rawSource(Stream<Buffer> value);
 
-	Observable<byte[]> getRawSource();
+	Stream<Buffer> getRawSource();
 
 	ClientRequest stringContent(String content);
 
-	ClientRequest stringSource(Observable<String> value);
+	ClientRequest stringSource(Stream<String> value);
 
 	ClientRequest content(Object content);
 
-	ClientRequest source(Observable<Object> value);
+	ClientRequest source(Stream<Object> value);
 
 }

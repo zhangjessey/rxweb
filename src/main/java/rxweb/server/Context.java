@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-package rxweb.http;
-
-import reactor.io.buffer.Buffer;
-import reactor.rx.Stream;
+package rxweb.server;
 
 /**
- * TODO: Maybe we should add some Promise<?> alternative that buffer and concatenates all the data emited
  * @author Sebastien Deleuze
  */
-public interface ContentObserver {
+public class Context {
 
-	Stream<Buffer> getRawContent();
+	private final ServerRequest request;
+	private final ServerResponse response;
+	private final HandlerChain chain;
 
-	<T> Stream<T> getContent(final Class<T> clazz);
+	public Context(ServerRequest request, ServerResponse response, HandlerChain chain) {
+		this.request = request;
+		this.response = response;
+		this.chain = chain;
+	}
 
-	// UTF-8 encoded
-	Stream<String> getStringContent();
+	public ServerRequest getRequest() {
+		return request;
+	}
 
+	public ServerResponse getResponse() {
+		return response;
+	}
+
+	public void next() {
+		this.chain.next().handle(this.request, this.response, this);
+	}
 }

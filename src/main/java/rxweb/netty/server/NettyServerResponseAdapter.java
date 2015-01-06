@@ -16,12 +16,12 @@
 
 package rxweb.netty.server;
 
-import java.util.concurrent.CompletableFuture;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.reactivex.netty.protocol.http.server.HttpServerResponse;
-import rx.Observable;
+import reactor.io.buffer.Buffer;
+import reactor.rx.Promise;
+import reactor.rx.Stream;
 import rxweb.http.ResponseHeaders;
 import rxweb.http.Protocol;
 import rxweb.http.Request;
@@ -109,49 +109,49 @@ public class NettyServerResponseAdapter implements ServerResponse {
 	}
 
 	@Override
-	public CompletableFuture<Void> writeRaw(byte[] content) {
-		this.nettyResponse.writeBytes(content);
+	public Promise<Void> writeRaw(Buffer content) {
+		this.nettyResponse.writeBytes(content.asBytes());
 		return this.flush();
 	}
 
 	@Override
-	public CompletableFuture<Void> writeString(String content) {
+	public Promise<Void> writeString(String content) {
 		this.nettyResponse.writeString(content);
 		return this.flush();
 	}
 
 	@Override
-	public CompletableFuture<Void> write(Object content) {
+	public Promise<Void> write(Object content) {
 		// We need to use converts/transformers here
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public ServerResponse rawSource(Observable<byte[]> value) {
+	public ServerResponse rawSource(Stream<Buffer> value) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public Observable<byte[]> getRawSource() {
+	public Stream<Buffer> getRawSource() {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public ServerResponse stringSource(Observable<String> value) {
+	public ServerResponse stringSource(Stream<String> value) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public ServerResponse source(Observable<Object> value) {
+	public ServerResponse source(Stream<Object> value) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
-	private CompletableFuture<Void> flush() {
+	private Promise<Void> flush() {
 		return ObservableUtils.fromVoidObservable(this.nettyResponse.flush());
 	}
 
 	@Override
-	public CompletableFuture<Void> close() {
+	public Promise<Void> close() {
 		return ObservableUtils.fromVoidObservable(this.nettyResponse.close());
 	}
 }

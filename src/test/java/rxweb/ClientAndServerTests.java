@@ -22,8 +22,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import rxweb.client.DefaultClientRequest;
-import rxweb.http.Method;
 import rxweb.http.Status;
 import rxweb.netty.client.NettyClient;
 import rxweb.netty.server.NettyServer;
@@ -48,15 +46,12 @@ public class ClientAndServerTests {
 		server.stop();
 	}
 
-
 	@Test
 	public void clientAndServer() throws ExecutionException, InterruptedException {
 
-		server.get("/test", (request, response) -> response.status(Status.OK).writeString("Hello World!"));
+		server.get("/test", (request, response, context) -> response.status(Status.OK).writeString("Hello World!"));
 
-		// TODO Currently it produces the following error : Content stream is already disposed, likely to be related to https://github.com/ReactiveX/RxNetty/issues/264
-		String result = client.execute(new DefaultClientRequest().uri("/test").method(
-				Method.GET)).get().getStringContent().toBlocking().single();
+		String result = client.get("/test").execute().get().getStringContent().next().get();
 		Assert.assertEquals("Hello World!", result);
 	}
 
