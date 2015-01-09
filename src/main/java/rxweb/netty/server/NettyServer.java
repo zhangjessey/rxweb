@@ -18,14 +18,20 @@ package rxweb.netty.server;
 
 import java.util.List;
 
-import io.netty.buffer.ByteBuf;
-import io.reactivex.netty.RxNetty;
-import io.reactivex.netty.protocol.http.server.HttpServer;
+import io.netty.handler.codec.http.HttpServerCodec;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import rx.Observable;
+import reactor.Environment;
+import reactor.io.codec.json.JacksonJsonCodec;
+import reactor.io.net.NetServer;
+import reactor.io.net.config.ServerSocketOptions;
+import reactor.io.net.netty.NettyServerSocketOptions;
+import reactor.io.net.netty.tcp.NettyTcpServer;
+import reactor.io.net.tcp.spec.TcpServerSpec;
+import reactor.rx.Promise;
+import reactor.rx.Stream;
 import rxweb.server.HandlerChain;
 import rxweb.server.Context;
 import rxweb.server.ServerHandler;
@@ -34,43 +40,50 @@ import rxweb.server.ServerRequest;
 import rxweb.server.ServerResponse;
 
 /**
- * TODO: Replace RxNetty by Reactor + Netty, maybe https://github.com/pk11/reactor-http-demo/blob/master/src/main/java/com/github/pk11/rnio/HttpServer.java could help
  * @author Sebastien Deleuze
  */
 public class NettyServer extends AbstractServer {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private HttpServer<ByteBuf, ByteBuf> nettyServer;
+	private final Environment env = new Environment();
 
-	@Override
-	public void start() {
-		nettyServer = RxNetty.createHttpServer(port, (nettyRequest, nettyResponse) -> {
-			ServerRequest request = new NettyServerRequestAdapter(nettyRequest);
-			ServerResponse response = new NettyServerResponseAdapter(nettyResponse, request);
-			List<ServerHandler> handlers = this.handlerResolver.resolve(request);
-			if(handlers.isEmpty()) {
-				return Observable.empty();
-			}
-			HandlerChain chain = new HandlerChain(handlers);
-			Context context = new Context(request, response, chain);
-			chain.next().handle(request, response, context);
+	private final NetServer<ServerRequest, Object> server;
 
-			// TODO: With the next() approach we have, I think we can't easily return the right Observable
-			return Observable.empty();
-		});
-		nettyServer.start();
+	public NettyServer() {
+		ServerSocketOptions options = new NettyServerSocketOptions()
+				.pipelineConfigurer(pipeline -> pipeline.addLast(new HttpServerCodec())
+						.addLast(new ServerRequestResponseConverter(env)));
+
+		server = new TcpServerSpec<ServerRequest, Object>(NettyTcpServer.class)
+				.listen(8080).env(this.env).dispatcher("sync").options(options)
+				.consume(ch -> {
+					// filter requests by URI via the input Stream
+					Stream<ServerRequest> in = ch.in();
+
+					// Implement here the routing
+					in.consume(request -> {
+						List<ServerHandler> handlers =
+								this.handlerResolver.resolve(request);
+						if (!handlers.isEmpty()) {
+							ServerResponse response =
+									new NettyServerResponse(ch, request);
+							HandlerChain chain = new HandlerChain(handlers);
+							Context context = new Context(request, response, chain);
+							chain.next().handle(request, response, context);
+						}
+					});
+				}).get();
 	}
 
+	@Override
+	public Promise<Boolean> start() {
+		return this.server.start();
+	}
 
 	@Override
-	public void stop() {
-		try {
-			nettyServer.shutdown();
-		}
-		catch (InterruptedException e) {
-			logger.error("Error while shutting down the RxWeb server", e);
-		}
+	public Promise<Boolean> stop() {
+		return this.server.shutdown();
 	}
 
 }

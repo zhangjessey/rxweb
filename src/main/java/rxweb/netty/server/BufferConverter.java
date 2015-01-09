@@ -14,37 +14,11 @@
  * limitations under the License.
  */
 
-package rxweb.http;
-
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+package rxweb.netty.server;
 
 /**
  * @author Sebastien Deleuze
  */
-public interface ReadableHeaders {
-
-	public boolean contains(String name);
-
-	public boolean contains(String name, String value, boolean ignoreCaseValue);
-
-	public List<Map.Entry<String, String>> entries();
-
-	public String get(String name);
-
-	public List<String> getAll(String name);
-
-	public Date getDate() throws ParseException;
-
-	public Date getDateHeader(String name) throws ParseException;
-
-	public String getHost();
-
-	public boolean isEmpty();
-
-	public Set<String> names();
+public class BufferConverter {
 
 }

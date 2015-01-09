@@ -41,4 +41,8 @@ public class HandlerChain implements Iterator<ServerHandler> {
 	public ServerHandler next() {
 		return this.handlerIterator.next();
 	}
+
+	public void addLast(ServerHandler handler) {
+		this.handlers.add(handler);
+	}
 }

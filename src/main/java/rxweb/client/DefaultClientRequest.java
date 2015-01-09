@@ -31,7 +31,7 @@ import rxweb.http.RequestHeaders;
  */
 public class DefaultClientRequest extends AbstractRequest implements ClientRequest {
 
-	protected ClientRequestHeaders headers;
+	protected final ClientRequestHeaders headers = new DefaultClientRequestHeaders();
 	protected Stream<Buffer> contentSource;
 
 	@Override

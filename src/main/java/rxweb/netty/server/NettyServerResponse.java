@@ -16,42 +16,57 @@
 
 package rxweb.netty.server;
 
+import java.nio.charset.StandardCharsets;
+
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.http.DefaultHttpContent;
+import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.reactivex.netty.protocol.http.server.HttpServerResponse;
+import io.netty.handler.codec.http.HttpVersion;
 import reactor.io.buffer.Buffer;
+import reactor.io.net.NetChannel;
 import reactor.rx.Promise;
 import reactor.rx.Stream;
+import reactor.rx.Streams;
 import rxweb.http.ResponseHeaders;
 import rxweb.http.Protocol;
-import rxweb.http.Request;
 import rxweb.http.Status;
 import rxweb.http.Transfer;
+import rxweb.server.ServerRequest;
 import rxweb.server.ServerResponse;
 import rxweb.server.ServerResponseHeaders;
-import rxweb.util.ObservableUtils;
 
 import org.springframework.util.Assert;
 
 /**
  * @author Sebastien Deleuze
  */
-public class NettyServerResponseAdapter implements ServerResponse {
+public class NettyServerResponse implements ServerResponse {
 
-	private final HttpServerResponse<ByteBuf> nettyResponse;
+	private final NetChannel<ServerRequest, Object>  channel;
+	private final HttpResponse nettyResponse;
+	private final ServerRequest request;
 	private final ServerResponseHeaders headers;
-	private final Request request;
+	private boolean statusAndHeadersSent = false;
 
-	public NettyServerResponseAdapter(HttpServerResponse<ByteBuf> nettyResponse,
-			Request request) {
-		this.nettyResponse = nettyResponse;
-		this.headers = new NettyResponseHeadersAdapter(this.nettyResponse.getHeaders());
+	public NettyServerResponse(NetChannel<ServerRequest, Object> channel, ServerRequest request) {
+		this.nettyResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+		this.headers = new NettyResponseHeadersAdapter(this.nettyResponse);
+		this.channel = channel;
 		this.request = request;
 	}
 
 	@Override
-	public Request getRequest() {
+	public ServerRequest getRequest() {
 		return this.request;
+	}
+
+	@Override
+	public Promise<Void> flush() {
+		return this.channel.send(this);
 	}
 
 	@Override
@@ -98,26 +113,40 @@ public class NettyServerResponseAdapter implements ServerResponse {
 
 	@Override
 	public ServerResponse header(String name, String value) {
-		this.nettyResponse.getHeaders().set(name, value);
+		this.headers.set(name, value);
 		return this;
 	}
 
 	@Override
 	public ServerResponse addHeader(String name, String value) {
-		this.nettyResponse.getHeaders().add(name, value);
+		this.headers.add(name, value);
 		return this;
 	}
 
 	@Override
 	public Promise<Void> writeRaw(Buffer content) {
-		this.nettyResponse.writeBytes(content.asBytes());
-		return this.flush();
+		ByteBuf nettyBuffer = Unpooled.wrappedBuffer(content.byteBuffer());
+		HttpContent httpContent = new DefaultHttpContent(nettyBuffer);
+		if(!this.statusAndHeadersSent) {
+			this.statusAndHeadersSent = true;
+			Promise<Void> headersPromise = this.channel.send(this);
+			Promise<Void> contentPromise = this.channel.send(httpContent);
+			return Streams.zip(headersPromise, contentPromise, tuple -> tuple.t1).next();
+		}
+		return this.channel.send(httpContent);
 	}
 
 	@Override
 	public Promise<Void> writeString(String content) {
-		this.nettyResponse.writeString(content);
-		return this.flush();
+		ByteBuf nettyBuffer = Unpooled.wrappedBuffer(content.getBytes(StandardCharsets.UTF_8));
+		HttpContent httpContent = new DefaultHttpContent(nettyBuffer);
+		if(!this.statusAndHeadersSent) {
+			this.statusAndHeadersSent = true;
+			Promise<Void> headersPromise = this.channel.send(this);
+			Promise<Void> contentPromise = this.channel.send(httpContent);
+			return Streams.zip(headersPromise, contentPromise, tuple -> tuple.t1).next();
+		}
+		return this.channel.send(httpContent);
 	}
 
 	@Override
@@ -127,31 +156,25 @@ public class NettyServerResponseAdapter implements ServerResponse {
 	}
 
 	@Override
-	public ServerResponse rawSource(Stream<Buffer> value) {
-		throw new UnsupportedOperationException("Not implemented yet");
+	public ServerResponse rawSource(Stream<Buffer> stream) {
+		Stream<HttpContent> httpStream = stream.map(buffer -> new DefaultHttpContent(
+				Unpooled.wrappedBuffer(buffer.byteBuffer())));
+		this.channel.send(httpStream);
+		return this;
 	}
 
 	@Override
-	public Stream<Buffer> getRawSource() {
-		throw new UnsupportedOperationException("Not implemented yet");
+	public Promise<Boolean> close() {
+		if(!this.statusAndHeadersSent) {
+			this.statusAndHeadersSent = true;
+			Promise<Void> headersPromise = this.channel.send(this);
+			Promise<Boolean> contentPromise = this.channel.close();
+			return Streams.zip(headersPromise, contentPromise, tuple -> tuple.t2).next();
+		}
+		return this.channel.close();
 	}
 
-	@Override
-	public ServerResponse stringSource(Stream<String> value) {
-		throw new UnsupportedOperationException("Not implemented yet");
-	}
-
-	@Override
-	public ServerResponse source(Stream<Object> value) {
-		throw new UnsupportedOperationException("Not implemented yet");
-	}
-
-	private Promise<Void> flush() {
-		return ObservableUtils.fromVoidObservable(this.nettyResponse.flush());
-	}
-
-	@Override
-	public Promise<Void> close() {
-		return ObservableUtils.fromVoidObservable(this.nettyResponse.close());
+	public HttpResponse getNettyResponse() {
+		return nettyResponse;
 	}
 }

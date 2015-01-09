@@ -16,35 +16,22 @@
 
 package rxweb.http;
 
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * @author Sebastien Deleuze
  */
-public interface ReadableHeaders {
+public abstract class AbstractResponse implements Response {
 
-	public boolean contains(String name);
+	protected Status status;
 
-	public boolean contains(String name, String value, boolean ignoreCaseValue);
+	protected Transfer transfer;
 
-	public List<Map.Entry<String, String>> entries();
+	@Override
+	public Status getStatus() {
+		return this.status;
+	}
 
-	public String get(String name);
-
-	public List<String> getAll(String name);
-
-	public Date getDate() throws ParseException;
-
-	public Date getDateHeader(String name) throws ParseException;
-
-	public String getHost();
-
-	public boolean isEmpty();
-
-	public Set<String> names();
-
+	@Override
+	public Transfer getTransfer() {
+		return this.transfer;
+	}
 }

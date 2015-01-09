@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.reactivex.netty.protocol.http.server.HttpRequestHeaders;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpRequest;
 import rxweb.server.ServerRequestHeaders;
 
 /**
@@ -30,10 +31,12 @@ import rxweb.server.ServerRequestHeaders;
  */
 public class NettyRequestHeadersAdapter implements ServerRequestHeaders {
 
-	private HttpRequestHeaders nettyHeaders;
+	private final HttpRequest nettyRequest;
+	private final HttpHeaders nettyHeaders;
 
-	public NettyRequestHeadersAdapter(HttpRequestHeaders nettyHeaders) {
-		this.nettyHeaders = nettyHeaders;
+	public NettyRequestHeadersAdapter(HttpRequest nettyRequest) {
+		this.nettyRequest = nettyRequest;
+		this.nettyHeaders = nettyRequest.headers();
 	}
 
 	@Override
@@ -63,22 +66,17 @@ public class NettyRequestHeadersAdapter implements ServerRequestHeaders {
 
 	@Override
 	public Date getDate() throws ParseException {
-		return this.nettyHeaders.getDate();
+		return HttpHeaders.getDate(this.nettyRequest);
 	}
 
 	@Override
 	public Date getDateHeader(String name) throws ParseException {
-		return this.nettyHeaders.getDateHeader(name);
+		return HttpHeaders.getDateHeader(this.nettyRequest, name);
 	}
 
 	@Override
 	public String getHost() {
-		return this.nettyHeaders.getHost();
-	}
-
-	@Override
-	public String getHost(String defaultValue) {
-		return this.nettyHeaders.getHost(defaultValue);
+		return HttpHeaders.getHost(this.nettyRequest);
 	}
 
 	@Override

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package rxweb.client;
+package rxweb.server;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -29,13 +29,13 @@ import org.springframework.util.LinkedCaseInsensitiveMap;
 /**
  * @author Sebastien Deleuze
  */
-public class DefaultClientRequestHeaders implements ClientRequestHeaders {
+public class DefaultServerResponseHeaders implements ServerResponseHeaders {
 
 	private final Map<String, List<String>>
 			headers = new LinkedCaseInsensitiveMap<List<String>>(8, Locale.ENGLISH);
 
 	@Override
-	public ClientRequestHeaders add(String name, String value) {
+	public ServerResponseHeaders add(String name, String value) {
 		List<String> values = headers.get(name);
 		if (values == null) {
 			values = new LinkedList<String>();
@@ -46,17 +46,17 @@ public class DefaultClientRequestHeaders implements ClientRequestHeaders {
 	}
 
 	@Override
-	public ClientRequestHeaders add(String name, Iterable<String> values) {
+	public ServerResponseHeaders add(String name, Iterable<String> values) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public ClientRequestHeaders addDateHeader(String name, Date value) {
+	public ServerResponseHeaders addDateHeader(String name, Date value) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public ClientRequestHeaders clear() {
+	public ServerResponseHeaders clear() {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
@@ -87,6 +87,11 @@ public class DefaultClientRequestHeaders implements ClientRequestHeaders {
 	}
 
 	@Override
+	public long getContentLength() {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	@Override
 	public Date getDate() throws ParseException {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
@@ -112,60 +117,59 @@ public class DefaultClientRequestHeaders implements ClientRequestHeaders {
 	}
 
 	@Override
-	public ClientRequestHeaders remove(String name) {
-		throw new UnsupportedOperationException("Not implemented yet");
-	}
-
-	@Override
-	public ClientRequestHeaders removeTransferEncodingChunked() {
-		throw new UnsupportedOperationException("Not implemented yet");
-	}
-
-	@Override
-	public ClientRequestHeaders set(String name, String value) {
-		List<String> values = new LinkedList<String>();
-		values.add(value);
-		headers.put(name, values);
+	public ServerResponseHeaders remove(String name) {
+		this.headers.remove(name);
 		return this;
 	}
 
 	@Override
-	public ClientRequestHeaders set(String name, Iterable<String> values) {
+	public ServerResponseHeaders removeTransferEncodingChunked() {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public ClientRequestHeaders contentLength(long length) {
+	public ServerResponseHeaders set(String name, String value) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public ClientRequestHeaders date(Date value) {
+	public ServerResponseHeaders set(String name, Iterable<String> values) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public ClientRequestHeaders dateHeader(String name, Date value) {
+	public ServerResponseHeaders contentLength(long length) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public ClientRequestHeaders dateHeader(String name, Iterable<Date> values) {
+	public ServerResponseHeaders date(Date value) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public ClientRequestHeaders host(String value) {
+	public ServerResponseHeaders dateHeader(String name, Date value) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public ClientRequestHeaders keepAlive(boolean keepAlive) {
+	public ServerResponseHeaders dateHeader(String name, Iterable<Date> values) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public ClientRequestHeaders transferEncodingChunked() {
+	public ServerResponseHeaders host(String value) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
+
+	@Override
+	public ServerResponseHeaders keepAlive(boolean keepAlive) {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
+	@Override
+	public ServerResponseHeaders transferEncodingChunked() {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
 }

@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.reactivex.netty.protocol.http.server.HttpResponseHeaders;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpResponse;
 import rxweb.server.ServerResponseHeaders;
 
 /**
@@ -30,34 +31,12 @@ import rxweb.server.ServerResponseHeaders;
  */
 public class NettyResponseHeadersAdapter implements ServerResponseHeaders {
 
-	private HttpResponseHeaders nettyHeaders;
+	private final HttpResponse nettyResponse;
+	private final HttpHeaders nettyHeaders;
 
-	public NettyResponseHeadersAdapter(HttpResponseHeaders nettyHeaders) {
-		this.nettyHeaders = nettyHeaders;
-	}
-
-	@Override
-	public ServerResponseHeaders add(String name, String value) {
-		this.nettyHeaders.add(name, value);
-		return this;
-	}
-
-	@Override
-	public ServerResponseHeaders add(String name, Iterable<String> values) {
-		this.nettyHeaders.add(name, values);
-		return this;
-	}
-
-	@Override
-	public ServerResponseHeaders addDateHeader(String name, Date value) {
-		this.nettyHeaders.addDateHeader(name, value);
-		return this;
-	}
-
-	@Override
-	public ServerResponseHeaders clear() {
-		this.nettyHeaders.clear();
-		return this;
+	public NettyResponseHeadersAdapter(HttpResponse nettyResponse) {
+		this.nettyResponse = nettyResponse;
+		this.nettyHeaders = nettyResponse.headers();
 	}
 
 	@Override
@@ -86,28 +65,18 @@ public class NettyResponseHeadersAdapter implements ServerResponseHeaders {
 	}
 
 	@Override
-	public long getContentLength() {
-		return this.nettyHeaders.getContentLength();
-	}
-
-	@Override
 	public Date getDate() throws ParseException {
-		return this.nettyHeaders.getDate();
+		return HttpHeaders.getDate(this.nettyResponse);
 	}
 
 	@Override
 	public Date getDateHeader(String name) throws ParseException {
-		return this.nettyHeaders.getDateHeader(name);
+		return HttpHeaders.getDateHeader(this.nettyResponse, name);
 	}
 
 	@Override
 	public String getHost() {
-		return this.nettyHeaders.getHost();
-	}
-
-	@Override
-	public String getHost(String defaultValue) {
-		return this.nettyHeaders.getHost(defaultValue);
+		return HttpHeaders.getHost(this.nettyResponse);
 	}
 
 	@Override
@@ -121,6 +90,35 @@ public class NettyResponseHeadersAdapter implements ServerResponseHeaders {
 	}
 
 	@Override
+	public long getContentLength() {
+		return 0;
+	}
+
+	@Override
+	public ServerResponseHeaders add(String name, String value) {
+		this.nettyHeaders.add(name, value);
+		return this;
+	}
+
+	@Override
+	public ServerResponseHeaders add(String name, Iterable<String> values) {
+		this.nettyHeaders.add(name, values);
+		return this;
+	}
+
+	@Override
+	public ServerResponseHeaders addDateHeader(String name, Date value) {
+		HttpHeaders.addDateHeader(this.nettyResponse, name, value);
+		return this;
+	}
+
+	@Override
+	public ServerResponseHeaders clear() {
+		this.nettyHeaders.clear();
+		return this;
+	}
+
+	@Override
 	public ServerResponseHeaders remove(String name) {
 		this.nettyHeaders.remove(name);
 		return this;
@@ -128,7 +126,7 @@ public class NettyResponseHeadersAdapter implements ServerResponseHeaders {
 
 	@Override
 	public ServerResponseHeaders removeTransferEncodingChunked() {
-		this.nettyHeaders.removeTransferEncodingChunked();
+		HttpHeaders.removeTransferEncodingChunked(this.nettyResponse);
 		return this;
 	}
 
@@ -146,44 +144,43 @@ public class NettyResponseHeadersAdapter implements ServerResponseHeaders {
 
 	@Override
 	public ServerResponseHeaders contentLength(long length) {
-		this.nettyHeaders.setContentLength(length);
+		HttpHeaders.setContentLength(this.nettyResponse, length);
 		return this;
 	}
 
 	@Override
 	public ServerResponseHeaders date(Date value) {
-		this.nettyHeaders.setDate(value);
+		HttpHeaders.setDate(this.nettyResponse, value);
 		return this;
 	}
 
 	@Override
 	public ServerResponseHeaders dateHeader(String name, Date value) {
-		this.nettyHeaders.setDateHeader(name, value);
+		HttpHeaders.setDateHeader(this.nettyResponse, name, value);
 		return this;
 	}
 
 	@Override
 	public ServerResponseHeaders dateHeader(String name, Iterable<Date> values) {
-		this.nettyHeaders.setDateHeader(name, values);
+		HttpHeaders.setDateHeader(this.nettyResponse, name, values);
 		return this;
 	}
 
 	@Override
 	public ServerResponseHeaders host(String value) {
-		this.nettyHeaders.setHost(value);
+		HttpHeaders.setHost(this.nettyResponse, value);
 		return this;
 	}
 
 	@Override
 	public ServerResponseHeaders keepAlive(boolean keepAlive) {
-		this.nettyHeaders.setKeepAlive(keepAlive);
+		HttpHeaders.setKeepAlive(this.nettyResponse, keepAlive);
 		return this;
 	}
 
 	@Override
 	public ServerResponseHeaders transferEncodingChunked() {
-		this.nettyHeaders.setTransferEncodingChunked();
+		HttpHeaders.setTransferEncodingChunked(this.nettyResponse);
 		return this;
 	}
-
 }

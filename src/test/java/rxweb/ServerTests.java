@@ -16,13 +16,11 @@
 
 package rxweb;
 
-import java.nio.charset.Charset;
+import java.io.IOException;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.handler.codec.http.HttpMethod;
-import io.reactivex.netty.RxNetty;
-import io.reactivex.netty.protocol.http.client.HttpClient;
-import io.reactivex.netty.protocol.http.client.HttpClientRequest;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -50,17 +48,16 @@ public class ServerTests {
 	}
 
 	@Test
-	public void server() {
+	public void server() throws IOException {
 
-		server.get("/test", (request, response, context) -> response.status(Status.OK).writeString("Hello World!"));
+		OkHttpClient client = new OkHttpClient();
 
-		HttpClient<String, ByteBuf> client = RxNetty.<String, ByteBuf>newHttpClientBuilder("localhost", 8080).build();
-		HttpClientRequest<String> request = HttpClientRequest.create(HttpMethod.GET, "/test");
-		String result = client.submit(request).flatMap((response)
-				-> response.getContent().map((byteBuf)
-				-> byteBuf.toString(Charset.defaultCharset()))).toBlocking().single();
+		server.get("/test", (request, response, context) -> response.status(Status.OK).writeString("Hello World!").onSuccess(v -> response.close()));
 
-		Assert.assertEquals("Hello World!", result);
+		Request request = new Request.Builder().url("http://localhost:8080/test").build();
+
+		Response response = client.newCall(request).execute();
+		Assert.assertEquals("Hello World!", response.body().string());
 	}
 
 }

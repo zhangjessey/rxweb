@@ -16,17 +16,11 @@
 
 package rxweb.netty.server;
 
-import java.nio.charset.StandardCharsets;
-
-import io.netty.buffer.ByteBuf;
+import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
-import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 
-import org.reactivestreams.Publisher;
 import reactor.io.buffer.Buffer;
 import reactor.rx.Stream;
-import reactor.rx.Streams;
-import rx.RxReactiveStreams;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.server.ServerRequest;
@@ -35,19 +29,21 @@ import rxweb.server.ServerRequestHeaders;
 /**
  * @author Sebastien Deleuze
  */
-public class NettyServerRequestAdapter implements ServerRequest {
+public class NettyServerRequest implements ServerRequest {
 
-	private final HttpServerRequest<ByteBuf> nettyRequest;
+	private final HttpRequest nettyRequest;
 	private final ServerRequestHeaders headers;
+	private final Stream<Buffer> content;
 
-	public NettyServerRequestAdapter(HttpServerRequest<ByteBuf> request) {
+	public NettyServerRequest(HttpRequest request, Stream<Buffer> content) {
 		this.nettyRequest = request;
-		this.headers = new NettyRequestHeadersAdapter(this.nettyRequest.getHeaders());
+		this.headers = new NettyRequestHeadersAdapter(request);
+		this.content = content;
 	}
 
 	@Override
 	public Protocol getProtocol() {
-		HttpVersion version = this.nettyRequest.getHttpVersion();
+		HttpVersion version = this.nettyRequest.getProtocolVersion();
 		if (version.equals(HttpVersion.HTTP_1_0)) {
 			return Protocol.HTTP_1_0;
 		} else if (version.equals(HttpVersion.HTTP_1_1)) {
@@ -63,7 +59,7 @@ public class NettyServerRequestAdapter implements ServerRequest {
 
 	@Override
 	public Method getMethod() {
-		return new Method(this.nettyRequest.getHttpMethod().name());
+		return new Method(this.nettyRequest.getMethod().name());
 	}
 
 	@Override
@@ -73,8 +69,7 @@ public class NettyServerRequestAdapter implements ServerRequest {
 
 	@Override
 	public Stream<Buffer> getRawContent() {
-		Publisher<Buffer> publisher = RxReactiveStreams.toPublisher(this.nettyRequest.getContent().map(byteBuf -> Buffer.wrap(byteBuf.array())));
-		return Streams.create(publisher);
+		return this.content;
 	}
 
 	@Override
@@ -84,8 +79,7 @@ public class NettyServerRequestAdapter implements ServerRequest {
 
 	@Override
 	public Stream<String> getStringContent() {
-		Publisher<String> publisher = RxReactiveStreams.toPublisher(this.nettyRequest.getContent().map((content) -> content.toString(StandardCharsets.UTF_8)));
-		return Streams.create(publisher);
+		return this.content.map(content -> content.asString());
 	}
 
 }

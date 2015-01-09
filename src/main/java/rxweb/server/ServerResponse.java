@@ -19,7 +19,6 @@ package rxweb.server;
 import reactor.io.buffer.Buffer;
 import reactor.rx.Promise;
 import reactor.rx.Stream;
-import rxweb.http.Request;
 import rxweb.http.Response;
 import rxweb.http.Status;
 import rxweb.http.Transfer;
@@ -29,7 +28,7 @@ import rxweb.http.Transfer;
  */
 public interface ServerResponse extends Response {
 
-	Request getRequest();
+	ServerRequest getRequest();
 
 	ServerResponse status(Status status);
 
@@ -41,20 +40,16 @@ public interface ServerResponse extends Response {
 
 	ServerResponse transfer(Transfer transfer);
 
+	Promise<Void> flush();
+
 	Promise<Void> writeRaw(Buffer content);
 
 	ServerResponse rawSource(Stream<Buffer> value);
 
-	Stream<Buffer> getRawSource();
-
 	Promise<Void> writeString(String content);
-
-	ServerResponse stringSource(Stream<String> value);
 
 	Promise<Void> write(Object content);
 
-	ServerResponse source(Stream<Object> value);
-
-	Promise<Void> close();
+	Promise<Boolean> close();
 
 }
