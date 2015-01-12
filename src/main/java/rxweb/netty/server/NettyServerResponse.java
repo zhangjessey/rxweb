@@ -30,6 +30,7 @@ import org.reactivestreams.Publisher;
 import reactor.io.buffer.Buffer;
 import reactor.io.net.NetChannel;
 import reactor.rx.Promise;
+import reactor.rx.Promises;
 import reactor.rx.Streams;
 import rxweb.http.ResponseHeaders;
 import rxweb.http.Protocol;
@@ -140,8 +141,7 @@ public class NettyServerResponse implements ServerResponse {
 			this.statusAndHeadersSent = true;
 			Promise<Void> headersPromise = this.channel.send(this);
 			Promise<Void> contentPromise = this.channel.send(httpContent);
-			// TODO: Using a workaround while waiting resolution of https://github.com/reactor/reactor/issues/416
-			return Streams.zip(headersPromise, contentPromise, tuple -> tuple.t1).next();
+			return Promises.when(headersPromise,contentPromise).map(tuple -> tuple.getT2());
 		}
 		return this.channel.send(httpContent);
 

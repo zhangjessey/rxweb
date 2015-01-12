@@ -4,12 +4,13 @@ sourceCompatibility = 1.8
 version = "1.0"
 
 repositories {
-  maven { url "http://repo.spring.io/libs-milestone" }
+  //maven { url "http://repo.spring.io/libs-milestone" }
+  maven { url "http://repo.spring.io/libs-snapshot" }
   mavenCentral()
 }
 
 ext {
-  reactorVersion  = "2.0.0.M2"
+  reactorVersion  = "2.0.0.BUILD-SNAPSHOT"
   nettyVersion    = "4.0.25.Final"
   springVersion   = "4.1.4.RELEASE"
   slf4jVersion    = "1.7.7"
