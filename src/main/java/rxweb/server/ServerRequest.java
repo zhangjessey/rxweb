@@ -16,14 +16,25 @@
 
 package rxweb.server;
 
-import rxweb.http.ContentObserver;
+import reactor.io.buffer.Buffer;
+import reactor.rx.Promise;
+import reactor.rx.Stream;
 import rxweb.http.Request;
 
 /**
  * @author Sebastien Deleuze
  */
-public interface ServerRequest extends Request, ContentObserver {
+public interface ServerRequest extends Request {
 
 	ServerRequestHeaders getHeaders();
+
+	/** For the moment, {@link Buffer} and {@link String} (UTF-8) are supported
+	 */
+	<T> Stream<T> getContentStream(final Class<T> clazz);
+
+	/** Accumulate all chunks before completed
+	 For the moment, {@link Buffer} and {@link String} (UTF-8) are supported
+	 */
+	<T> Promise<T> getContent(final Class<T> clazz);
 
 }

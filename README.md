@@ -1,8 +1,7 @@
 Implementation notes
 ====================
 
-**This is an early draft prototype, nothing to use for now. This is a work in progress
-attempt to move from RxNetty to Reactor + Netty**
+**This is an early draft prototype, nothing to use for now **
 
 - See TODO Javadoc comments for in code remarks
 - Need to work on converters ...
@@ -23,8 +22,9 @@ attempt to move from RxNetty to Reactor + Netty**
 - Client require a small footprint and may be used in non Spring context. So should we make
   the dependency on spring-core Mandatory ? We just use a small subset so maybe we could build
   a smaller version with just the classes we use as described in this SPR-10258 comment [4].
-- I have chosen to have no dependency on spring-web
-- We should reuse Reactor Netty support [5]
+- I have chosen to have no dependency on spring-web (too much overlap between the old and new implementation)
+- What about using this prototype to create a reactor-http module as proposed by Stéphane?
+- We reuse Reactor Netty support [5]
 - For non blocking callback we have the choice between Promise style API (with onSuccess/onError) like done in the Client
   class and callback style API (here we don't need onError so just a callback seems to be the right choice) like done in
   the Server class.
@@ -39,4 +39,3 @@ attempt to move from RxNetty to Reactor + Netty**
 - [4] https://jira.spring.io/browse/SPR-10258?focusedCommentId=110154
 - [5] https://github.com/reactor/reactor/tree/master/reactor-net/src/main/java/reactor/io/net/netty
 - [6] http://www.eclipse.org/jetty/documentation/current/http-client-api.html#http-client-async
-

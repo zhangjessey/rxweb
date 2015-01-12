@@ -16,14 +16,25 @@
 
 package rxweb.client;
 
-import rxweb.http.ContentObserver;
+import reactor.io.buffer.Buffer;
+import reactor.rx.Promise;
+import reactor.rx.Stream;
 import rxweb.http.Response;
 
 /**
  * @author Sebastien Deleuze
  */
-public interface ClientResponse extends Response, ContentObserver {
+public interface ClientResponse extends Response {
 
 	ClientResponseHeaders getHeaders();
+
+	/** For the moment, {@link Buffer} and {@link String} (UTF-8) are supported
+	 */
+	<T> Stream<T> getContentStream(final Class<T> clazz);
+
+	/** Accumulate all chunks before completed
+	 For the moment, {@link Buffer} and {@link String} (UTF-8) are supported
+	 */
+	<T> Promise<T> getContent(final Class<T> clazz);
 
 }

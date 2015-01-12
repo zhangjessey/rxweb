@@ -16,8 +16,8 @@
 
 package rxweb.client;
 
+import org.reactivestreams.Publisher;
 import reactor.io.buffer.Buffer;
-import reactor.rx.Stream;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.http.Request;
@@ -41,18 +41,10 @@ public interface ClientRequest extends Request {
 
 	ClientRequest accept(String value);
 
-	ClientRequest rawContent(Buffer content);
+	/** For the moment, {@link Buffer} and {@link String} are supported **/
+	ClientRequest source(Publisher<Object> source);
 
-	ClientRequest rawSource(Stream<Buffer> value);
-
-	Stream<Buffer> getRawSource();
-
-	ClientRequest stringContent(String content);
-
-	ClientRequest stringSource(Stream<String> value);
-
+	/** For the moment, {@link Buffer} and {@link String} are supported **/
 	ClientRequest content(Object content);
-
-	ClientRequest source(Stream<Object> value);
 
 }

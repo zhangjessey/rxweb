@@ -52,7 +52,8 @@ public class ServerTests {
 
 		OkHttpClient client = new OkHttpClient();
 
-		server.get("/test", (request, response, context) -> response.status(Status.OK).writeString("Hello World!").onSuccess(v -> response.close()));
+		// TODO: how to auto-close the request ? We could add an auto-close handler at the end of the chain but it would require calling context.next() ...
+		server.get("/test", (request, response, context) -> response.status(Status.OK).write("Hello World!").onSuccess(v -> response.close()));
 
 		Request request = new Request.Builder().url("http://localhost:8080/test").build();
 

@@ -26,10 +26,10 @@ import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
+import org.reactivestreams.Publisher;
 import reactor.io.buffer.Buffer;
 import reactor.io.net.NetChannel;
 import reactor.rx.Promise;
-import reactor.rx.Stream;
 import reactor.rx.Streams;
 import rxweb.http.ResponseHeaders;
 import rxweb.http.Protocol;
@@ -62,11 +62,6 @@ public class NettyServerResponse implements ServerResponse {
 	@Override
 	public ServerRequest getRequest() {
 		return this.request;
-	}
-
-	@Override
-	public Promise<Void> flush() {
-		return this.channel.send(this);
 	}
 
 	@Override
@@ -123,44 +118,44 @@ public class NettyServerResponse implements ServerResponse {
 		return this;
 	}
 
-	@Override
-	public Promise<Void> writeRaw(Buffer content) {
-		ByteBuf nettyBuffer = Unpooled.wrappedBuffer(content.byteBuffer());
-		HttpContent httpContent = new DefaultHttpContent(nettyBuffer);
-		if(!this.statusAndHeadersSent) {
-			this.statusAndHeadersSent = true;
-			Promise<Void> headersPromise = this.channel.send(this);
-			Promise<Void> contentPromise = this.channel.send(httpContent);
-			return Streams.zip(headersPromise, contentPromise, tuple -> tuple.t1).next();
-		}
-		return this.channel.send(httpContent);
-	}
-
-	@Override
-	public Promise<Void> writeString(String content) {
-		ByteBuf nettyBuffer = Unpooled.wrappedBuffer(content.getBytes(StandardCharsets.UTF_8));
-		HttpContent httpContent = new DefaultHttpContent(nettyBuffer);
-		if(!this.statusAndHeadersSent) {
-			this.statusAndHeadersSent = true;
-			Promise<Void> headersPromise = this.channel.send(this);
-			Promise<Void> contentPromise = this.channel.send(httpContent);
-			return Streams.zip(headersPromise, contentPromise, tuple -> tuple.t1).next();
-		}
-		return this.channel.send(httpContent);
-	}
-
+	/**
+	 * For the moment, {@link Buffer} and {@link String} are supported
+	 */
 	@Override
 	public Promise<Void> write(Object content) {
-		// We need to use converts/transformers here
-		throw new UnsupportedOperationException("Not implemented yet");
+		// TODO: We need to use converts/transformers here
+		ByteBuf nettyBuffer;
+		if(content instanceof Buffer) {
+			// TODO: Need to be able to retreive Netty Channel from Reactor NettyNetChannel in order to use pooled buffers
+			nettyBuffer = Unpooled.wrappedBuffer(((Buffer)content).byteBuffer());
+		} else if(content instanceof String) {
+			nettyBuffer = Unpooled.wrappedBuffer(
+					((String) content).getBytes(StandardCharsets.UTF_8));
+		} else {
+			throw new UnsupportedOperationException("Not implemented yet");
+		}
+
+		HttpContent httpContent = new DefaultHttpContent(nettyBuffer);
+		if(!this.statusAndHeadersSent) {
+			this.statusAndHeadersSent = true;
+			Promise<Void> headersPromise = this.channel.send(this);
+			Promise<Void> contentPromise = this.channel.send(httpContent);
+			// TODO: Using a workaround while waiting resolution of https://github.com/reactor/reactor/issues/416
+			return Streams.zip(headersPromise, contentPromise, tuple -> tuple.t1).next();
+		}
+		return this.channel.send(httpContent);
+
 	}
 
 	@Override
-	public ServerResponse rawSource(Stream<Buffer> stream) {
-		Stream<HttpContent> httpStream = stream.map(buffer -> new DefaultHttpContent(
-				Unpooled.wrappedBuffer(buffer.byteBuffer())));
-		this.channel.send(httpStream);
+	public ServerResponse source(Publisher<Object> publisher) {
+		Streams.create(publisher).observe(content -> this.write(content));
 		return this;
+	}
+
+	@Override
+	public Promise<Void> flush() {
+		return this.channel.send(this);
 	}
 
 	@Override

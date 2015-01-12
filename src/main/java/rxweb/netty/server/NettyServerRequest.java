@@ -20,6 +20,7 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
 
 import reactor.io.buffer.Buffer;
+import reactor.rx.Promise;
 import reactor.rx.Stream;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
@@ -68,18 +69,13 @@ public class NettyServerRequest implements ServerRequest {
 	}
 
 	@Override
-	public Stream<Buffer> getRawContent() {
-		return this.content;
-	}
-
-	@Override
-	public <T> Stream<T> getContent(Class<T> clazz) {
+	public <T> Stream<T> getContentStream(Class<T> clazz) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
-	public Stream<String> getStringContent() {
-		return this.content.map(content -> content.asString());
+	public <T> Promise<T> getContent(Class<T> clazz) {
+		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 }
