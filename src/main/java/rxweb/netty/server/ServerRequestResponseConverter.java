@@ -22,8 +22,10 @@ import io.netty.buffer.ByteBufHolder;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import io.netty.handler.codec.http.DefaultHttpContent;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.LastHttpContent;
 import reactor.Environment;
 import reactor.io.buffer.Buffer;
@@ -34,6 +36,9 @@ import rxweb.server.ServerRequest;
 import org.springframework.util.Assert;
 
 /**
+ * Conversion between Netty types ({@link HttpRequest}, {@link HttpResponse} and {@link LastHttpContent})
+ * and Spring RxWeb types ({@link NettyServerResponse}, {@link NettyServerRequest} and {@link Buffer}).
+ *
  * @author Sebastien Deleuze
  */
 public class ServerRequestResponseConverter extends ChannelDuplexHandler {
@@ -73,6 +78,11 @@ public class ServerRequestResponseConverter extends ChannelDuplexHandler {
 		if (NettyServerResponse.class.isAssignableFrom(messageClass)) {
 			NettyServerResponse response = (NettyServerResponse) msg;
 			super.write(ctx, response.getNettyResponse(), promise);
+		} else if (Buffer.class.isAssignableFrom(messageClass)) {
+			Buffer buffer = (Buffer) msg;
+			ByteBuf nettyBuffer = ctx.alloc().directBuffer();
+			nettyBuffer.writeBytes(buffer.byteBuffer());
+			super.write(ctx, new DefaultHttpContent(nettyBuffer), promise);
 		} else {
 			super.write(ctx, msg, promise); // pass through, since we do not understand this message.
 		}

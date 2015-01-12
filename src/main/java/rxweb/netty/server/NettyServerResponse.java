@@ -124,26 +124,25 @@ public class NettyServerResponse implements ServerResponse {
 	 */
 	@Override
 	public Promise<Void> write(Object content) {
+		Buffer buffer;
 		// TODO: We need to use converts/transformers here
-		ByteBuf nettyBuffer;
 		if(content instanceof Buffer) {
-			// TODO: Need to write a Reactor buffer and move Netty ByteBuf creation to ServerRequestResponseConverter in order to be able to use pooled buffers
-			nettyBuffer = Unpooled.wrappedBuffer(((Buffer)content).byteBuffer());
+			buffer = (Buffer)content;
 		} else if(content instanceof String) {
-			nettyBuffer = Unpooled.wrappedBuffer(
-					((String) content).getBytes(StandardCharsets.UTF_8));
+			buffer = Buffer.wrap(((String) content).getBytes(StandardCharsets.UTF_8));
 		} else {
 			throw new UnsupportedOperationException("Not implemented yet");
 		}
 
-		HttpContent httpContent = new DefaultHttpContent(nettyBuffer);
+
 		if(!this.statusAndHeadersSent) {
 			this.statusAndHeadersSent = true;
 			Promise<Void> headersPromise = this.channel.send(this);
-			Promise<Void> contentPromise = this.channel.send(httpContent);
-			return Promises.when(headersPromise,contentPromise).map(tuple -> tuple.getT2());
+			Promise<Void> contentPromise = this.channel.send(buffer);
+			return Promises.when(headersPromise,contentPromise).map(tuple -> tuple
+					.getT2());
 		}
-		return this.channel.send(httpContent);
+		return this.channel.send(buffer);
 
 	}
 
