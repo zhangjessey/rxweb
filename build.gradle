@@ -1,28 +1,28 @@
-apply plugin: 'java'
+apply plugin: "java"
 
 sourceCompatibility = 1.8
-version = '1.0'
+version = "1.0"
 
 repositories {
-  maven { url 'http://repo.spring.io/libs-milestone' }
+  maven { url "http://repo.spring.io/libs-milestone" }
   mavenCentral()
 }
 
 ext {
-  reactorVersion  = '2.0.0.M2'
-  nettyVersion    = '4.0.25.Final'
-  springVersion   = '4.1.4.RELEASE'
-  slf4jVersion    = '1.7.7'
+  reactorVersion  = "2.0.0.M2"
+  nettyVersion    = "4.0.25.Final"
+  springVersion   = "4.1.4.RELEASE"
+  slf4jVersion    = "1.7.7"
 }
 
 dependencies {
-  compile 'org.springframework:spring-core:${springVersion}'
-  compile 'io.projectreactor:reactor-core:${reactorVersion}'
-  compile 'io.projectreactor:reactor-net:${reactorVersion}'
-  compile 'io.netty:netty-codec-http:${nettyVersion}'
-  compile 'io.netty:netty-transport-native-epoll:${nettyVersion}'
-  compile 'org.slf4j:slf4j-api:${slf4jVersion}'
-  compile 'org.slf4j:slf4j-simple:${slf4jVersion}'
-  testCompile 'junit:junit:4.12'
-  testCompile 'com.squareup.okhttp:okhttp:2.2.0'
+  compile "org.springframework:spring-core:${springVersion}"
+  compile "io.projectreactor:reactor-core:${reactorVersion}"
+  compile "io.projectreactor:reactor-net:${reactorVersion}"
+  compile "io.netty:netty-codec-http:${nettyVersion}"
+  compile "io.netty:netty-transport-native-epoll:${nettyVersion}"
+  compile "org.slf4j:slf4j-api:${slf4jVersion}"
+  compile "org.slf4j:slf4j-simple:${slf4jVersion}"
+  testCompile "junit:junit:4.12"
+  testCompile "com.squareup.okhttp:okhttp:2.2.0"
 }
