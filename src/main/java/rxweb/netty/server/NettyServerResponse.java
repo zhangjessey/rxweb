@@ -126,7 +126,7 @@ public class NettyServerResponse implements ServerResponse {
 		// TODO: We need to use converts/transformers here
 		ByteBuf nettyBuffer;
 		if(content instanceof Buffer) {
-			// TODO: Need to be able to retreive Netty Channel from Reactor NettyNetChannel in order to use pooled buffers
+			// TODO: Need to write a Reactor buffer and move Netty ByteBuf creation to ServerRequestResponseConverter in order to be able to use pooled buffers
 			nettyBuffer = Unpooled.wrappedBuffer(((Buffer)content).byteBuffer());
 		} else if(content instanceof String) {
 			nettyBuffer = Unpooled.wrappedBuffer(
