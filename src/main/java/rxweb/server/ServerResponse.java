@@ -16,8 +16,6 @@
 
 package rxweb.server;
 
-import org.reactivestreams.Publisher;
-import reactor.io.buffer.Buffer;
 import reactor.rx.Promise;
 import rxweb.http.Response;
 import rxweb.http.Status;
@@ -40,14 +38,6 @@ public interface ServerResponse extends Response {
 
 	ServerResponse transfer(Transfer transfer);
 
-	/** For the moment, {@link Buffer} and {@link String} are supported **/
-	ServerResponse source(Publisher<Object> source);
-
-	/** For the moment, {@link Buffer} and {@link String} are supported **/
-	Promise<Void> write(Object content);
-
-	Promise<Void> flush();
-
-	Promise<Boolean> close();
+	Promise<?> write(Object content);
 
 }

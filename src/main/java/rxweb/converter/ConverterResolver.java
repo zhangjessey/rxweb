@@ -14,35 +14,23 @@
  * limitations under the License.
  */
 
-package rxweb.server;
+package rxweb.converter;
 
-import java.util.Iterator;
-import java.util.List;
+import reactor.io.buffer.Buffer;
+import rxweb.http.MediaType;
+import rxweb.http.Request;
+import rxweb.mapping.Condition;
+import rxweb.server.ServerHandler;
 
 /**
  * @author Sebastien Deleuze
  */
-public class HandlerChain implements Iterator<ServerHandler> {
+public interface ConverterResolver {
 
-	private List<ServerHandler> handlers;
-	private Iterator<ServerHandler> handlerIterator;
+	void addConverter(Converter converter);
 
-	public HandlerChain(List<ServerHandler> handlers) {
-		this.handlers = handlers;
-		this.handlerIterator = handlers.iterator();
-	}
+	Converter resolveReader(Class<?> clazz, MediaType mediaType);
 
-	@Override
-	public boolean hasNext() {
-		return this.handlerIterator.hasNext();
-	}
+	Converter resolveWriter(Class<?> clazz, MediaType mediaType);
 
-	@Override
-	public ServerHandler next() {
-		return this.handlerIterator.next();
-	}
-
-	public void addLast(ServerHandler handler) {
-		this.handlers.add(handler);
-	}
 }

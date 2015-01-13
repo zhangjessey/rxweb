@@ -36,10 +36,18 @@ public interface Server extends HandlerRegistry<Request> {
 
 	void get(final String path, final ServerHandler handler);
 
+	<T> void get(final String path, final Class<T> requestClass, final ServerHandler handler);
+
 	void post(final String path, final ServerHandler handler);
+
+	<T> void post(final String path, final Class<T> requestClass, final ServerHandler handler);
 
 	void put(final String path, final ServerHandler handler);
 
+	<T> void put(final String path, final Class<T> requestClass, final ServerHandler handler);
+
 	void delete(final String path, final ServerHandler handler);
+
+	<T> void delete(final String path, final Class<T> requestClass, final ServerHandler handler);
 
 }

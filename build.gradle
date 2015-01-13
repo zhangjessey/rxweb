@@ -14,6 +14,8 @@ ext {
   nettyVersion    = "4.0.25.Final"
   springVersion   = "4.1.4.RELEASE"
   slf4jVersion    = "1.7.7"
+  logbackVersion    = "1.1.2"
+  jacksonVersion  = "2.4.4"
 }
 
 dependencies {
@@ -23,7 +25,8 @@ dependencies {
   compile "io.netty:netty-codec-http:${nettyVersion}"
   compile "io.netty:netty-transport-native-epoll:${nettyVersion}"
   compile "org.slf4j:slf4j-api:${slf4jVersion}"
-  compile "org.slf4j:slf4j-simple:${slf4jVersion}"
+  compile "ch.qos.logback:logback-classic:${logbackVersion}"
+  compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
   testCompile "junit:junit:4.12"
-  testCompile "com.squareup.okhttp:okhttp:2.2.0"
+  testCompile "org.apache.httpcomponents:fluent-hc:4.3.6"
 }

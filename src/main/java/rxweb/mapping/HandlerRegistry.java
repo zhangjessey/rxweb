@@ -16,24 +16,16 @@
 
 package rxweb.mapping;
 
+import reactor.io.buffer.Buffer;
 import rxweb.server.ServerHandler;
 
 /**
  * @author Sebastien Deleuze
  */
-public interface HandlerRegistry<T> {
+public interface HandlerRegistry<R> {
 
-	default void addHandler(final ServerHandler handler) {
-		addHandler(new NoCondition<>(), handler);
-	}
+	void addHandler(final Condition<R> condition, final ServerHandler handler);
 
-	void addHandler(final Condition<T> condition, final ServerHandler handler);
-
-	public class NoCondition<T> implements Condition<T> {
-		@Override
-		public boolean match(T element) {
-			return true;
-		}
-	}
+	<T> void addHandler(final Condition<R> condition, final Class<T> type, final ServerHandler handler);
 
 }

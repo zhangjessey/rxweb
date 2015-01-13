@@ -16,16 +16,31 @@
 
 package rxweb.converter;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
+import reactor.io.buffer.Buffer;
+import rxweb.http.MediaType;
 
 /**
  * @author Sebastien Deleuze
  */
-public class JsonConverter implements Converter<Object> {
+public class BufferConverter implements Converter<Buffer> {
 
 	@Override
-	public ByteBuf apply(Object o, ByteBufAllocator allocator) {
-		throw new UnsupportedOperationException("Not implemented yet");
+	public boolean canRead(Class<?> clazz, MediaType mediaType) {
+		return clazz.isAssignableFrom(Buffer.class);
+	}
+
+	@Override
+	public boolean canWrite(Class<?> clazz, MediaType mediaType) {
+		return clazz.isAssignableFrom(Buffer.class);
+	}
+
+	@Override
+	public Buffer read(Class<? extends Buffer> type, Buffer buffer) {
+		return buffer;
+	}
+
+	@Override
+	public Buffer write(Buffer buffer, MediaType contentType) {
+		return buffer;
 	}
 }

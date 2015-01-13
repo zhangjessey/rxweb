@@ -19,9 +19,11 @@ package rxweb.netty.server;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
 
-import reactor.io.buffer.Buffer;
-import reactor.rx.Promise;
+import org.reactivestreams.Publisher;
+import reactor.fn.Function;
+import reactor.io.buffer.Buffer;;
 import reactor.rx.Stream;
+import reactor.rx.Streams;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.server.ServerRequest;
@@ -34,12 +36,13 @@ public class NettyServerRequest implements ServerRequest {
 
 	private final HttpRequest nettyRequest;
 	private final ServerRequestHeaders headers;
-	private final Stream<Buffer> content;
+	private final Stream<Buffer> contentStream;
+	private Function<Buffer, ?> convertFunction;
 
-	public NettyServerRequest(HttpRequest request, Stream<Buffer> content) {
+	public NettyServerRequest(HttpRequest request, Publisher<Buffer> contentPublisher) {
 		this.nettyRequest = request;
 		this.headers = new NettyRequestHeadersAdapter(request);
-		this.content = content;
+		this.contentStream = Streams.create(contentPublisher);
 	}
 
 	@Override
@@ -69,13 +72,20 @@ public class NettyServerRequest implements ServerRequest {
 	}
 
 	@Override
-	public <T> Stream<T> getContentStream(Class<T> clazz) {
-		throw new UnsupportedOperationException("Not implemented yet");
+	public void setConvert(Function<Buffer, ?> convertFunction) {
+		this.convertFunction = convertFunction;
 	}
 
 	@Override
-	public <T> Promise<T> getContent(Class<T> clazz) {
-		throw new UnsupportedOperationException("Not implemented yet");
+	public Stream<Buffer> getRawContentStream() {
+		return contentStream;
 	}
 
+	@Override
+	public Stream<?> getContentStream() {
+		if(this.convertFunction == null) {
+			throw new IllegalStateException("No convert function define.");
+		}
+		return this.contentStream.map(buffer -> this.convertFunction.apply(buffer));
+	}
 }

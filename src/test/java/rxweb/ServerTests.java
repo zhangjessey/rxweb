@@ -18,9 +18,7 @@ package rxweb;
 
 import java.io.IOException;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import org.apache.http.client.fluent.Request;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -50,15 +48,42 @@ public class ServerTests {
 	@Test
 	public void server() throws IOException {
 
-		OkHttpClient client = new OkHttpClient();
-
 		// TODO: how to auto-close the request ? We could add an auto-close handler at the end of the chain but it would require calling context.next() ...
-		server.get("/test", (request, response, context) -> response.status(Status.OK).write("Hello World!").onSuccess(v -> response.close()));
+		server.get("/test", (request, response) -> response.status(Status.OK).write(new User("Brian", "Clozel")));
 
-		Request request = new Request.Builder().url("http://localhost:8080/test").build();
+		String content = Request.Get("http://localhost:8080/test"). execute().returnContent().asString();
 
-		Response response = client.newCall(request).execute();
-		Assert.assertEquals("Hello World!", response.body().string());
+		Assert.assertEquals("{\"firstname\":\"Brian\",\"lastname\":\"Clozel\"}", content);
+	}
+
+	public static class User {
+
+		public User() {
+		}
+
+		public User(String firstname, String lastname) {
+			this.firstname = firstname;
+			this.lastname = lastname;
+		}
+
+		private String firstname;
+		private String lastname;
+
+		public String getFirstname() {
+			return firstname;
+		}
+
+		public void setFirstname(String firstname) {
+			this.firstname = firstname;
+		}
+
+		public String getLastname() {
+			return lastname;
+		}
+
+		public void setLastname(String lastname) {
+			this.lastname = lastname;
+		}
 	}
 
 }

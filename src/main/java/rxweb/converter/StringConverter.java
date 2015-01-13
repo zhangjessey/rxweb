@@ -16,21 +16,36 @@
 
 package rxweb.converter;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 import reactor.io.buffer.Buffer;
 import rxweb.http.MediaType;
 
 /**
- * TODO: optimize Buffer allocation (pooled buffer like in Netty, direct buffer, etc.)
  * @author Sebastien Deleuze
  */
-public interface Converter<T> {
+public class StringConverter implements Converter<String> {
 
-	boolean canRead(Class<?> clazz, MediaType mediaType);
+	private final Charset defaultEncoding = StandardCharsets.UTF_8;
 
-	boolean canWrite(Class<?> clazz, MediaType mediaType);
+	@Override
+	public boolean canRead(Class<?> clazz, MediaType mediaType) {
+		return clazz.isAssignableFrom(String.class);
+	}
 
-	T read(Class<? extends T> type, Buffer buffer);
+	@Override
+	public boolean canWrite(Class<?> clazz, MediaType mediaType) {
+		return clazz.isAssignableFrom(String.class);
+	}
 
-	Buffer write(T t, MediaType contentType);
+	@Override
+	public String read(Class<? extends String> type, Buffer buffer) {
+		return new String(buffer.asBytes(), defaultEncoding);
+	}
 
+	@Override
+	public Buffer write(String s, MediaType contentType) {
+		return Buffer.wrap(s.getBytes(defaultEncoding));
+	}
 }

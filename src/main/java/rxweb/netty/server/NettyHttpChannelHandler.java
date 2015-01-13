@@ -41,13 +41,13 @@ import org.springframework.util.Assert;
  *
  * @author Sebastien Deleuze
  */
-public class ServerRequestResponseConverter extends ChannelDuplexHandler {
+public class NettyHttpChannelHandler extends ChannelDuplexHandler {
 
 	private final Environment env;
 	private ServerRequest request;
 	private Broadcaster<Buffer> content;
 
-	public ServerRequestResponseConverter(Environment env) {
+	public NettyHttpChannelHandler(Environment env) {
 		this.env = env;
 	}
 
@@ -59,9 +59,7 @@ public class ServerRequestResponseConverter extends ChannelDuplexHandler {
 			this.content = Streams.broadcast(this.env);
 			this.request = new NettyServerRequest((HttpRequest) msg, this.content);
 			super.channelRead(ctx, request);
-		}
-
-		if (HttpContent.class.isAssignableFrom(messageClass)) {
+		} else if (HttpContent.class.isAssignableFrom(messageClass)) {
 			Assert.notNull(this.request);
 			ByteBuf content = ((ByteBufHolder) msg).content();
 			this.content.onNext(new Buffer(content.nioBuffer()));
@@ -83,6 +81,8 @@ public class ServerRequestResponseConverter extends ChannelDuplexHandler {
 			ByteBuf nettyBuffer = ctx.alloc().directBuffer();
 			nettyBuffer.writeBytes(buffer.byteBuffer());
 			super.write(ctx, new DefaultHttpContent(nettyBuffer), promise);
+		} else if (ByteBuf.class.isAssignableFrom(messageClass)) {
+			super.write(ctx, new DefaultHttpContent((ByteBuf)msg), promise);
 		} else {
 			super.write(ctx, msg, promise); // pass through, since we do not understand this message.
 		}

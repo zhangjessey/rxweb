@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-package rxweb.converter;
-
-import reactor.io.buffer.Buffer;
-import rxweb.http.MediaType;
+package rxweb.mapping;
 
 /**
- * TODO: optimize Buffer allocation (pooled buffer like in Netty, direct buffer, etc.)
  * @author Sebastien Deleuze
  */
-public interface Converter<T> {
+public class NoCondition implements Condition<Object> {
 
-	boolean canRead(Class<?> clazz, MediaType mediaType);
-
-	boolean canWrite(Class<?> clazz, MediaType mediaType);
-
-	T read(Class<? extends T> type, Buffer buffer);
-
-	Buffer write(T t, MediaType contentType);
-
+	@Override
+	public boolean match(Object element) {
+		return true;
+	}
 }

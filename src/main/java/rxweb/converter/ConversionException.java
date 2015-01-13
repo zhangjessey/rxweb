@@ -14,32 +14,21 @@
  * limitations under the License.
  */
 
-package rxweb.server;
+package rxweb.converter;
 
 /**
  * @author Sebastien Deleuze
  */
-public class Context {
+public class ConversionException extends RuntimeException {
 
-	private final ServerRequest request;
-	private final ServerResponse response;
-	private final HandlerChain chain;
-
-	public Context(ServerRequest request, ServerResponse response, HandlerChain chain) {
-		this.request = request;
-		this.response = response;
-		this.chain = chain;
+	public ConversionException() {
 	}
 
-	public ServerRequest getRequest() {
-		return request;
+	public ConversionException(Throwable cause) {
+		super(cause);
 	}
 
-	public ServerResponse getResponse() {
-		return response;
-	}
-
-	public void next() {
-		this.chain.next().handle(this.request, this.response, this);
+	public ConversionException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

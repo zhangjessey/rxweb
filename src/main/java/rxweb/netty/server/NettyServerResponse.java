@@ -16,18 +16,11 @@
 
 package rxweb.netty.server;
 
-import java.nio.charset.StandardCharsets;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.http.DefaultHttpContent;
 import io.netty.handler.codec.http.DefaultHttpResponse;
-import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import org.reactivestreams.Publisher;
-import reactor.io.buffer.Buffer;
 import reactor.io.net.NetChannel;
 import reactor.rx.Promise;
 import reactor.rx.Promises;
@@ -72,6 +65,9 @@ public class NettyServerResponse implements ServerResponse {
 
 	@Override
 	public ServerResponse status(Status status) {
+		if(this.statusAndHeadersSent) {
+			throw new IllegalStateException("Status and headers already sent");
+		}
 		this.nettyResponse.setStatus(HttpResponseStatus.valueOf(status.getCode()));
 		return this;
 	}
@@ -109,66 +105,36 @@ public class NettyServerResponse implements ServerResponse {
 
 	@Override
 	public ServerResponse header(String name, String value) {
+		if(this.statusAndHeadersSent) {
+			throw new IllegalStateException("Status and headers already sent");
+		}
 		this.headers.set(name, value);
 		return this;
 	}
 
 	@Override
 	public ServerResponse addHeader(String name, String value) {
+		if(this.statusAndHeadersSent) {
+			throw new IllegalStateException("Status and headers already sent");
+		}
 		this.headers.add(name, value);
 		return this;
 	}
 
-	/**
-	 * For the moment, {@link Buffer} and {@link String} are supported
-	 */
 	@Override
-	public Promise<Void> write(Object content) {
-		Buffer buffer;
-		// TODO: We need to use converts/transformers here
-		if(content instanceof Buffer) {
-			buffer = (Buffer)content;
-		} else if(content instanceof String) {
-			buffer = Buffer.wrap(((String) content).getBytes(StandardCharsets.UTF_8));
-		} else {
-			throw new UnsupportedOperationException("Not implemented yet");
-		}
-
-
-		if(!this.statusAndHeadersSent) {
-			this.statusAndHeadersSent = true;
-			Promise<Void> headersPromise = this.channel.send(this);
-			Promise<Void> contentPromise = this.channel.send(buffer);
-			return Promises.when(headersPromise,contentPromise).map(tuple -> tuple
-					.getT2());
-		}
-		return this.channel.send(buffer);
-
-	}
-
-	@Override
-	public ServerResponse source(Publisher<Object> publisher) {
-		Streams.create(publisher).observe(content -> this.write(content));
-		return this;
-	}
-
-	@Override
-	public Promise<Void> flush() {
-		return this.channel.send(this);
-	}
-
-	@Override
-	public Promise<Boolean> close() {
-		if(!this.statusAndHeadersSent) {
-			this.statusAndHeadersSent = true;
-			Promise<Void> headersPromise = this.channel.send(this);
-			Promise<Boolean> contentPromise = this.channel.close();
-			return Streams.zip(headersPromise, contentPromise, tuple -> tuple.t2).next();
-		}
-		return this.channel.close();
+	public Promise<?> write(Object content) {
+		return Promises.success(content);
 	}
 
 	public HttpResponse getNettyResponse() {
 		return nettyResponse;
+	}
+
+	public boolean isStatusAndHeadersSent() {
+		return statusAndHeadersSent;
+	}
+
+	public void setStatusAndHeadersSent(boolean statusAndHeadersSent) {
+		this.statusAndHeadersSent = statusAndHeadersSent;
 	}
 }
