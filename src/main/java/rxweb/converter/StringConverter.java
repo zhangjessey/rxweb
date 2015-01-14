@@ -22,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import reactor.io.buffer.Buffer;
 import rxweb.http.MediaType;
 
+import org.springframework.util.Assert;
+
 /**
  * @author Sebastien Deleuze
  */
@@ -40,8 +42,9 @@ public class StringConverter implements Converter<String> {
 	}
 
 	@Override
-	public String read(Class<? extends String> type, Buffer buffer) {
-		return new String(buffer.asBytes(), defaultEncoding);
+	public <T extends String> T read(Class<T> type, Buffer buffer) {
+		Assert.isTrue(type.equals(String.class));
+		return (T) new String(buffer.asBytes(), defaultEncoding);
 	}
 
 	@Override

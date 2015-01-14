@@ -18,7 +18,6 @@ package rxweb.mapping;
 
 import java.util.List;
 
-import reactor.fn.tuple.Tuple2;
 import rxweb.server.ServerHandler;
 import rxweb.http.Request;
 
@@ -27,6 +26,6 @@ import rxweb.http.Request;
  */
 public interface HandlerResolver extends HandlerRegistry<Request> {
 
-	<T> List<Tuple2<ServerHandler, Class<T>>> resolve(Request request);
+	List<ServerHandler> resolve(Request request);
 
 }

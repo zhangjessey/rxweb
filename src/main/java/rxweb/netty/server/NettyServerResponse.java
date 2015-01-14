@@ -40,13 +40,13 @@ import org.springframework.util.Assert;
  */
 public class NettyServerResponse implements ServerResponse {
 
-	private final NetChannel<ServerRequest, Object>  channel;
+	private final NetChannel<NettyServerRequest, Object>  channel;
 	private final HttpResponse nettyResponse;
-	private final ServerRequest request;
+	private final NettyServerRequest request;
 	private final ServerResponseHeaders headers;
 	private boolean statusAndHeadersSent = false;
 
-	public NettyServerResponse(NetChannel<ServerRequest, Object> channel, ServerRequest request) {
+	public NettyServerResponse(NetChannel<NettyServerRequest, Object> channel, NettyServerRequest request) {
 		this.nettyResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
 		this.headers = new NettyResponseHeadersAdapter(this.nettyResponse);
 		this.channel = channel;

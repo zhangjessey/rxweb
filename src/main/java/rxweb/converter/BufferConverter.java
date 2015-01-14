@@ -19,6 +19,8 @@ package rxweb.converter;
 import reactor.io.buffer.Buffer;
 import rxweb.http.MediaType;
 
+import org.springframework.util.Assert;
+
 /**
  * @author Sebastien Deleuze
  */
@@ -35,12 +37,14 @@ public class BufferConverter implements Converter<Buffer> {
 	}
 
 	@Override
-	public Buffer read(Class<? extends Buffer> type, Buffer buffer) {
-		return buffer;
+	public <T extends Buffer> T read(Class<T> type, Buffer buffer) {
+		Assert.isTrue(type.equals(Buffer.class));
+		return (T) buffer;
 	}
 
 	@Override
 	public Buffer write(Buffer buffer, MediaType contentType) {
-		return buffer;
+		Assert.isAssignable(buffer.getClass(), Buffer.class);
+		return (Buffer)buffer;
 	}
 }

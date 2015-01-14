@@ -50,11 +50,6 @@ public abstract class AbstractServer implements Server {
 	}
 
 	@Override
-	public <T> void addHandler(Condition<Request> condition, Class<T> type, ServerHandler handler) {
-		this.handlerResolver.addHandler(condition, type, handler);
-	}
-
-	@Override
 	public void setHost(String host) {
 		this.host = host;
 	}
@@ -70,18 +65,8 @@ public abstract class AbstractServer implements Server {
 	}
 
 	@Override
-	public <T> void get(String path, Class<T> type, ServerHandler  handler) {
-		addHandler(MappingCondition.Builder.from(path).method(Method.GET).build(), type, handler);
-	}
-
-	@Override
 	public void post(final String path, final ServerHandler handler) {
 		addHandler(MappingCondition.Builder.from(path).method(Method.POST).build(), handler);
-	}
-
-	@Override
-	public <T> void post(String path, Class<T> type, ServerHandler handler) {
-		addHandler(MappingCondition.Builder.from(path).method(Method.POST).build(), type, handler);
 	}
 
 	@Override
@@ -90,18 +75,8 @@ public abstract class AbstractServer implements Server {
 	}
 
 	@Override
-	public <T> void put(String path, Class<T> type, ServerHandler handler) {
-		addHandler(MappingCondition.Builder.from(path).method(Method.PUT).build(), type, handler);
-	}
-
-	@Override
 	public void delete(final String path, final ServerHandler handler) {
 		addHandler(MappingCondition.Builder.from(path).method(Method.DELETE).build(), handler);
-	}
-
-	@Override
-	public <T> void delete(String path, Class<T> type, ServerHandler handler) {
-		addHandler(MappingCondition.Builder.from(path).method(Method.DELETE).build(), type, handler);
 	}
 
 }

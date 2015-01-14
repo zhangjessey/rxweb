@@ -19,6 +19,7 @@ package rxweb;
 import java.io.IOException;
 
 import org.apache.http.client.fluent.Request;
+import org.apache.http.entity.ContentType;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,14 +47,17 @@ public class ServerTests {
 	}
 
 	@Test
-	public void server() throws IOException {
-
-		// TODO: how to auto-close the request ? We could add an auto-close handler at the end of the chain but it would require calling context.next() ...
+	public void writeResponseContent() throws IOException {
 		server.get("/test", (request, response) -> response.status(Status.OK).write(new User("Brian", "Clozel")));
-
-		String content = Request.Get("http://localhost:8080/test"). execute().returnContent().asString();
-
+		String content = Request.Get("http://localhost:8080/test").execute().returnContent().asString();
 		Assert.assertEquals("{\"firstname\":\"Brian\",\"lastname\":\"Clozel\"}", content);
+	}
+
+	@Test // TODO: Fix this test
+	public void echo() throws IOException {
+		server.post("/test", (request, response) -> request.getContentStream());
+		String content = Request.Post("http://localhost:8080/test").bodyString("This is a test!", ContentType.TEXT_PLAIN).execute().returnContent().asString();
+		Assert.assertEquals("This is a test!", content);
 	}
 
 	public static class User {

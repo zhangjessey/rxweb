@@ -16,8 +16,8 @@
 
 package rxweb.server;
 
-import reactor.fn.Function;
 import reactor.io.buffer.Buffer;
+import reactor.rx.Promise;
 import reactor.rx.Stream;
 import rxweb.http.Request;
 
@@ -28,12 +28,12 @@ public interface ServerRequest extends Request {
 
 	ServerRequestHeaders getHeaders();
 
-	Stream<Buffer> getRawContentStream();
+	Stream<Buffer> getContentStream();
 
-	void setConvert(Function<Buffer, ?> convert);
+	Promise<Buffer> getContent();
 
-	/** For the moment, {@link Buffer} and {@link String} (UTF-8) are supported
-	 */
-	Stream<?> getContentStream();
+	<T> Stream<T> getContentStream(Class<T> clazz);
+
+	<T> Promise<T> getContent(Class<T> clazz);
 
 }

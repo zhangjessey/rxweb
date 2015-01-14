@@ -38,9 +38,7 @@ import reactor.rx.Promise;
 import reactor.rx.Stream;
 import reactor.rx.Streams;
 import rxweb.converter.Converter;
-import rxweb.server.ServerHandler;
 import rxweb.server.AbstractServer;
-import rxweb.server.ServerRequest;
 
 /**
  * @author Sebastien Deleuze
@@ -51,7 +49,7 @@ public class NettyServer extends AbstractServer {
 
 	private final Environment env = new Environment();
 
-	private final NetServer<ServerRequest, Object> server;
+	private final NetServer<NettyServerRequest, Object> server;
 
 	public NettyServer() {
 		ServerSocketOptions options = new NettyServerSocketOptions()
@@ -60,22 +58,17 @@ public class NettyServer extends AbstractServer {
 						.addLast(new HttpServerCodec())
 						.addLast(new NettyHttpChannelHandler(env)));
 
-		server = new TcpServerSpec<ServerRequest, Object>(NettyTcpServer.class)
+		server = new TcpServerSpec<NettyServerRequest, Object>(NettyTcpServer.class)
 				.listen(8080).env(this.env).dispatcher("sync").options(options)
 				.consume(ch -> {
 					// filter requests by URI via the input Stream
-					Stream<ServerRequest> in = ch.in();
+					Stream<NettyServerRequest> in = ch.in();
 
 					// Implement here the routing
 					in.consume(request -> {
 						NettyServerResponse response = new NettyServerResponse(ch, request);
-						List<Publisher<?>> publishers = this.handlerResolver.resolve(request).stream().map(tuple -> {
-							ServerHandler handler = tuple.getT1();
-							Class<?> clazz = tuple.getT2();
-							// TODO: handle media type
-							Converter converter = this.converterResolver.resolveReader(clazz, null);
-							request.setConvert(data -> converter.read(clazz, data));
-
+						List<Publisher<?>> publishers = this.handlerResolver.resolve(request).stream().map(handler -> {
+							request.setConverterResolver(this.converterResolver);
 							return handler.handle(request, response);
 						}).collect(Collectors.toList());
 

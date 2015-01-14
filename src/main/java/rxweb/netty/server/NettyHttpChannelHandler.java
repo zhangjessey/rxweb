@@ -45,7 +45,7 @@ public class NettyHttpChannelHandler extends ChannelDuplexHandler {
 
 	private final Environment env;
 	private ServerRequest request;
-	private Broadcaster<Buffer> content;
+	private Broadcaster<Buffer> requestContentStream;
 
 	public NettyHttpChannelHandler(Environment env) {
 		this.env = env;
@@ -56,15 +56,15 @@ public class NettyHttpChannelHandler extends ChannelDuplexHandler {
 		Class<?> messageClass = msg.getClass();
 
 		if (HttpRequest.class.isAssignableFrom(messageClass)) {
-			this.content = Streams.broadcast(this.env);
-			this.request = new NettyServerRequest((HttpRequest) msg, this.content);
+			this.requestContentStream = Streams.broadcast(this.env);
+			this.request = new NettyServerRequest((HttpRequest) msg, this.requestContentStream);
 			super.channelRead(ctx, request);
 		} else if (HttpContent.class.isAssignableFrom(messageClass)) {
 			Assert.notNull(this.request);
 			ByteBuf content = ((ByteBufHolder) msg).content();
-			this.content.onNext(new Buffer(content.nioBuffer()));
+			this.requestContentStream.onNext(new Buffer(content.nioBuffer()));
 			if (LastHttpContent.class.isAssignableFrom(messageClass)) {
-				// TODO: Not sure what to do here
+				this.requestContentStream.onComplete();
 			}
 		}
 	}

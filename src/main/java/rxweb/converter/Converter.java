@@ -23,13 +23,13 @@ import rxweb.http.MediaType;
  * TODO: optimize Buffer allocation (pooled buffer like in Netty, direct buffer, etc.)
  * @author Sebastien Deleuze
  */
-public interface Converter<T> {
+public interface Converter<T extends Object> {
 
 	boolean canRead(Class<?> clazz, MediaType mediaType);
 
 	boolean canWrite(Class<?> clazz, MediaType mediaType);
 
-	T read(Class<? extends T> type, Buffer buffer);
+	<U extends T> U read(Class<U> type, Buffer buffer);
 
 	Buffer write(T t, MediaType contentType);
 

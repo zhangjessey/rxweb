@@ -20,14 +20,18 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
 
 import org.reactivestreams.Publisher;
-import reactor.fn.Function;
 import reactor.io.buffer.Buffer;;
+import reactor.rx.Promise;
 import reactor.rx.Stream;
 import reactor.rx.Streams;
+import rxweb.converter.Converter;
+import rxweb.converter.ConverterResolver;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.server.ServerRequest;
 import rxweb.server.ServerRequestHeaders;
+
+import org.springframework.util.Assert;
 
 /**
  * @author Sebastien Deleuze
@@ -37,7 +41,7 @@ public class NettyServerRequest implements ServerRequest {
 	private final HttpRequest nettyRequest;
 	private final ServerRequestHeaders headers;
 	private final Stream<Buffer> contentStream;
-	private Function<Buffer, ?> convertFunction;
+	private ConverterResolver converterResolver;
 
 	public NettyServerRequest(HttpRequest request, Publisher<Buffer> contentPublisher) {
 		this.nettyRequest = request;
@@ -71,21 +75,43 @@ public class NettyServerRequest implements ServerRequest {
 		return this.headers;
 	}
 
-	@Override
-	public void setConvert(Function<Buffer, ?> convertFunction) {
-		this.convertFunction = convertFunction;
+	public void setConverterResolver(ConverterResolver converterResolver) {
+		this.converterResolver = converterResolver;
 	}
 
 	@Override
-	public Stream<Buffer> getRawContentStream() {
-		return contentStream;
+	public Stream<Buffer> getContentStream() {
+		return this.contentStream;
 	}
 
 	@Override
-	public Stream<?> getContentStream() {
-		if(this.convertFunction == null) {
-			throw new IllegalStateException("No convert function define.");
+	public <T> Stream<T> getContentStream(Class<T> clazz) {
+		Assert.state(this.converterResolver != null);
+		return this.contentStream.map(buffer -> this.convert(clazz, buffer));
+	}
+
+	private <T> T convert(Class<T> clazz, Buffer buffer) {
+		// TODO: handle media type
+		Converter<Object> converter = this.converterResolver.resolveReader(clazz, null);
+		if(converter == null) {
+			throw new IllegalStateException("No relevant converter found.");
 		}
-		return this.contentStream.map(buffer -> this.convertFunction.apply(buffer));
+		return converter.read(clazz, buffer);
 	}
+
+	@Override
+	public Promise<Buffer> getContent() {
+		return this.contentStream.buffer().toList().map(bufferList -> new Buffer().append((Buffer[])bufferList.toArray()));
+	}
+
+	@Override
+	public <T> Promise<T> getContent(Class<T> clazz) {
+		Assert.state(this.converterResolver != null);
+		return getContent().map(buffer -> {
+			T value = this.convert(clazz, buffer);
+			return value;
+		});
+	}
+
+
 }

@@ -21,9 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import reactor.fn.tuple.Tuple;
-import reactor.fn.tuple.Tuple2;
-import reactor.io.buffer.Buffer;
 import rxweb.http.Request;
 import rxweb.mapping.Condition;
 import rxweb.mapping.HandlerResolver;
@@ -33,22 +30,17 @@ import rxweb.mapping.HandlerResolver;
  */
 public class DefaultHandlerResolver implements HandlerResolver {
 
-	private final Map<Condition<Request>, Tuple2<ServerHandler, Class<?>>> handlers = new LinkedHashMap<>();
+	private final Map<Condition<Request>, ServerHandler> handlers = new LinkedHashMap<>();
 
 	@Override
 	public void addHandler(final Condition<Request> condition, final ServerHandler handler) {
-		handlers.put(condition, Tuple.of(handler, Buffer.class));
+		handlers.put(condition, handler);
 	}
 
 	@Override
-	public <T> void addHandler(final Condition<Request> condition, final Class<T> type, final ServerHandler handler) {
-		handlers.put(condition, Tuple.of(handler, type));
-	}
-
-	@Override
-	public List<Tuple2<ServerHandler, Class<?>>> resolve(Request request) {
-		List<Tuple2<ServerHandler, Class<?>>> requestHandlers = new ArrayList<>();
-		for(Map.Entry<Condition<Request>, Tuple2<ServerHandler, Class<?>>> entry : this.handlers.entrySet()) {
+	public List<ServerHandler> resolve(Request request) {
+		List<ServerHandler> requestHandlers = new ArrayList<>();
+		for(Map.Entry<Condition<Request>, ServerHandler> entry : this.handlers.entrySet()) {
 			if(entry.getKey().match(request)) {
 				requestHandlers.add(entry.getValue());
 			}

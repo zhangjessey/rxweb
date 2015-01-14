@@ -16,7 +16,6 @@
 
 package rxweb.mapping;
 
-import reactor.io.buffer.Buffer;
 import rxweb.server.ServerHandler;
 
 /**
@@ -25,7 +24,5 @@ import rxweb.server.ServerHandler;
 public interface HandlerRegistry<R> {
 
 	void addHandler(final Condition<R> condition, final ServerHandler handler);
-
-	<T> void addHandler(final Condition<R> condition, final Class<T> type, final ServerHandler handler);
 
 }

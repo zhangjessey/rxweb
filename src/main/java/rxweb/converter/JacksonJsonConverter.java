@@ -41,7 +41,7 @@ public class JacksonJsonConverter implements Converter<Object> {
 	}
 
 	@Override
-	public Object read(Class<?> type, Buffer buffer) {
+	public <T extends Object> T read(Class<T> type, Buffer buffer) {
 		try {
 			return this.mapper.readValue(buffer.asBytes(), type);
 		}
