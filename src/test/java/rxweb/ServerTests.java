@@ -53,7 +53,7 @@ public class ServerTests {
 		Assert.assertEquals("{\"firstname\":\"Brian\",\"lastname\":\"Clozel\"}", content);
 	}
 
-	@Test // TODO: Fix this test
+	@Test
 	public void echo() throws IOException {
 		server.post("/test", (request, response) -> request.getContentStream());
 		String content = Request.Post("http://localhost:8080/test").bodyString("This is a test!", ContentType.TEXT_PLAIN).execute().returnContent().asString();

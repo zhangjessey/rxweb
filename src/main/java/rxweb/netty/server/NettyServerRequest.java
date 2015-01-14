@@ -43,10 +43,10 @@ public class NettyServerRequest implements ServerRequest {
 	private final Stream<Buffer> contentStream;
 	private ConverterResolver converterResolver;
 
-	public NettyServerRequest(HttpRequest request, Publisher<Buffer> contentPublisher) {
+	public NettyServerRequest(HttpRequest request, Stream<Buffer> contentStream) {
 		this.nettyRequest = request;
 		this.headers = new NettyRequestHeadersAdapter(request);
-		this.contentStream = Streams.create(contentPublisher);
+		this.contentStream = contentStream;
 	}
 
 	@Override
