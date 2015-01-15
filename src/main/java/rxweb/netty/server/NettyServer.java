@@ -16,19 +16,12 @@
 
 package rxweb.netty.server;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
 import io.netty.handler.codec.http.HttpServerCodec;
-
 import io.netty.handler.logging.LoggingHandler;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import reactor.Environment;
-
 import reactor.io.net.NetServer;
 import reactor.io.net.config.ServerSocketOptions;
 import reactor.io.net.netty.NettyServerSocketOptions;
@@ -42,8 +35,12 @@ import rxweb.server.AbstractServer;
 import rxweb.server.ServerRequest;
 import rxweb.server.ServerResponse;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Netty powered Spring RxWeb server
+ *
  * @author Sebastien Deleuze
  */
 public class NettyServer extends AbstractServer {
@@ -56,9 +53,11 @@ public class NettyServer extends AbstractServer {
 
 	public NettyServer() {
 		ServerSocketOptions options = new NettyServerSocketOptions()
-			.pipelineConfigurer(pipeline -> pipeline.addLast(new LoggingHandler()).addLast(new HttpServerCodec()).addLast(new NettyServerCodecHandlerAdapter(env)));
+				.pipelineConfigurer(pipeline -> pipeline.addLast(new LoggingHandler()).addLast(new HttpServerCodec()).addLast
+						(new NettyServerCodecHandlerAdapter(env)));
 
-		server = new TcpServerSpec<ServerRequest, Object>(NettyTcpServer.class).listen(8080).env(this.env).dispatcher("sync").options(options).consume(ch -> {
+		server = new TcpServerSpec<ServerRequest, Object>(NettyTcpServer.class).listen(8080).env(this.env).dispatcher
+				("sync").options(options).consume(ch -> {
 			// filter requests by URI via the input Stream
 			Stream<ServerRequest> in = ch.in();
 
@@ -75,27 +74,24 @@ public class NettyServer extends AbstractServer {
 					// TODO: handle media type
 					Converter converter = this.converterResolver.resolveWriter(data.getClass(), null);
 					return converter.write(data, null);
-				}).consume(buffer -> {
-							if (response.isStatusAndHeadersSent()) {
-								ch.send(buffer);
-							}
-							else {
-								response.setStatusAndHeadersSent(true);
-								ch.send(response).onComplete(w -> ch.send(buffer));
-							}
-						}, Throwable::printStackTrace, v -> {
-							if (response.isStatusAndHeadersSent()) {
-								// TODO: try to find how to close the request without having to wait 1s ...
-								env.getTimer().schedule(t -> ch.close(), 1, TimeUnit.SECONDS);
-								//ch.close();
-							}
-							else {
-								response.setStatusAndHeadersSent(true);
-								// TODO: try to find how to close the request without having to wait 1s ...
-								ch.send(response).onComplete(w -> env.getTimer().schedule(t -> ch.close(), 1, TimeUnit.SECONDS));
-								//ch.send(response).onComplete(w -> ch.close());
-							}
-						});
+				}).flatMap(buffer -> {
+					if (response.isStatusAndHeadersSent()) {
+						return ch.send(buffer);
+					} else {
+						response.setStatusAndHeadersSent(true);
+						return Streams.concat(ch.send(response), ch.send(buffer));
+					}
+				}).consume(
+				/* ignore onNext */ null,
+				/* ignore errors */ Throwable::printStackTrace,
+						/* close on Complete */ v -> {
+					if (response.isStatusAndHeadersSent()) {
+						ch.close();
+					} else {
+						response.setStatusAndHeadersSent(true);
+						ch.send(response).onComplete(w -> ch.close());
+					}
+				});
 			});
 		}).get();
 	}
