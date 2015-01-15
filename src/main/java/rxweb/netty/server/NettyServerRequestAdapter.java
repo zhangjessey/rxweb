@@ -34,14 +34,14 @@ import org.springframework.util.Assert;
 /**
  * @author Sebastien Deleuze
  */
-public class NettyServerRequest implements ServerRequest {
+public class NettyServerRequestAdapter implements ServerRequest {
 
 	private final HttpRequest nettyRequest;
 	private final ServerRequestHeaders headers;
 	private final Stream<Buffer> contentStream;
 	private ConverterResolver converterResolver;
 
-	public NettyServerRequest(HttpRequest request, Stream<Buffer> contentStream) {
+	public NettyServerRequestAdapter(HttpRequest request, Stream<Buffer> contentStream) {
 		this.nettyRequest = request;
 		this.headers = new NettyRequestHeadersAdapter(request);
 		this.contentStream = contentStream;

@@ -43,6 +43,7 @@ import rxweb.server.ServerRequest;
 import rxweb.server.ServerResponse;
 
 /**
+ * Netty powered Spring RxWeb server
  * @author Sebastien Deleuze
  */
 public class NettyServer extends AbstractServer {
@@ -55,53 +56,48 @@ public class NettyServer extends AbstractServer {
 
 	public NettyServer() {
 		ServerSocketOptions options = new NettyServerSocketOptions()
-				.pipelineConfigurer(pipeline -> pipeline
-						.addLast(new LoggingHandler())
-						.addLast(new HttpServerCodec())
-						.addLast(new NettyHttpChannelHandler(env)));
+			.pipelineConfigurer(pipeline -> pipeline.addLast(new LoggingHandler()).addLast(new HttpServerCodec()).addLast(new NettyServerCodecHandlerAdapter(env)));
 
-		server = new TcpServerSpec<ServerRequest, Object>(NettyTcpServer.class)
-				.listen(8080).env(this.env).dispatcher("sync").options(options)
-				.consume(ch -> {
-					// filter requests by URI via the input Stream
-					Stream<ServerRequest> in = ch.in();
+		server = new TcpServerSpec<ServerRequest, Object>(NettyTcpServer.class).listen(8080).env(this.env).dispatcher("sync").options(options).consume(ch -> {
+			// filter requests by URI via the input Stream
+			Stream<ServerRequest> in = ch.in();
 
-					// Implement here the routing
-					in.consume(request -> {
-						ServerResponse response = new NettyServerResponse(ch, request);
-						List<Publisher<?>> publishers = this.handlerResolver.resolve(request).stream().map(handler -> {
-							request.setConverterResolver(this.converterResolver);
-							return handler.handle(request, response);
-						}).collect(Collectors.toList());
+			// Implement here the routing
+			in.consume(request -> {
+				ServerResponse response = new NettyServerResponseAdapter(ch, request);
+				List<Publisher<?>> publishers = this.handlerResolver.resolve(request).stream().map(handler -> {
+					request.setConverterResolver(this.converterResolver);
+					return handler.handle(request, response);
+				}).collect(Collectors.toList());
 
-						// Merge all handlers and convert it to a Stream of Buffer thanks to the converter
-						Streams.concat(publishers).map(data -> {
-							// TODO: handle media type
-							Converter converter = this.converterResolver.resolveWriter(data.getClass(), null);
-							return converter.write(data, null);
-						}).consume(buffer -> {
-								if (response.isStatusAndHeadersSent()) {
-									ch.send(buffer);
-								}
-								else {
-									response.setStatusAndHeadersSent(true);
-									ch.send(response).onComplete(w -> ch.send(buffer));
-								}
-							}, Throwable::printStackTrace, v -> {
-								if (response.isStatusAndHeadersSent()) {
-									// TODO: try to find how to close the request without having to wait 1s ...
-									env.getTimer().schedule(t -> ch.close(), 1, TimeUnit.SECONDS);
-									//ch.close();
-								}
-								else {
-									response.setStatusAndHeadersSent(true);
-									// TODO: try to find how to close the request without having to wait 1s ...
-									ch.send(response).onComplete(w -> env.getTimer().schedule(t -> ch.close(), 1, TimeUnit.SECONDS));
-									//ch.send(response).onComplete(w -> ch.close());
-								}
-							});
-					});
-				}).get();
+				// Merge all handlers and convert it to a Stream of Buffer thanks to the converter
+				Streams.concat(publishers).map(data -> {
+					// TODO: handle media type
+					Converter converter = this.converterResolver.resolveWriter(data.getClass(), null);
+					return converter.write(data, null);
+				}).consume(buffer -> {
+							if (response.isStatusAndHeadersSent()) {
+								ch.send(buffer);
+							}
+							else {
+								response.setStatusAndHeadersSent(true);
+								ch.send(response).onComplete(w -> ch.send(buffer));
+							}
+						}, Throwable::printStackTrace, v -> {
+							if (response.isStatusAndHeadersSent()) {
+								// TODO: try to find how to close the request without having to wait 1s ...
+								env.getTimer().schedule(t -> ch.close(), 1, TimeUnit.SECONDS);
+								//ch.close();
+							}
+							else {
+								response.setStatusAndHeadersSent(true);
+								// TODO: try to find how to close the request without having to wait 1s ...
+								ch.send(response).onComplete(w -> env.getTimer().schedule(t -> ch.close(), 1, TimeUnit.SECONDS));
+								//ch.send(response).onComplete(w -> ch.close());
+							}
+						});
+			});
+		}).get();
 	}
 
 	@Override

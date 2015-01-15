@@ -36,28 +36,32 @@ import rxweb.server.ServerRequest;
 import org.springframework.util.Assert;
 
 /**
- * Conversion between Netty types ({@link HttpRequest}, {@link HttpResponse} and {@link LastHttpContent})
- * and Spring RxWeb types ({@link NettyServerResponse}, {@link NettyServerRequest} and {@link Buffer}).
+ * Conversion between Netty types ({@link HttpRequest}, {@link HttpResponse}, {@link HttpContent} and {@link LastHttpContent})
+ * and Spring RxWeb types ({@link NettyServerResponseAdapter}, {@link NettyServerRequestAdapter} and {@link Buffer}).
  *
  * @author Sebastien Deleuze
  */
-public class NettyHttpChannelHandler extends ChannelDuplexHandler {
+public class NettyServerCodecHandlerAdapter extends ChannelDuplexHandler {
 
 	private final Environment env;
 	private ServerRequest request;
 	private Broadcaster<Buffer> requestContentStream;
 
-	public NettyHttpChannelHandler(Environment env) {
+	public NettyServerCodecHandlerAdapter(Environment env) {
 		this.env = env;
 	}
 
+	/**
+	 * Create a {@link NettyServerRequestAdapter} when a {@link HttpRequest} is received, and use
+	 * @ {@link Broadcaster} to send the content as a request stream.
+	 */
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		Class<?> messageClass = msg.getClass();
 
 		if (HttpRequest.class.isAssignableFrom(messageClass)) {
 			this.requestContentStream = Streams.broadcast(this.env);
-			this.request = new NettyServerRequest((HttpRequest) msg, this.requestContentStream);
+			this.request = new NettyServerRequestAdapter((HttpRequest) msg, this.requestContentStream);
 			super.channelRead(ctx, request);
 		} else if (HttpContent.class.isAssignableFrom(messageClass)) {
 			Assert.notNull(this.request);
@@ -73,14 +77,10 @@ public class NettyHttpChannelHandler extends ChannelDuplexHandler {
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
 		Class<?> messageClass = msg.getClass();
 
-		if (NettyServerResponse.class.isAssignableFrom(messageClass)) {
-			NettyServerResponse response = (NettyServerResponse) msg;
+		if (NettyServerResponseAdapter.class.isAssignableFrom(messageClass)) {
+			NettyServerResponseAdapter response = (NettyServerResponseAdapter) msg;
 			super.write(ctx, response.getNettyResponse(), promise);
-		} else if (Buffer.class.isAssignableFrom(messageClass)) {
-			Buffer buffer = (Buffer) msg;
-			ByteBuf nettyBuffer = ctx.alloc().directBuffer();
-			nettyBuffer.writeBytes(buffer.byteBuffer());
-			super.write(ctx, new DefaultHttpContent(nettyBuffer), promise);
+		// Reactor Netty integration has already done the conversion from Reactor Buffer to netty ByteBuf
 		} else if (ByteBuf.class.isAssignableFrom(messageClass)) {
 			super.write(ctx, new DefaultHttpContent((ByteBuf)msg), promise);
 		} else {
@@ -94,4 +94,5 @@ public class NettyHttpChannelHandler extends ChannelDuplexHandler {
 		super.channelReadComplete(ctx);
 		ctx.pipeline().flush(); // If there is nothing to flush, this is a short-circuit in netty.
 	}
+
 }
