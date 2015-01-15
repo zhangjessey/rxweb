@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package rxweb.netty.server;
+package rxweb.engine.server.netty;
 
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.logging.LoggingHandler;
@@ -53,8 +53,7 @@ public class NettyServer extends AbstractServer {
 
 	public NettyServer() {
 		ServerSocketOptions options = new NettyServerSocketOptions()
-				.pipelineConfigurer(pipeline -> pipeline.addLast(new LoggingHandler()).addLast(new HttpServerCodec()).addLast
-						(new NettyServerCodecHandlerAdapter(env)));
+				.pipelineConfigurer(pipeline -> pipeline.addLast(new LoggingHandler()).addLast(new HttpServerCodec()).addLast(new NettyServerCodecHandlerAdapter(env)));
 
 		server = new TcpServerSpec<ServerRequest, Object>(NettyTcpServer.class).listen(8080).env(this.env).dispatcher
 				("sync").options(options).consume(ch -> {
@@ -69,7 +68,9 @@ public class NettyServer extends AbstractServer {
 					return handler.handle(request, response);
 				}).collect(Collectors.toList());
 
-				// Merge all handlers and convert it to a Stream of Buffer thanks to the converter
+				// Streams.concat(publishers) execute handlers in order (handler chain)
+				// Streams.merge(publishers) all handlers contribute to the output stream (if on the same thread
+				// so maybe we need to specify another dispatcher)
 				Streams.concat(publishers).map(data -> {
 					// TODO: handle media type
 					Converter converter = this.converterResolver.resolveWriter(data.getClass(), null);
@@ -77,7 +78,8 @@ public class NettyServer extends AbstractServer {
 				}).flatMap(buffer -> {
 					if (response.isStatusAndHeadersSent()) {
 						return ch.send(buffer);
-					} else {
+					}
+					else {
 						response.setStatusAndHeadersSent(true);
 						return Streams.concat(ch.send(response), ch.send(buffer));
 					}

@@ -16,7 +16,7 @@
 
 package rxweb;
 
-import reactor.rx.Promise;
+import org.reactivestreams.Publisher;
 import rxweb.http.Request;
 import rxweb.mapping.HandlerRegistry;
 import rxweb.server.ServerHandler;
@@ -26,9 +26,11 @@ import rxweb.server.ServerHandler;
  */
 public interface Server extends HandlerRegistry<Request> {
 
-	Promise<Boolean> start();
+	/** Complete when the server is started **/
+	Publisher<Boolean> start();
 
-	Promise<Boolean> stop();
+	/** Complete when the server is stopped **/
+	Publisher<Boolean> stop();
 
 	void setHost(String host);
 

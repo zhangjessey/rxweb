@@ -16,7 +16,7 @@
 
 package rxweb.server;
 
-import reactor.rx.Promise;
+import org.reactivestreams.Publisher;
 import rxweb.http.Response;
 import rxweb.http.Status;
 import rxweb.http.Transfer;
@@ -38,7 +38,7 @@ public interface ServerResponse extends Response {
 
 	ServerResponse transfer(Transfer transfer);
 
-	Promise<?> write(Object content);
+	Publisher<?> write(Object content);
 
 	boolean isStatusAndHeadersSent();
 

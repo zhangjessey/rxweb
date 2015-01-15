@@ -16,8 +16,6 @@
 
 package rxweb.client;
 
-import java.nio.charset.StandardCharsets;
-
 import org.reactivestreams.Publisher;
 import reactor.io.buffer.Buffer;
 import reactor.rx.Stream;

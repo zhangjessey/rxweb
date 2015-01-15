@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package rxweb.netty.server;
+package rxweb.engine.server.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufHolder;

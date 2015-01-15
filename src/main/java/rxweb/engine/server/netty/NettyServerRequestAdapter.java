@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package rxweb.netty.server;
+package rxweb.engine.server.netty;
+
+import java.nio.ByteBuffer;
 
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
 
+import org.reactivestreams.Publisher;
 import reactor.io.buffer.Buffer;;
 import reactor.rx.Promise;
 import reactor.rx.Stream;
@@ -79,8 +82,8 @@ public class NettyServerRequestAdapter implements ServerRequest {
 	}
 
 	@Override
-	public Stream<Buffer> getContentStream() {
-		return this.contentStream;
+	public Publisher<ByteBuffer> getContentStream() {
+		return this.contentStream.map(buffer -> buffer.byteBuffer());
 	}
 
 	@Override
@@ -99,7 +102,20 @@ public class NettyServerRequestAdapter implements ServerRequest {
 	}
 
 	@Override
-	public Promise<Buffer> getContent() {
+	public Publisher<ByteBuffer> getContent() {
+		return getContentInternal().map(buffer -> buffer.byteBuffer());
+	}
+
+	@Override
+	public <T> Publisher<T> getContent(Class<T> clazz) {
+		Assert.state(this.converterResolver != null);
+		return getContentInternal().map(buffer -> {
+			T value = this.convert(clazz, buffer);
+			return value;
+		});
+	}
+
+	private Promise<Buffer> getContentInternal() {
 		return this.contentStream.toList().map(bufferList -> {
 			Buffer buffer = new Buffer();
 			bufferList.stream().forEach(b -> buffer.append(b));
@@ -107,15 +123,5 @@ public class NettyServerRequestAdapter implements ServerRequest {
 			return buffer;
 		});
 	}
-
-	@Override
-	public <T> Promise<T> getContent(Class<T> clazz) {
-		Assert.state(this.converterResolver != null);
-		return getContent().map(buffer -> {
-			T value = this.convert(clazz, buffer);
-			return value;
-		});
-	}
-
 
 }

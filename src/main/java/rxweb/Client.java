@@ -16,7 +16,7 @@
 
 package rxweb;
 
-import reactor.rx.Promise;
+import org.reactivestreams.Publisher;
 import rxweb.client.ClientRequest;
 import rxweb.client.ClientRequestHolder;
 import rxweb.client.ClientResponse;
@@ -27,7 +27,7 @@ import rxweb.client.ClientResponse;
 public interface Client {
 
 	// Return the client response as soon as headers has been received (we don't wait to have received the full body).
-	Promise<ClientResponse> execute(final ClientRequest request);
+	Publisher<ClientResponse> execute(final ClientRequest request);
 
 	ClientRequestHolder get(final String uri);
 

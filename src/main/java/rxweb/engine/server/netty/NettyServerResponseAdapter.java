@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package rxweb.netty.server;
+package rxweb.engine.server.netty;
 
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
+import org.reactivestreams.Publisher;
 import reactor.io.net.NetChannel;
-import reactor.rx.Promise;
 import reactor.rx.Promises;
 import rxweb.http.ResponseHeaders;
 import rxweb.http.Protocol;
@@ -130,7 +130,7 @@ public class NettyServerResponseAdapter implements ServerResponse {
 	}
 
 	@Override
-	public Promise<?> write(Object content) {
+	public Publisher<?> write(Object content) {
 		return Promises.success(content);
 	}
 

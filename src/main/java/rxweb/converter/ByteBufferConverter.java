@@ -16,6 +16,8 @@
 
 package rxweb.converter;
 
+import java.nio.ByteBuffer;
+
 import reactor.io.buffer.Buffer;
 import rxweb.http.MediaType;
 
@@ -24,27 +26,27 @@ import org.springframework.util.Assert;
 /**
  * @author Sebastien Deleuze
  */
-public class BufferConverter implements Converter<Buffer> {
+public class ByteBufferConverter implements Converter<ByteBuffer> {
 
 	@Override
 	public boolean canRead(Class<?> clazz, MediaType mediaType) {
-		return clazz.isAssignableFrom(Buffer.class);
+		return ByteBuffer.class.isAssignableFrom(clazz);
 	}
 
 	@Override
 	public boolean canWrite(Class<?> clazz, MediaType mediaType) {
-		return clazz.isAssignableFrom(Buffer.class);
+		return ByteBuffer.class.isAssignableFrom(clazz);
 	}
 
 	@Override
-	public <T extends Buffer> T read(Class<T> type, Buffer buffer) {
-		Assert.isTrue(type.equals(Buffer.class));
-		return (T) buffer;
+	public <T extends ByteBuffer> T read(Class<T> type, Buffer buffer) {
+		Assert.isTrue(type.equals(ByteBuffer.class));
+		return (T) buffer.byteBuffer();
 	}
 
 	@Override
-	public Buffer write(Buffer buffer, MediaType contentType) {
-		Assert.isAssignable(buffer.getClass(), Buffer.class);
-		return (Buffer)buffer;
+	public Buffer write(ByteBuffer buffer, MediaType contentType) {
+		Assert.isAssignable(ByteBuffer.class, buffer.getClass());
+		return new Buffer(buffer);
 	}
 }

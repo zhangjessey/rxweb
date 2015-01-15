@@ -17,7 +17,7 @@
 package rxweb.server;
 
 import rxweb.Server;
-import rxweb.converter.BufferConverter;
+import rxweb.converter.ByteBufferConverter;
 import rxweb.converter.ConverterResolver;
 import rxweb.converter.DefaultConverterResolver;
 import rxweb.converter.JacksonJsonConverter;
@@ -39,7 +39,7 @@ public abstract class AbstractServer implements Server {
 	protected ConverterResolver converterResolver = new DefaultConverterResolver();
 
 	public AbstractServer() {
-		this.converterResolver.addConverter(new BufferConverter());
+		this.converterResolver.addConverter(new ByteBufferConverter());
 		this.converterResolver.addConverter(new StringConverter());
 		this.converterResolver.addConverter(new JacksonJsonConverter());
 	}

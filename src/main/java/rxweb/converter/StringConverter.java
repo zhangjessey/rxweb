@@ -33,12 +33,12 @@ public class StringConverter implements Converter<String> {
 
 	@Override
 	public boolean canRead(Class<?> clazz, MediaType mediaType) {
-		return clazz.isAssignableFrom(String.class);
+		return String.class.isAssignableFrom(clazz);
 	}
 
 	@Override
 	public boolean canWrite(Class<?> clazz, MediaType mediaType) {
-		return clazz.isAssignableFrom(String.class);
+		return String.class.isAssignableFrom(clazz);
 	}
 
 	@Override

@@ -16,9 +16,9 @@
 
 package rxweb.client;
 
-import reactor.io.buffer.Buffer;
-import reactor.rx.Promise;
-import reactor.rx.Stream;
+import java.nio.ByteBuffer;
+
+import org.reactivestreams.Publisher;
 import rxweb.http.Response;
 
 /**
@@ -28,13 +28,17 @@ public interface ClientResponse extends Response {
 
 	ClientResponseHeaders getHeaders();
 
-	/** For the moment, {@link Buffer} and {@link String} (UTF-8) are supported
-	 */
-	<T> Stream<T> getContentStream(final Class<T> clazz);
+	/** Return a stream of raw content chunks **/
+	Publisher<ByteBuffer> getContentStream();
 
-	/** Accumulate all chunks before completed
-	 For the moment, {@link Buffer} and {@link String} (UTF-8) are supported
-	 */
-	<T> Promise<T> getContent(final Class<T> clazz);
+	/** Return a scalar raw content **/
+	Publisher<ByteBuffer> getContent();
 
+
+	/** Return a stream of POJO contents using converters (1 chunk = 1 POJO) **/
+	<T> Publisher<T> getContentStream(Class<T> clazz);
+
+
+	/** Return a scalar POJO content using converters **/
+	<T> Publisher<T> getContent(Class<T> clazz);
 }
