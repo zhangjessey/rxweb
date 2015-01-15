@@ -40,4 +40,8 @@ public interface ServerResponse extends Response {
 
 	Promise<?> write(Object content);
 
+	boolean isStatusAndHeadersSent();
+
+	void setStatusAndHeadersSent(boolean statusAndHeadersSent);
+
 }

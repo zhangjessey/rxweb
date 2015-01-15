@@ -39,6 +39,8 @@ import reactor.rx.Stream;
 import reactor.rx.Streams;
 import rxweb.converter.Converter;
 import rxweb.server.AbstractServer;
+import rxweb.server.ServerRequest;
+import rxweb.server.ServerResponse;
 
 /**
  * @author Sebastien Deleuze
@@ -49,7 +51,7 @@ public class NettyServer extends AbstractServer {
 
 	private final Environment env = new Environment();
 
-	private final NetServer<NettyServerRequest, Object> server;
+	private final NetServer<ServerRequest, Object> server;
 
 	public NettyServer() {
 		ServerSocketOptions options = new NettyServerSocketOptions()
@@ -58,15 +60,15 @@ public class NettyServer extends AbstractServer {
 						.addLast(new HttpServerCodec())
 						.addLast(new NettyHttpChannelHandler(env)));
 
-		server = new TcpServerSpec<NettyServerRequest, Object>(NettyTcpServer.class)
+		server = new TcpServerSpec<ServerRequest, Object>(NettyTcpServer.class)
 				.listen(8080).env(this.env).dispatcher("sync").options(options)
 				.consume(ch -> {
 					// filter requests by URI via the input Stream
-					Stream<NettyServerRequest> in = ch.in();
+					Stream<ServerRequest> in = ch.in();
 
 					// Implement here the routing
 					in.consume(request -> {
-						NettyServerResponse response = new NettyServerResponse(ch, request);
+						ServerResponse response = new NettyServerResponse(ch, request);
 						List<Publisher<?>> publishers = this.handlerResolver.resolve(request).stream().map(handler -> {
 							request.setConverterResolver(this.converterResolver);
 							return handler.handle(request, response);
@@ -78,26 +80,26 @@ public class NettyServer extends AbstractServer {
 							Converter converter = this.converterResolver.resolveWriter(data.getClass(), null);
 							return converter.write(data, null);
 						}).consume(buffer -> {
-									if (response.isStatusAndHeadersSent()) {
-										ch.send(buffer);
-									}
-									else {
-										response.setStatusAndHeadersSent(true);
-										ch.send(response).onComplete(w -> ch.send(buffer));
-									}
-								}, Throwable::printStackTrace, v -> {
-									if (response.isStatusAndHeadersSent()) {
-										// TODO: try to find how to close the request without having to wait 1s ...
-										env.getTimer().schedule(t -> ch.close(), 1, TimeUnit.SECONDS);
-										//ch.close();
-									}
-									else {
-										response.setStatusAndHeadersSent(true);
-										// TODO: try to find how to close the request without having to wait 1s ...
-										ch.send(response).onComplete(w -> env.getTimer().schedule(t -> ch.close(), 1, TimeUnit.SECONDS));
-										//ch.send(response).onComplete(w -> ch.close());
-									}
-								});
+								if (response.isStatusAndHeadersSent()) {
+									ch.send(buffer);
+								}
+								else {
+									response.setStatusAndHeadersSent(true);
+									ch.send(response).onComplete(w -> ch.send(buffer));
+								}
+							}, Throwable::printStackTrace, v -> {
+								if (response.isStatusAndHeadersSent()) {
+									// TODO: try to find how to close the request without having to wait 1s ...
+									env.getTimer().schedule(t -> ch.close(), 1, TimeUnit.SECONDS);
+									//ch.close();
+								}
+								else {
+									response.setStatusAndHeadersSent(true);
+									// TODO: try to find how to close the request without having to wait 1s ...
+									ch.send(response).onComplete(w -> env.getTimer().schedule(t -> ch.close(), 1, TimeUnit.SECONDS));
+									//ch.send(response).onComplete(w -> ch.close());
+								}
+							});
 					});
 				}).get();
 	}

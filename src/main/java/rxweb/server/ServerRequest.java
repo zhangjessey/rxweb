@@ -19,6 +19,7 @@ package rxweb.server;
 import reactor.io.buffer.Buffer;
 import reactor.rx.Promise;
 import reactor.rx.Stream;
+import rxweb.converter.ConverterResolver;
 import rxweb.http.Request;
 
 /**
@@ -35,5 +36,7 @@ public interface ServerRequest extends Request {
 	<T> Stream<T> getContentStream(Class<T> clazz);
 
 	<T> Promise<T> getContent(Class<T> clazz);
+
+	void setConverterResolver(ConverterResolver converterResolver);
 
 }

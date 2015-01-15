@@ -20,11 +20,9 @@ import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
-import org.reactivestreams.Publisher;
 import reactor.io.net.NetChannel;
 import reactor.rx.Promise;
 import reactor.rx.Promises;
-import reactor.rx.Streams;
 import rxweb.http.ResponseHeaders;
 import rxweb.http.Protocol;
 import rxweb.http.Status;
@@ -40,13 +38,13 @@ import org.springframework.util.Assert;
  */
 public class NettyServerResponse implements ServerResponse {
 
-	private final NetChannel<NettyServerRequest, Object>  channel;
+	private final NetChannel<ServerRequest, Object>  channel;
 	private final HttpResponse nettyResponse;
-	private final NettyServerRequest request;
+	private final ServerRequest request;
 	private final ServerResponseHeaders headers;
 	private boolean statusAndHeadersSent = false;
 
-	public NettyServerResponse(NetChannel<NettyServerRequest, Object> channel, NettyServerRequest request) {
+	public NettyServerResponse(NetChannel<ServerRequest, Object> channel, ServerRequest request) {
 		this.nettyResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
 		this.headers = new NettyResponseHeadersAdapter(this.nettyResponse);
 		this.channel = channel;
@@ -122,6 +120,16 @@ public class NettyServerResponse implements ServerResponse {
 	}
 
 	@Override
+	public boolean isStatusAndHeadersSent() {
+		return statusAndHeadersSent;
+	}
+
+	@Override
+	public void setStatusAndHeadersSent(boolean statusAndHeadersSent) {
+		this.statusAndHeadersSent = statusAndHeadersSent;
+	}
+
+	@Override
 	public Promise<?> write(Object content) {
 		return Promises.success(content);
 	}
@@ -130,11 +138,5 @@ public class NettyServerResponse implements ServerResponse {
 		return nettyResponse;
 	}
 
-	public boolean isStatusAndHeadersSent() {
-		return statusAndHeadersSent;
-	}
 
-	public void setStatusAndHeadersSent(boolean statusAndHeadersSent) {
-		this.statusAndHeadersSent = statusAndHeadersSent;
-	}
 }
