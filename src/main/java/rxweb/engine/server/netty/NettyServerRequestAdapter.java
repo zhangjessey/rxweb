@@ -22,6 +22,7 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
 
 import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 import reactor.io.buffer.Buffer;;
 import reactor.rx.Promise;
 import reactor.rx.Stream;
@@ -37,17 +38,22 @@ import org.springframework.util.Assert;
 /**
  * @author Sebastien Deleuze
  */
-public class NettyServerRequestAdapter implements ServerRequest {
+public class NettyServerRequestAdapter extends Stream<ByteBuffer> implements ServerRequest {
 
 	private final HttpRequest nettyRequest;
 	private final ServerRequestHeaders headers;
-	private final Stream<Buffer> contentStream;
 	private ConverterResolver converterResolver;
+	private Stream<Buffer> contentStream;
 
 	public NettyServerRequestAdapter(HttpRequest request, Stream<Buffer> contentStream) {
 		this.nettyRequest = request;
 		this.headers = new NettyRequestHeadersAdapter(request);
 		this.contentStream = contentStream;
+	}
+
+	@Override
+	public void subscribe(Subscriber<? super ByteBuffer> subscriber) {
+		getContentStream().subscribe(subscriber);
 	}
 
 	@Override
@@ -83,13 +89,13 @@ public class NettyServerRequestAdapter implements ServerRequest {
 
 	@Override
 	public Publisher<ByteBuffer> getContentStream() {
-		return this.contentStream.map(buffer -> buffer.byteBuffer());
+		return this.contentStream.map(b -> b.byteBuffer());
 	}
 
 	@Override
 	public <T> Stream<T> getContentStream(Class<T> clazz) {
 		Assert.state(this.converterResolver != null);
-		return this.contentStream.map(buffer -> this.convert(clazz, buffer));
+		return this.map(buffer -> this.convert(clazz, new Buffer(buffer)));
 	}
 
 	private <T> T convert(Class<T> clazz, Buffer buffer) {
@@ -116,7 +122,7 @@ public class NettyServerRequestAdapter implements ServerRequest {
 	}
 
 	private Promise<Buffer> getContentInternal() {
-		return this.contentStream.toList().map(bufferList -> {
+		return this.toList().map(bufferList -> {
 			Buffer buffer = new Buffer();
 			bufferList.stream().forEach(b -> buffer.append(b));
 			buffer.flip();
