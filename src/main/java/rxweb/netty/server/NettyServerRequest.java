@@ -19,11 +19,9 @@ package rxweb.netty.server;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
 
-import org.reactivestreams.Publisher;
 import reactor.io.buffer.Buffer;;
 import reactor.rx.Promise;
 import reactor.rx.Stream;
-import reactor.rx.Streams;
 import rxweb.converter.Converter;
 import rxweb.converter.ConverterResolver;
 import rxweb.http.Method;
@@ -101,7 +99,12 @@ public class NettyServerRequest implements ServerRequest {
 
 	@Override
 	public Promise<Buffer> getContent() {
-		return this.contentStream.buffer().toList().map(bufferList -> new Buffer().append((Buffer[])bufferList.toArray()));
+		return this.contentStream.toList().map(bufferList -> {
+			Buffer buffer = new Buffer();
+			bufferList.stream().forEach(b -> buffer.append(b));
+			buffer.flip();
+			return buffer;
+		});
 	}
 
 	@Override

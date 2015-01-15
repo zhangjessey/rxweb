@@ -54,8 +54,15 @@ public class ServerTests {
 	}
 
 	@Test
-	public void echo() throws IOException {
+	public void echoStream() throws IOException {
 		server.post("/test", (request, response) -> request.getContentStream());
+		String content = Request.Post("http://localhost:8080/test").bodyString("This is a test!", ContentType.TEXT_PLAIN).execute().returnContent().asString();
+		Assert.assertEquals("This is a test!", content);
+	}
+
+	@Test
+	public void echo() throws IOException {
+		server.post("/test", (request, response) -> request.getContent());
 		String content = Request.Post("http://localhost:8080/test").bodyString("This is a test!", ContentType.TEXT_PLAIN).execute().returnContent().asString();
 		Assert.assertEquals("This is a test!", content);
 	}
