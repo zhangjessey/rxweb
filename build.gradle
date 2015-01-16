@@ -16,6 +16,7 @@ ext {
   slf4jVersion    = "1.7.7"
   logbackVersion    = "1.1.2"
   jacksonVersion  = "2.4.4"
+
 }
 
 dependencies {
@@ -27,6 +28,7 @@ dependencies {
   compile "org.slf4j:slf4j-api:${slf4jVersion}"
   compile "ch.qos.logback:logback-classic:${logbackVersion}"
   compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+  compile "io.reactivex:rxjava-reactive-streams:0.5.0"
   testCompile "junit:junit:4.12"
   testCompile "org.apache.httpcomponents:fluent-hc:4.3.6"
 }
