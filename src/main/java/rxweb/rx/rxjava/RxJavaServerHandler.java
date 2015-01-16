@@ -17,7 +17,6 @@
 package rxweb.rx.rxjava;
 
 import rx.Observable;
-import rxweb.server.ServerResponse;
 
 /**
  * Handle the HTTP request to produce a response.

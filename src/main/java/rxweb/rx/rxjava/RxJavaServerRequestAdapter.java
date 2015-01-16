@@ -19,8 +19,6 @@ package rxweb.rx.rxjava;
 import java.nio.ByteBuffer;
 
 import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
-import reactor.io.buffer.Buffer;
 import rx.Observable;
 import rx.RxReactiveStreams;
 import rxweb.converter.ConverterResolver;
@@ -46,8 +44,8 @@ public class RxJavaServerRequestAdapter implements RxJavaServerRequest {
 	}
 
 	@Override
-	public Observable<Buffer> getContent() {
-		return RxReactiveStreams.toObservable(this.serverRequest.getContent()).map(Buffer::new);
+	public Observable<ByteBuffer> getContent() {
+		return RxReactiveStreams.toObservable(this.serverRequest.getContent());
 	}
 
 	@Override
@@ -56,8 +54,8 @@ public class RxJavaServerRequestAdapter implements RxJavaServerRequest {
 	}
 
 	@Override
-	public Observable<Buffer> getContentStream() {
-		return RxReactiveStreams.toObservable(this.serverRequest.getContentStream()).map(Buffer::new);
+	public Observable<ByteBuffer> getContentStream() {
+		return RxReactiveStreams.toObservable(this.serverRequest.getContentStream());
 	}
 
 	@Override
@@ -71,28 +69,8 @@ public class RxJavaServerRequestAdapter implements RxJavaServerRequest {
 	}
 
 	@Override
-	public void subscribe(Subscriber<? super Buffer> s) {
-		this.serverRequest.subscribe(new Subscriber<ByteBuffer>() {
-			@Override
-			public void onSubscribe(Subscription subscription) {
-				s.onSubscribe(subscription);
-			}
-
-			@Override
-			public void onNext(ByteBuffer buffer) {
-				s.onNext(new Buffer(buffer));
-			}
-
-			@Override
-			public void onError(Throwable t) {
-				s.onError(t);
-			}
-
-			@Override
-			public void onComplete() {
-				s.onComplete();
-			}
-		});
+	public void subscribe(Subscriber<? super ByteBuffer> s) {
+		this.serverRequest.subscribe(s);
 	}
 
 	@Override

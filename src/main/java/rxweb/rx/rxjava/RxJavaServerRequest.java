@@ -16,8 +16,9 @@
 
 package rxweb.rx.rxjava;
 
+import java.nio.ByteBuffer;
+
 import org.reactivestreams.Publisher;
-import reactor.io.buffer.Buffer;
 import rx.Observable;
 import rxweb.converter.ConverterResolver;
 import rxweb.http.Request;
@@ -26,18 +27,18 @@ import rxweb.server.ServerRequestHeaders;
 /**
  * @author Sebastien Deleuze
  */
-public interface RxJavaServerRequest extends Request, Publisher<Buffer> {
+public interface RxJavaServerRequest extends Request, Publisher<ByteBuffer> {
 
 	ServerRequestHeaders getHeaders();
 
 	/** Return a single buffered raw content **/
-	Observable<Buffer> getContent();
+	Observable<ByteBuffer> getContent();
 
 	/** Return a single (the content is buffered) POJO using converters **/
 	<T> Observable<T> getContent(Class<T> clazz);
 
 	/** Return a stream of raw content chunks **/
-	Observable<Buffer> getContentStream();
+	Observable<ByteBuffer> getContentStream();
 
 	/** Return a stream of POJO contents using converters (1 chunk = 1 POJO) **/
 	<T> Observable<T> getContentStream(Class<T> clazz);
