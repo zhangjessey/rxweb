@@ -25,6 +25,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import reactor.io.buffer.Buffer;
 import rxweb.http.Status;
 import rxweb.engine.server.netty.NettyServer;
 
@@ -47,10 +48,24 @@ public class ServerTests {
 	}
 
 	@Test
-	public void writeResponseContent() throws IOException {
+	public void writePojo() throws IOException {
 		server.get("/test", (request, response) -> response.status(Status.OK).write(new User("Brian", "Clozel")));
 		String content = Request.Get("http://localhost:8080/test").execute().returnContent().asString();
 		Assert.assertEquals("{\"firstname\":\"Brian\",\"lastname\":\"Clozel\"}", content);
+	}
+
+	@Test
+	public void writeByteBuffer() throws IOException {
+		server.get("/test", (request, response) -> response.status(Status.OK).write(Buffer.wrap("This is a test!").byteBuffer()));
+		String content = Request.Get("http://localhost:8080/test").execute().returnContent().asString();
+		Assert.assertEquals("This is a test!", content);
+	}
+
+	@Test
+	public void writeBuffer() throws IOException {
+		server.get("/test", (request, response) -> response.status(Status.OK).write(Buffer.wrap("This is a test!")));
+		String content = Request.Get("http://localhost:8080/test").execute().returnContent().asString();
+		Assert.assertEquals("This is a test!", content);
 	}
 
 	@Test
