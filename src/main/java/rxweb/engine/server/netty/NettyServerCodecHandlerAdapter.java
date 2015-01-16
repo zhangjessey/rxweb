@@ -18,22 +18,16 @@ package rxweb.engine.server.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufHolder;
-
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import io.netty.handler.codec.http.DefaultHttpContent;
-import io.netty.handler.codec.http.HttpContent;
-import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.handler.codec.http.*;
+import org.springframework.util.Assert;
 import reactor.Environment;
 import reactor.io.buffer.Buffer;
 import reactor.rx.Streams;
 import reactor.rx.stream.Broadcaster;
 import rxweb.server.ServerRequest;
-
-import org.springframework.util.Assert;
 
 /**
  * Conversion between Netty types ({@link HttpRequest}, {@link HttpResponse}, {@link HttpContent} and {@link LastHttpContent})
@@ -60,7 +54,8 @@ public class NettyServerCodecHandlerAdapter extends ChannelDuplexHandler {
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		Class<?> messageClass = msg.getClass();
 		if (HttpRequest.class.isAssignableFrom(messageClass)) {
-			this.request = new NettyServerRequestAdapter((HttpRequest) msg, this.requestContentStream);
+			//TODO remove log()
+			this.request = new NettyServerRequestAdapter((HttpRequest) msg, this.requestContentStream.log());
 			super.channelRead(ctx, request);
 		} else if (HttpContent.class.isAssignableFrom(messageClass)) {
 			Assert.notNull(this.request);
