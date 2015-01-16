@@ -68,14 +68,21 @@ public class ReactorServerTests {
 		Assert.assertEquals("This is a test!", content);
 	}
 
-	@Test // TODO: FIXME
+	@Test
 	public void echoStream() throws IOException {
 		server.post("/test", (request, response) -> request);
 		String content = Request.Post("http://localhost:8080/test").bodyString("This is a test!", ContentType.TEXT_PLAIN).execute().returnContent().asString();
 		Assert.assertEquals("This is a test!", content);
 	}
 
-	@Test // TODO: FIXME
+	@Test
+	public void echoCapitalizedStream() throws IOException {
+		server.post("/test", (request, response) -> request.getContentStream(String.class).map(s -> s.toUpperCase()));
+		String content = Request.Post("http://localhost:8080/test").bodyString("This is a test!", ContentType.TEXT_PLAIN).execute().returnContent().asString();
+		Assert.assertEquals("THIS IS A TEST!", content);
+	}
+
+	@Test
 	public void echo() throws IOException {
 		server.post("/test", (request, response) -> request.getContent());
 		String content = Request.Post("http://localhost:8080/test").bodyString("This is a test!", ContentType.TEXT_PLAIN).execute().returnContent().asString();
