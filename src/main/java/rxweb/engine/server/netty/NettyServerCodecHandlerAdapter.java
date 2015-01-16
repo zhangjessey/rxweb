@@ -49,6 +49,7 @@ public class NettyServerCodecHandlerAdapter extends ChannelDuplexHandler {
 
 	public NettyServerCodecHandlerAdapter(Environment env) {
 		this.env = env;
+		this.requestContentStream = Streams.broadcast(this.env);
 	}
 
 	/**
@@ -58,9 +59,7 @@ public class NettyServerCodecHandlerAdapter extends ChannelDuplexHandler {
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		Class<?> messageClass = msg.getClass();
-
 		if (HttpRequest.class.isAssignableFrom(messageClass)) {
-			this.requestContentStream = Streams.broadcast(this.env);
 			this.request = new NettyServerRequestAdapter((HttpRequest) msg, this.requestContentStream);
 			super.channelRead(ctx, request);
 		} else if (HttpContent.class.isAssignableFrom(messageClass)) {

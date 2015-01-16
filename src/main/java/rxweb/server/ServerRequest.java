@@ -32,16 +32,14 @@ public interface ServerRequest extends Request, Publisher<ByteBuffer> {
 	/** Return a single buffered raw content **/
 	Publisher<ByteBuffer> getContent();
 
+	/** Return a single (the content is buffered) POJO using converters **/
+	<T> Publisher<T> getContent(Class<T> clazz);
+
 	/** Return a stream of raw content chunks **/
 	Publisher<ByteBuffer> getContentStream();
 
-
 	/** Return a stream of POJO contents using converters (1 chunk = 1 POJO) **/
 	<T> Publisher<T> getContentStream(Class<T> clazz);
-
-
-	/** Return a single (the content is buffered) POJO using converters **/
-	<T> Publisher<T> getContent(Class<T> clazz);
 
 	void setConverterResolver(ConverterResolver converterResolver);
 
