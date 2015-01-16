@@ -16,8 +16,6 @@
 
 package rxweb.rx.reactor;
 
-import java.nio.ByteBuffer;
-
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import reactor.io.buffer.Buffer;
@@ -29,6 +27,8 @@ import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.server.ServerRequest;
 import rxweb.server.ServerRequestHeaders;
+
+import java.nio.ByteBuffer;
 
 /**
  * @author Sebastien Deleuze
@@ -48,7 +48,7 @@ public class ReactorServerRequestAdapter implements ReactorServerRequest {
 
 	@Override
 	public Promise<Buffer> getContent() {
-		return Streams.create(this.serverRequest.getContent()).map(buffer -> new Buffer(buffer)).next();
+		return Streams.create(this.serverRequest.getContent()).map(Buffer::new).next();
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class ReactorServerRequestAdapter implements ReactorServerRequest {
 
 	@Override
 	public Stream<Buffer> getContentStream() {
-		return Streams.create(this.serverRequest.getContentStream()).map(buffer -> new Buffer(buffer));
+		return Streams.create(this.serverRequest.getContentStream()).map(Buffer::new);
 	}
 
 	@Override

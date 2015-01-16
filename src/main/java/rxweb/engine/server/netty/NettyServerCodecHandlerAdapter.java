@@ -24,6 +24,7 @@ import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.http.*;
 import org.springframework.util.Assert;
 import reactor.Environment;
+import reactor.core.dispatch.SynchronousDispatcher;
 import reactor.io.buffer.Buffer;
 import reactor.rx.Streams;
 import reactor.rx.stream.Broadcaster;
@@ -43,7 +44,7 @@ public class NettyServerCodecHandlerAdapter extends ChannelDuplexHandler {
 
 	public NettyServerCodecHandlerAdapter(Environment env) {
 		this.env = env;
-		this.requestContentStream = Streams.broadcast(this.env);
+		this.requestContentStream = Streams.broadcast(this.env, SynchronousDispatcher.INSTANCE);
 	}
 
 	/**
@@ -55,7 +56,7 @@ public class NettyServerCodecHandlerAdapter extends ChannelDuplexHandler {
 		Class<?> messageClass = msg.getClass();
 		if (HttpRequest.class.isAssignableFrom(messageClass)) {
 			//TODO remove log()
-			this.request = new NettyServerRequestAdapter((HttpRequest) msg, this.requestContentStream.log());
+			this.request = new NettyServerRequestAdapter((HttpRequest) msg, this.requestContentStream);
 			super.channelRead(ctx, request);
 		} else if (HttpContent.class.isAssignableFrom(messageClass)) {
 			Assert.notNull(this.request);

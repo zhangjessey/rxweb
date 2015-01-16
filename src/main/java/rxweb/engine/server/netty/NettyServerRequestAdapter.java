@@ -16,15 +16,12 @@
 
 package rxweb.engine.server.netty;
 
-import java.nio.ByteBuffer;
-
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
-
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
-import reactor.io.buffer.Buffer;;
-import reactor.rx.Promise;
+import org.springframework.util.Assert;
+import reactor.io.buffer.Buffer;
 import reactor.rx.Stream;
 import rxweb.converter.Converter;
 import rxweb.converter.ConverterResolver;
@@ -33,7 +30,9 @@ import rxweb.http.Protocol;
 import rxweb.server.ServerRequest;
 import rxweb.server.ServerRequestHeaders;
 
-import org.springframework.util.Assert;
+import java.nio.ByteBuffer;
+
+;
 
 /**
  * @author Sebastien Deleuze
@@ -109,7 +108,7 @@ public class NettyServerRequestAdapter extends Stream<ByteBuffer> implements Ser
 
 	@Override
 	public Publisher<ByteBuffer> getContent() {
-		return getContentInternal().map(buffer -> buffer.byteBuffer());
+		return getContentInternal().map(Buffer::byteBuffer);
 	}
 
 	@Override
@@ -121,10 +120,10 @@ public class NettyServerRequestAdapter extends Stream<ByteBuffer> implements Ser
 		});
 	}
 
-	private Promise<Buffer> getContentInternal() {
-		return this.toList().map(bufferList -> {
+	private Stream<Buffer> getContentInternal() {
+		return buffer().map(bufferList -> {
 			Buffer buffer = new Buffer();
-			bufferList.stream().forEach(b -> buffer.append(b));
+			bufferList.stream().forEach(buffer::append);
 			buffer.flip();
 			return buffer;
 		});
