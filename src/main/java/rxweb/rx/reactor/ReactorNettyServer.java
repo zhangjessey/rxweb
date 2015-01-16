@@ -31,6 +31,10 @@ public class ReactorNettyServer implements ReactorServer {
 		this.server = new NettyServer();
 	}
 
+	public ReactorNettyServer(String host, int port) {
+		this.server = new NettyServer(host, port);
+	}
+
 	@Override
 	public Promise<Boolean> start() {
 		return Streams.create(this.server.start()).next();
@@ -39,16 +43,6 @@ public class ReactorNettyServer implements ReactorServer {
 	@Override
 	public Promise<Boolean> stop() {
 		return Streams.create(this.server.stop()).next();
-	}
-
-	@Override
-	public void setHost(String host) {
-		this.server.setHost(host);
-	}
-
-	@Override
-	public void setPort(int port) {
-		this.server.setPort(port);
 	}
 
 	@Override

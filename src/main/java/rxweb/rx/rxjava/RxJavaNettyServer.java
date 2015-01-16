@@ -31,6 +31,10 @@ public class RxJavaNettyServer implements RxJavaServer {
 		this.server = new NettyServer();
 	}
 
+	public RxJavaNettyServer(String host, int port) {
+		this.server = new NettyServer(host, port);
+	}
+
 	@Override
 	public Observable<Boolean> start() {
 		return RxReactiveStreams.toObservable(this.server.start());
@@ -39,16 +43,6 @@ public class RxJavaNettyServer implements RxJavaServer {
 	@Override
 	public Observable<Boolean> stop() {
 		return RxReactiveStreams.toObservable(this.server.stop());
-	}
-
-	@Override
-	public void setHost(String host) {
-		this.server.setHost(host);
-	}
-
-	@Override
-	public void setPort(int port) {
-		this.server.setPort(port);
 	}
 
 	@Override

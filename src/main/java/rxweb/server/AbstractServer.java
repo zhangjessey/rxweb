@@ -16,9 +16,19 @@
 
 package rxweb.server;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.reactivestreams.Publisher;
+import reactor.Environment;
+import reactor.io.net.NetChannel;
+import reactor.io.net.NetServer;
+import reactor.rx.Promise;
+import reactor.rx.Streams;
 import rxweb.Server;
 import rxweb.converter.BufferConverter;
 import rxweb.converter.ByteBufferConverter;
+import rxweb.converter.Converter;
 import rxweb.converter.ConverterResolver;
 import rxweb.converter.DefaultConverterResolver;
 import rxweb.converter.JacksonJsonConverter;
@@ -34,12 +44,61 @@ import rxweb.mapping.MappingCondition;
  */
 public abstract class AbstractServer implements Server {
 
+	protected final Environment env = new Environment();
+	protected final HandlerResolver handlerResolver = new DefaultHandlerResolver();
+	protected final ConverterResolver converterResolver = new DefaultConverterResolver();
+	protected NetServer<ServerRequest, Object> server;
 	protected String host = "0.0.0.0";
 	protected int port = 8080;
-	protected HandlerResolver handlerResolver = new DefaultHandlerResolver();
-	protected ConverterResolver converterResolver = new DefaultConverterResolver();
 
 	public AbstractServer() {
+		initConverters();
+	}
+
+	public AbstractServer(String host, int port) {
+		this.host = host;
+		this.port = port;
+		initConverters();
+	}
+
+	protected void handleRequest(NetChannel<ServerRequest, Object> ch, ServerRequest request)  {
+		ServerResponse response = createResponse(ch, request);
+		List<Publisher<?>> publishers = this.handlerResolver.resolve(request).stream().map(handler -> {
+			request.setConverterResolver(this.converterResolver);
+			return handler.handle(request, response);
+		}).collect(Collectors.toList());
+
+		// Streams.concat(publishers) execute handlers in order (handler chain)
+		// Streams.merge(publishers) all handlers contribute to the output stream (if on the same thread
+		// so maybe we need to specify another dispatcher)
+		Streams.concat(publishers).map(data -> {
+			// TODO: handle media type
+			Converter converter = this.converterResolver.resolveWriter(data.getClass(), null);
+			return converter.write(data, null);
+		}).flatMap(buffer -> {
+			if (response.isStatusAndHeadersSent()) {
+				return ch.send(buffer);
+			}
+			else {
+				response.setStatusAndHeadersSent(true);
+				return Streams.concat(ch.send(response), ch.send(buffer));
+			}
+		}).consume(
+				/* ignore onNext */ null,
+				/* ignore errors */ Throwable::printStackTrace,
+						/* close on Complete */ v -> {
+			if (response.isStatusAndHeadersSent()) {
+				ch.close();
+			} else {
+				response.setStatusAndHeadersSent(true);
+				ch.send(response).onComplete(w -> ch.close());
+			}
+		});
+	}
+
+	protected abstract ServerResponse createResponse(NetChannel<ServerRequest, Object> ch, ServerRequest request);
+
+	protected void initConverters() {
 		this.converterResolver.addConverter(new BufferConverter());
 		this.converterResolver.addConverter(new ByteBufferConverter());
 		this.converterResolver.addConverter(new StringConverter());
@@ -49,16 +108,6 @@ public abstract class AbstractServer implements Server {
 	@Override
 	public void addHandler(final Condition<Request> condition, final ServerHandler handler) {
 		this.handlerResolver.addHandler(condition, handler);
-	}
-
-	@Override
-	public void setHost(String host) {
-		this.host = host;
-	}
-
-	@Override
-	public void setPort(int port) {
-		this.port = port;
 	}
 
 	@Override
@@ -79,6 +128,16 @@ public abstract class AbstractServer implements Server {
 	@Override
 	public void delete(final String path, final ServerHandler handler) {
 		addHandler(MappingCondition.Builder.from(path).method(Method.DELETE).build(), handler);
+	}
+
+	@Override
+	public Promise<Boolean> start() {
+		return this.server.start();
+	}
+
+	@Override
+	public Promise<Boolean> stop() {
+		return this.server.shutdown();
 	}
 
 }

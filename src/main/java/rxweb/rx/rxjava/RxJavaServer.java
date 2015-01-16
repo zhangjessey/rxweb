@@ -29,10 +29,6 @@ public interface RxJavaServer {
 	/** Complete when the server is stopped **/
 	Observable<Boolean> stop();
 
-	void setHost(String host);
-
-	void setPort(int port);
-
 	void get(final String path, final RxJavaServerHandler handler);
 
 	void post(final String path, final RxJavaServerHandler handler);

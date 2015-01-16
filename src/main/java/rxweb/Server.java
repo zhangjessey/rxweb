@@ -32,10 +32,6 @@ public interface Server extends HandlerRegistry<Request> {
 	/** Complete when the server is stopped **/
 	Publisher<Boolean> stop();
 
-	void setHost(String host);
-
-	void setPort(int port);
-
 	void get(final String path, final ServerHandler handler);
 
 	void post(final String path, final ServerHandler handler);
