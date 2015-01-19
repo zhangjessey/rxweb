@@ -1,7 +1,10 @@
 Implementation notes
 ====================
 
-**This is an early draft prototype**
+This is a prototype of a Web Framework based on a Spring + Reactor 2.0 core with both Netty and Servlet 3.1 (TODO) engines.
+A Reactive Streams SPI is exposed (see [ServerTests.java](https://github.com/sdeleuze/spring-rxweb/blob/master/src/test/java/rxweb/ServerTests.java))
+and both Reactor 2.0 (see [ReactorServerTests.java](https://github.com/sdeleuze/spring-rxweb/blob/master/src/test/java/rxweb/ReactorServerTests.java))
+and RxJava 1.0 (see [RxJavaServerTests.java](https://github.com/sdeleuze/spring-rxweb/blob/master/src/test/java/rxweb/RxJavaServerTests.java)) API are provided.
 
 - See TODO Javadoc comments for in code remarks
 - No more split between `Handler`/`Interceptor`, just a collection of handlers that could be run in order or at the same time.
