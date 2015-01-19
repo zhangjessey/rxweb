@@ -69,9 +69,12 @@ public abstract class AbstractServer implements Server {
 			return handler.handle(request, response);
 		}).collect(Collectors.toList());
 
-		// Streams.concat(publishers) execute handlers in order (handler chain)
-		// Streams.merge(publishers) all handlers contribute to the output stream (if on the same thread
-		// so maybe we need to specify another dispatcher)
+		// TODO: what behavior do we want to implement?
+		// Currently implemented: Streams.concat(publishers) execute handlers in order (handler chain)
+		// Also possible: Streams.merge(publishers) all handlers contribute to the output stream
+		// (be careful if on the same single threaded dispatcher it is still executed sequentially,
+		// so maybe we need to specify another dispatcher if we decide to implement an "all handlers
+		// contribute at the same time" behavior)
 		Streams.concat(publishers).map(data -> {
 			// TODO: handle media type
 			Converter converter = this.converterResolver.resolveWriter(data.getClass(), null);
