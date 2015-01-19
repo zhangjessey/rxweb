@@ -20,20 +20,21 @@ import org.reactivestreams.Publisher;
 import reactor.io.buffer.Buffer;
 import reactor.rx.Stream;
 import rxweb.http.AbstractRequest;
-import rxweb.http.Method;
 import rxweb.http.Protocol;
-import rxweb.http.RequestHeaders;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * @author Sebastien Deleuze
  */
 public class DefaultClientRequest extends AbstractRequest implements ClientRequest {
 
-	protected final ClientRequestHeaders headers = new DefaultClientRequestHeaders();
+	protected final HttpHeaders headers = new HttpHeaders();
 	protected Stream<Buffer> contentSource;
 
 	@Override
-	public ClientRequestHeaders getHeaders() {
+	public HttpHeaders getHeaders() {
 		return this.headers;
 	}
 
@@ -50,7 +51,7 @@ public class DefaultClientRequest extends AbstractRequest implements ClientReque
 	}
 
 	@Override
-	public ClientRequest method(Method method) {
+	public ClientRequest method(RequestMethod method) {
 		this.method = method;
 		return this;
 	}
@@ -69,7 +70,7 @@ public class DefaultClientRequest extends AbstractRequest implements ClientReque
 
 	@Override
 	public ClientRequest accept(String value) {
-		this.header(RequestHeaders.ACCEPT, value);
+		this.header(HttpHeaders.ACCEPT, value);
 		return this;
 	}
 

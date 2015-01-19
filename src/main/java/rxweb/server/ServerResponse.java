@@ -18,8 +18,10 @@ package rxweb.server;
 
 import org.reactivestreams.Publisher;
 import rxweb.http.Response;
-import rxweb.http.Status;
 import rxweb.http.Transfer;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author Sebastien Deleuze
@@ -28,9 +30,9 @@ public interface ServerResponse extends Response {
 
 	ServerRequest getRequest();
 
-	ServerResponse status(Status status);
+	ServerResponse status(HttpStatus status);
 
-	ServerResponseHeaders getHeaders();
+	HttpHeaders getHeaders();
 
 	ServerResponse header(String name, String value);
 

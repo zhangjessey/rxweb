@@ -17,8 +17,8 @@
 package rxweb.converter;
 
 import reactor.io.buffer.Buffer;
-import rxweb.http.MediaType;
 
+import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 
 /**

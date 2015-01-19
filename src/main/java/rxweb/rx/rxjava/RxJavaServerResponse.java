@@ -18,10 +18,11 @@ package rxweb.rx.rxjava;
 
 import rx.Observable;
 import rxweb.http.Response;
-import rxweb.http.Status;
 import rxweb.http.Transfer;
 import rxweb.server.ServerRequest;
-import rxweb.server.ServerResponseHeaders;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author Sebastien Deleuze
@@ -30,9 +31,9 @@ public interface RxJavaServerResponse extends Response {
 
 	ServerRequest getRequest();
 
-	RxJavaServerResponse status(Status status);
+	RxJavaServerResponse status(HttpStatus status);
 
-	ServerResponseHeaders getHeaders();
+	HttpHeaders getHeaders();
 
 	RxJavaServerResponse header(String name, String value);
 

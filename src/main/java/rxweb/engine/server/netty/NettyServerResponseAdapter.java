@@ -23,14 +23,13 @@ import io.netty.handler.codec.http.HttpVersion;
 import org.reactivestreams.Publisher;
 import reactor.io.net.NetChannel;
 import reactor.rx.Promises;
-import rxweb.http.ResponseHeaders;
 import rxweb.http.Protocol;
-import rxweb.http.Status;
 import rxweb.http.Transfer;
 import rxweb.server.ServerRequest;
 import rxweb.server.ServerResponse;
-import rxweb.server.ServerResponseHeaders;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
 
 /**
@@ -41,12 +40,14 @@ public class NettyServerResponseAdapter implements ServerResponse {
 	private final NetChannel<ServerRequest, Object>  channel;
 	private final HttpResponse nettyResponse;
 	private final ServerRequest request;
-	private final ServerResponseHeaders headers;
+	private final HttpHeaders headers;
 	private boolean statusAndHeadersSent = false;
 
 	public NettyServerResponseAdapter(NetChannel<ServerRequest, Object> channel, ServerRequest request) {
 		this.nettyResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
 		this.headers = new NettyResponseHeadersAdapter(this.nettyResponse);
+		// TODO: Handle chunked and non-chunked modes
+		//this.header(HttpHeaders.TRANSFER_ENCODING, "chunked");
 		this.channel = channel;
 		this.request = request;
 	}
@@ -57,30 +58,30 @@ public class NettyServerResponseAdapter implements ServerResponse {
 	}
 
 	@Override
-	public Status getStatus() {
-		return Status.valueOf(this.nettyResponse.getStatus().code());
+	public HttpStatus getStatus() {
+		return HttpStatus.valueOf(this.nettyResponse.getStatus().code());
 	}
 
 	@Override
-	public ServerResponse status(Status status) {
+	public ServerResponse status(HttpStatus status) {
 		if(this.statusAndHeadersSent) {
 			throw new IllegalStateException("Status and headers already sent");
 		}
-		this.nettyResponse.setStatus(HttpResponseStatus.valueOf(status.getCode()));
+		this.nettyResponse.setStatus(HttpResponseStatus.valueOf(status.value()));
 		return this;
 	}
 
 	@Override
-	public ServerResponseHeaders getHeaders() {
+	public HttpHeaders getHeaders() {
 		return this.headers;
 	}
 
 	@Override
 	public Transfer getTransfer() {
-		if("chunked".equals(this.headers.get(ResponseHeaders.TRANSFER_ENCODING))) {
+		if("chunked".equals(this.headers.get(HttpHeaders.TRANSFER_ENCODING))) {
 			Assert.isTrue(Protocol.HTTP_1_1.equals(this.request.getProtocol()));
 			return Transfer.CHUNKED;
-		} else if(this.headers.get(ResponseHeaders.TRANSFER_ENCODING) == null) {
+		} else if(this.headers.get(HttpHeaders.TRANSFER_ENCODING) == null) {
 			return Transfer.NON_CHUNKED;
 		}
 		throw new IllegalStateException("Can't determine a valide transfer based on headers and protocol");
@@ -93,10 +94,11 @@ public class NettyServerResponseAdapter implements ServerResponse {
 				throw new IllegalStateException("Transfer " + Transfer.EVENT_STREAM + " is not supported yet");
 			case CHUNKED:
 				Assert.isTrue(Protocol.HTTP_1_1.equals(this.request.getProtocol()));
-				this.header(ResponseHeaders.TRANSFER_ENCODING, "chunked");
+				this.header(HttpHeaders.TRANSFER_ENCODING, "chunked");
 				break;
 			case NON_CHUNKED:
-				this.getHeaders().remove(ResponseHeaders.TRANSFER_ENCODING);
+				//this.getHeaders().remove(HttpHeaders.TRANSFER_ENCODING);
+				throw new IllegalStateException("Transfer " + Transfer.NON_CHUNKED + " is not supported yet");
 		}
 		return this;
 	}

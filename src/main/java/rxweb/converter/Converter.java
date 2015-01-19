@@ -16,11 +16,17 @@
 
 package rxweb.converter;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import reactor.io.buffer.Buffer;
-import rxweb.http.MediaType;
+
+import org.springframework.http.MediaType;
 
 /**
+ * TODO: Maybe use Spring Web converters, but is it possible to use them since there APi is based on {@link InputStream} and {@link OutputStream} ?
  * TODO: optimize Buffer allocation (pooled buffer like in Netty, direct buffer, etc.)
+ *
  * @author Sebastien Deleuze
  */
 public interface Converter<T extends Object> {

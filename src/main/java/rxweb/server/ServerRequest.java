@@ -22,12 +22,14 @@ import org.reactivestreams.Publisher;
 import rxweb.converter.ConverterResolver;
 import rxweb.http.Request;
 
+import org.springframework.http.HttpHeaders;
+
 /**
  * @author Sebastien Deleuze
  */
 public interface ServerRequest extends Request, Publisher<ByteBuffer> {
 
-	ServerRequestHeaders getHeaders();
+	HttpHeaders getHeaders();
 
 	/** Return a single buffered raw content **/
 	Publisher<ByteBuffer> getContent();

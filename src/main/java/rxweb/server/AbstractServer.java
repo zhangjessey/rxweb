@@ -33,11 +33,12 @@ import rxweb.converter.ConverterResolver;
 import rxweb.converter.DefaultConverterResolver;
 import rxweb.converter.JacksonJsonConverter;
 import rxweb.converter.StringConverter;
-import rxweb.http.Method;
 import rxweb.http.Request;
 import rxweb.mapping.Condition;
 import rxweb.mapping.HandlerResolver;
 import rxweb.mapping.MappingCondition;
+
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * @author Sebastien Deleuze
@@ -112,22 +113,22 @@ public abstract class AbstractServer implements Server {
 
 	@Override
 	public void get(final String path, final ServerHandler handler) {
-		addHandler(MappingCondition.Builder.from(path).method(Method.GET).build(), handler);
+		addHandler(MappingCondition.Builder.from(path).method(RequestMethod.GET).build(), handler);
 	}
 
 	@Override
 	public void post(final String path, final ServerHandler handler) {
-		addHandler(MappingCondition.Builder.from(path).method(Method.POST).build(), handler);
+		addHandler(MappingCondition.Builder.from(path).method(RequestMethod.POST).build(), handler);
 	}
 
 	@Override
 	public void put(final String path, final ServerHandler handler) {
-		addHandler(MappingCondition.Builder.from(path).method(Method.PUT).build(), handler);
+		addHandler(MappingCondition.Builder.from(path).method(RequestMethod.PUT).build(), handler);
 	}
 
 	@Override
 	public void delete(final String path, final ServerHandler handler) {
-		addHandler(MappingCondition.Builder.from(path).method(Method.DELETE).build(), handler);
+		addHandler(MappingCondition.Builder.from(path).method(RequestMethod.DELETE).build(), handler);
 	}
 
 	@Override

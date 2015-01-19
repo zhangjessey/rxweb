@@ -20,15 +20,17 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
+
+import org.springframework.http.HttpHeaders;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.RequestMethod;
+
 import reactor.io.buffer.Buffer;
 import reactor.rx.Stream;
 import rxweb.converter.Converter;
 import rxweb.converter.ConverterResolver;
-import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.server.ServerRequest;
-import rxweb.server.ServerRequestHeaders;
 
 import java.nio.ByteBuffer;
 
@@ -40,7 +42,7 @@ import java.nio.ByteBuffer;
 public class NettyServerRequestAdapter extends Stream<ByteBuffer> implements ServerRequest {
 
 	private final HttpRequest nettyRequest;
-	private final ServerRequestHeaders headers;
+	private final HttpHeaders headers;
 	private ConverterResolver converterResolver;
 	private Stream<Buffer> contentStream;
 
@@ -72,12 +74,12 @@ public class NettyServerRequestAdapter extends Stream<ByteBuffer> implements Ser
 	}
 
 	@Override
-	public Method getMethod() {
-		return new Method(this.nettyRequest.getMethod().name());
+	public RequestMethod getMethod() {
+		return RequestMethod.valueOf(this.nettyRequest.getMethod().name());
 	}
 
 	@Override
-	public ServerRequestHeaders getHeaders() {
+	public HttpHeaders getHeaders() {
 		return this.headers;
 	}
 

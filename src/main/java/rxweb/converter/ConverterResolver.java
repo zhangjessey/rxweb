@@ -16,11 +16,7 @@
 
 package rxweb.converter;
 
-import reactor.io.buffer.Buffer;
-import rxweb.http.MediaType;
-import rxweb.http.Request;
-import rxweb.mapping.Condition;
-import rxweb.server.ServerHandler;
+import org.springframework.http.MediaType;
 
 /**
  * @author Sebastien Deleuze

@@ -16,17 +16,19 @@
 
 package rxweb.http;
 
+import org.springframework.http.HttpStatus;
+
 /**
  * @author Sebastien Deleuze
  */
 public abstract class AbstractResponse implements Response {
 
-	protected Status status;
+	protected HttpStatus status;
 
 	protected Transfer transfer;
 
 	@Override
-	public Status getStatus() {
+	public HttpStatus getStatus() {
 		return this.status;
 	}
 
