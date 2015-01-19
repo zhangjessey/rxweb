@@ -55,7 +55,6 @@ public class NettyServerCodecHandlerAdapter extends ChannelDuplexHandler {
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		Class<?> messageClass = msg.getClass();
 		if (HttpRequest.class.isAssignableFrom(messageClass)) {
-			//TODO remove log()
 			this.request = new NettyServerRequestAdapter((HttpRequest) msg, this.requestContentStream);
 			super.channelRead(ctx, request);
 		} else if (HttpContent.class.isAssignableFrom(messageClass)) {
