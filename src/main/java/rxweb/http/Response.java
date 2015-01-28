@@ -16,8 +16,6 @@
 
 package rxweb.http;
 
-import org.springframework.http.HttpStatus;
-
 /**
  * Flushing is currently under user responsibility
  *
@@ -25,7 +23,7 @@ import org.springframework.http.HttpStatus;
  */
 public interface Response {
 
-	HttpStatus getStatus();
+	Status getStatus();
 
 	Transfer getTransfer();
 

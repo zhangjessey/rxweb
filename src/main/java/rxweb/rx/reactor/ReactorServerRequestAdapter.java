@@ -23,13 +23,12 @@ import reactor.rx.Promise;
 import reactor.rx.Stream;
 import reactor.rx.Streams;
 import rxweb.converter.ConverterResolver;
+import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.server.ServerRequest;
+import rxweb.server.ServerRequestHeaders;
 
 import java.nio.ByteBuffer;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * @author Sebastien Deleuze
@@ -43,7 +42,7 @@ public class ReactorServerRequestAdapter implements ReactorServerRequest {
 	}
 
 	@Override
-	public HttpHeaders getHeaders() {
+	public ServerRequestHeaders getHeaders() {
 		return this.serverRequest.getHeaders();
 	}
 
@@ -108,7 +107,7 @@ public class ReactorServerRequestAdapter implements ReactorServerRequest {
 	}
 
 	@Override
-	public RequestMethod getMethod() {
+	public Method getMethod() {
 		return this.serverRequest.getMethod();
 	}
 }

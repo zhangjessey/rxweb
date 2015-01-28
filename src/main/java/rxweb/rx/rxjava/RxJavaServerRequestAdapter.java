@@ -22,11 +22,10 @@ import org.reactivestreams.Subscriber;
 import rx.Observable;
 import rx.RxReactiveStreams;
 import rxweb.converter.ConverterResolver;
+import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.server.ServerRequest;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.bind.annotation.RequestMethod;
+import rxweb.server.ServerRequestHeaders;
 
 /**
  * @author Sebastien Deleuze
@@ -40,7 +39,7 @@ public class RxJavaServerRequestAdapter implements RxJavaServerRequest {
 	}
 
 	@Override
-	public HttpHeaders getHeaders() {
+	public ServerRequestHeaders getHeaders() {
 		return this.serverRequest.getHeaders();
 	}
 
@@ -85,7 +84,7 @@ public class RxJavaServerRequestAdapter implements RxJavaServerRequest {
 	}
 
 	@Override
-	public RequestMethod getMethod() {
+	public Method getMethod() {
 		return this.serverRequest.getMethod();
 	}
 }

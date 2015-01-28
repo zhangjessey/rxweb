@@ -20,26 +20,25 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import rxweb.http.Method;
 import rxweb.http.Request;
-
-import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * @author Sebastien Deleuze
  */
 public class MethodCondition implements Condition<Request> {
 
-	private final Set<RequestMethod> methods = new HashSet<>();
+	private final Set<Method> methods = new HashSet<>();
 
-	public MethodCondition(RequestMethod method) {
+	public MethodCondition(Method method) {
 		this.methods.add(method);
 	}
 
-	public MethodCondition(RequestMethod... methods) {
+	public MethodCondition(Method... methods) {
 		Collections.addAll(this.methods, methods);
 	}
 
-	public Set<RequestMethod> getMethods() {
+	public Set<Method> getMethods() {
 		return methods;
 	}
 

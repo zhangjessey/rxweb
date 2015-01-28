@@ -21,8 +21,7 @@ import java.io.IOException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import reactor.io.buffer.Buffer;
-
-import org.springframework.http.MediaType;
+import rxweb.http.MediaType;
 
 /**
  * @author Sebastien Deleuze

@@ -18,24 +18,22 @@ package rxweb.client;
 
 import org.reactivestreams.Publisher;
 import reactor.io.buffer.Buffer;
+import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.http.Request;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * @author Sebastien Deleuze
  */
 public interface ClientRequest extends Request {
 
-	HttpHeaders getHeaders();
+	ClientRequestHeaders getHeaders();
 
 	ClientRequest uri(String uri);
 
 	ClientRequest protocol(Protocol protocol);
 
-	ClientRequest method(RequestMethod method);
+	ClientRequest method(Method method);
 
 	ClientRequest header(String name, String value);
 

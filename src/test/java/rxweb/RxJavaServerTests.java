@@ -25,10 +25,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import rx.Observable;
+import rxweb.http.Status;
 import rxweb.rx.rxjava.RxJavaNettyServer;
 import rxweb.rx.rxjava.RxJavaServer;
-
-import org.springframework.http.HttpStatus;
 
 /**
  * @author Sebastien Deleuze
@@ -50,21 +49,21 @@ public class RxJavaServerTests {
 
 	@Test
 	public void writePojo() throws IOException {
-		server.get("/test", (request, response) -> response.status(HttpStatus.OK).content(Observable.just(new User("Brian", "Clozel"))));
+		server.get("/test", (request, response) -> response.status(Status.OK).content(Observable.just(new User("Brian", "Clozel"))));
 		String content = Request.Get("http://localhost:8080/test").execute().returnContent().asString();
 		Assert.assertEquals("{\"firstname\":\"Brian\",\"lastname\":\"Clozel\"}", content);
 	}
 
 	@Test
 	public void writeByteBuffer() throws IOException {
-		server.get("/test", (request, response) -> response.status(HttpStatus.OK).content(Observable.just("This is a test!")));
+		server.get("/test", (request, response) -> response.status(Status.OK).content(Observable.just("This is a test!")));
 		String content = Request.Get("http://localhost:8080/test").execute().returnContent().asString();
 		Assert.assertEquals("This is a test!", content);
 	}
 
 	@Test
 	public void writeBuffer() throws IOException {
-		server.get("/test", (request, response) -> response.status(HttpStatus.OK).content(Observable.just("This is a test!")));
+		server.get("/test", (request, response) -> response.status(Status.OK).content(Observable.just("This is a test!")));
 		String content = Request.Get("http://localhost:8080/test").execute().returnContent().asString();
 		Assert.assertEquals("This is a test!", content);
 	}

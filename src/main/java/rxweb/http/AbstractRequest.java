@@ -16,15 +16,13 @@
 
 package rxweb.http;
 
-import org.springframework.web.bind.annotation.RequestMethod;
-
 /**
  * @author Sebastien Deleuze
  */
 public abstract class AbstractRequest implements Request {
 
 	protected Protocol protocol;
-	protected RequestMethod method;
+	protected Method method;
 	protected String uri;
 
 	@Override
@@ -38,7 +36,7 @@ public abstract class AbstractRequest implements Request {
 	}
 
 	@Override
-	public RequestMethod getMethod() {
+	public Method getMethod() {
 		return this.method;
 	}
 

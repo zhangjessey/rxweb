@@ -16,9 +16,8 @@
 
 package rxweb.mapping;
 
+import rxweb.http.Method;
 import rxweb.http.Request;
-
-import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * @author Sebastien Deleuze
@@ -55,19 +54,19 @@ public class MappingCondition implements Condition<Request> {
 			return builder;
 		}
 
-		public Builder method(RequestMethod method) {
+		public Builder method(Method method) {
 			this.methodCondition = new MethodCondition(method);
 			return this;
 		}
 
-		public Builder method(RequestMethod... methods) {
+		public Builder method(Method... methods) {
 			this.methodCondition = new MethodCondition(methods);
 			return this;
 		}
 
 		public MappingCondition build() {
 			if(this.methodCondition.getMethods().isEmpty()) {
-				this.methodCondition = new MethodCondition(RequestMethod.GET);
+				this.methodCondition = new MethodCondition(Method.GET);
 			}
 			return new MappingCondition(this);
 		}

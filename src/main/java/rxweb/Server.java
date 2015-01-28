@@ -27,10 +27,10 @@ import rxweb.server.ServerHandler;
 public interface Server extends HandlerRegistry<Request> {
 
 	/** Complete when the server is started **/
-	Publisher<Boolean> start();
+	Publisher<Void> start();
 
 	/** Complete when the server is stopped **/
-	Publisher<Boolean> stop();
+	Publisher<Void> stop();
 
 	void get(final String path, final ServerHandler handler);
 

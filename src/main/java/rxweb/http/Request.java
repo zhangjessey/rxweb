@@ -16,8 +16,6 @@
 
 package rxweb.http;
 
-import org.springframework.web.bind.annotation.RequestMethod;
-
 /**
  * @author Sebastien Deleuze
  */
@@ -27,6 +25,6 @@ public interface Request {
 
 	String getUri();
 
-	RequestMethod getMethod();
+	Method getMethod();
 
 }

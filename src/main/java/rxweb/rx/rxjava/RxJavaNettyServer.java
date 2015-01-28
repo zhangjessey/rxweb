@@ -36,12 +36,12 @@ public class RxJavaNettyServer implements RxJavaServer {
 	}
 
 	@Override
-	public Observable<Boolean> start() {
+	public Observable<Void> start() {
 		return RxReactiveStreams.toObservable(this.server.start());
 	}
 
 	@Override
-	public Observable<Boolean> stop() {
+	public Observable<Void> stop() {
 		return RxReactiveStreams.toObservable(this.server.stop());
 	}
 

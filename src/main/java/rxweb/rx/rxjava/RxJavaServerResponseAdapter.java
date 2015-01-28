@@ -18,12 +18,11 @@ package rxweb.rx.rxjava;
 
 import rx.Observable;
 import rx.RxReactiveStreams;
+import rxweb.http.Status;
 import rxweb.http.Transfer;
 import rxweb.server.ServerRequest;
 import rxweb.server.ServerResponse;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import rxweb.server.ServerResponseHeaders;
 
 /**
  * @author Sebastien Deleuze
@@ -42,13 +41,13 @@ public class RxJavaServerResponseAdapter implements RxJavaServerResponse {
 	}
 
 	@Override
-	public RxJavaServerResponse status(HttpStatus status) {
+	public RxJavaServerResponse status(Status status) {
 		this.serverReponse.status(status);
 		return this;
 	}
 
 	@Override
-	public HttpHeaders getHeaders() {
+	public ServerResponseHeaders getHeaders() {
 		return this.serverReponse.getHeaders();
 	}
 
@@ -92,7 +91,7 @@ public class RxJavaServerResponseAdapter implements RxJavaServerResponse {
 	}
 
 	@Override
-	public HttpStatus getStatus() {
+	public Status getStatus() {
 		return this.serverReponse.getStatus();
 	}
 

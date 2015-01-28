@@ -19,7 +19,7 @@ package rxweb.converter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.http.MediaType;
+import rxweb.http.MediaType;
 
 /**
  * @author Sebastien Deleuze

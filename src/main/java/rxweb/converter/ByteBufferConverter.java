@@ -19,9 +19,8 @@ package rxweb.converter;
 import java.nio.ByteBuffer;
 
 import reactor.io.buffer.Buffer;
-
-import org.springframework.http.MediaType;
-import org.springframework.util.Assert;
+import rxweb.http.MediaType;
+import rxweb.support.Assert;
 
 /**
  * @author Sebastien Deleuze

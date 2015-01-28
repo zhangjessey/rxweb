@@ -24,10 +24,10 @@ import rx.Observable;
 public interface RxJavaServer {
 
 	/** Complete when the server is started **/
-	Observable<Boolean> start();
+	Observable<Void> start();
 
 	/** Complete when the server is stopped **/
-	Observable<Boolean> stop();
+	Observable<Void> stop();
 
 	void get(final String path, final RxJavaServerHandler handler);
 

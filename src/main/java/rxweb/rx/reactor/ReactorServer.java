@@ -24,10 +24,10 @@ import reactor.rx.Promise;
 public interface ReactorServer {
 
 	/** Complete when the server is started **/
-	Promise<Boolean> start();
+	Promise<Void> start();
 
 	/** Complete when the server is stopped **/
-	Promise<Boolean> stop();
+	Promise<Void> stop();
 
 	void get(final String path, final ReactorServerHandler handler);
 

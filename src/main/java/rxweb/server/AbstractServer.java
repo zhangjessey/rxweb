@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import org.reactivestreams.Publisher;
 import reactor.Environment;
 import reactor.io.net.NetChannel;
-import reactor.io.net.NetServer;
+import reactor.io.net.tcp.TcpServer;
 import reactor.rx.Promise;
 import reactor.rx.Streams;
 import rxweb.Server;
@@ -33,12 +33,11 @@ import rxweb.converter.ConverterResolver;
 import rxweb.converter.DefaultConverterResolver;
 import rxweb.converter.JacksonJsonConverter;
 import rxweb.converter.StringConverter;
+import rxweb.http.Method;
 import rxweb.http.Request;
 import rxweb.mapping.Condition;
 import rxweb.mapping.HandlerResolver;
 import rxweb.mapping.MappingCondition;
-
-import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * @author Sebastien Deleuze
@@ -48,7 +47,7 @@ public abstract class AbstractServer implements Server {
 	protected final Environment env = new Environment();
 	protected final HandlerResolver handlerResolver = new DefaultHandlerResolver();
 	protected final ConverterResolver converterResolver = new DefaultConverterResolver();
-	protected NetServer<ServerRequest, Object> server;
+	protected TcpServer<ServerRequest, Object> server;
 	protected String host = "0.0.0.0";
 	protected int port = 8080;
 
@@ -117,31 +116,31 @@ public abstract class AbstractServer implements Server {
 
 	@Override
 	public void get(final String path, final ServerHandler handler) {
-		addHandler(MappingCondition.Builder.from(path).method(RequestMethod.GET).build(), handler);
+		addHandler(MappingCondition.Builder.from(path).method(Method.GET).build(), handler);
 	}
 
 	@Override
 	public void post(final String path, final ServerHandler handler) {
-		addHandler(MappingCondition.Builder.from(path).method(RequestMethod.POST).build(), handler);
+		addHandler(MappingCondition.Builder.from(path).method(Method.POST).build(), handler);
 	}
 
 	@Override
 	public void put(final String path, final ServerHandler handler) {
-		addHandler(MappingCondition.Builder.from(path).method(RequestMethod.PUT).build(), handler);
+		addHandler(MappingCondition.Builder.from(path).method(Method.PUT).build(), handler);
 	}
 
 	@Override
 	public void delete(final String path, final ServerHandler handler) {
-		addHandler(MappingCondition.Builder.from(path).method(RequestMethod.DELETE).build(), handler);
+		addHandler(MappingCondition.Builder.from(path).method(Method.DELETE).build(), handler);
 	}
 
 	@Override
-	public Promise<Boolean> start() {
+	public Promise<Void> start() {
 		return this.server.start();
 	}
 
 	@Override
-	public Promise<Boolean> stop() {
+	public Promise<Void> stop() {
 		return this.server.shutdown();
 	}
 

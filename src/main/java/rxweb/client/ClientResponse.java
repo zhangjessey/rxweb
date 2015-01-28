@@ -21,14 +21,12 @@ import java.nio.ByteBuffer;
 import org.reactivestreams.Publisher;
 import rxweb.http.Response;
 
-import org.springframework.http.HttpHeaders;
-
 /**
  * @author Sebastien Deleuze
  */
 public interface ClientResponse extends Response {
 
-	HttpHeaders getHeaders();
+	ClientResponseHeaders getHeaders();
 
 	/** Return a stream of raw content chunks **/
 	Publisher<ByteBuffer> getContentStream();

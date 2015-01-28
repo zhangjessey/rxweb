@@ -49,7 +49,9 @@ public class NettyServer extends AbstractServer {
 
 		server = new TcpServerSpec<ServerRequest, Object>(NettyTcpServer.class).listen(this.host, this.port)
 				.env(this.env).dispatcher(SynchronousDispatcher.INSTANCE).options(options)
-				.consume(ch -> ch.in().consume(request -> this.handleRequest(ch, request))).get();
+				.get();
+
+		server.consume(ch -> ch.in().consume(request -> this.handleRequest(ch, request)));
 	}
 
 	@Override

@@ -22,13 +22,12 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.http.*;
-import org.springframework.util.Assert;
 import reactor.Environment;
 import reactor.core.dispatch.SynchronousDispatcher;
 import reactor.io.buffer.Buffer;
-import reactor.rx.Streams;
-import reactor.rx.stream.Broadcaster;
+import reactor.rx.broadcast.Broadcaster;
 import rxweb.server.ServerRequest;
+import rxweb.support.Assert;
 
 /**
  * Conversion between Netty types ({@link HttpRequest}, {@link HttpResponse}, {@link HttpContent} and {@link LastHttpContent})
@@ -44,7 +43,7 @@ public class NettyServerCodecHandlerAdapter extends ChannelDuplexHandler {
 
 	public NettyServerCodecHandlerAdapter(Environment env) {
 		this.env = env;
-		this.requestContentStream = Streams.broadcast(this.env, SynchronousDispatcher.INSTANCE);
+		this.requestContentStream = Broadcaster.create(this.env, SynchronousDispatcher.INSTANCE);
 	}
 
 	/**

@@ -22,15 +22,14 @@ import reactor.rx.Promise;
 import reactor.rx.Stream;
 import rxweb.converter.ConverterResolver;
 import rxweb.http.Request;
-
-import org.springframework.http.HttpHeaders;
+import rxweb.server.ServerRequestHeaders;
 
 /**
  * @author Sebastien Deleuze
  */
 public interface ReactorServerRequest extends Request, Publisher<Buffer> {
 
-	HttpHeaders getHeaders();
+	ServerRequestHeaders getHeaders();
 
 	/** Return a single buffered raw content **/
 	Promise<Buffer> getContent();

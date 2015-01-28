@@ -36,12 +36,12 @@ public class ReactorNettyServer implements ReactorServer {
 	}
 
 	@Override
-	public Promise<Boolean> start() {
+	public Promise<Void> start() {
 		return Streams.create(this.server.start()).next();
 	}
 
 	@Override
-	public Promise<Boolean> stop() {
+	public Promise<Void> stop() {
 		return Streams.create(this.server.stop()).next();
 	}
 

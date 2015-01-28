@@ -17,9 +17,8 @@
 package rxweb.mapping;
 
 import rxweb.http.Request;
-
-import org.springframework.util.AntPathMatcher;
-import org.springframework.util.PathMatcher;
+import rxweb.support.AntPathMatcher;
+import rxweb.support.PathMatcher;
 
 /**
  * @author Sebastien Deleuze
