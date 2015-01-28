@@ -19,10 +19,8 @@ package rxweb.rx.reactor;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import reactor.io.buffer.Buffer;
-import reactor.rx.Promise;
 import reactor.rx.Stream;
 import reactor.rx.Streams;
-import rxweb.converter.ConverterResolver;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.server.ServerRequest;
@@ -47,28 +45,8 @@ public class ReactorServerRequestAdapter implements ReactorServerRequest {
 	}
 
 	@Override
-	public Promise<Buffer> getContent() {
-		return Streams.create(this.serverRequest.getContent()).map(Buffer::new).next();
-	}
-
-	@Override
-	public <T> Promise<T> getContent(Class<T> clazz) {
-		return Streams.create(this.serverRequest.getContent(clazz)).next();
-	}
-
-	@Override
-	public Stream<Buffer> getContentStream() {
-		return Streams.create(this.serverRequest.getContentStream()).map(Buffer::new);
-	}
-
-	@Override
-	public <T> Stream<T> getContentStream(Class<T> clazz) {
-		return Streams.create(this.serverRequest.getContentStream(clazz));
-	}
-
-	@Override
-	public void setConverterResolver(ConverterResolver converterResolver) {
-		this.serverRequest.setConverterResolver(converterResolver);
+	public Stream<Buffer> getContent() {
+		return Streams.create(this.serverRequest).map(Buffer::new);
 	}
 
 	@Override

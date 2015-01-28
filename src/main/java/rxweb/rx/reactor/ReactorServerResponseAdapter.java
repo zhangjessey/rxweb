@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package rxweb.rx.rxjava;
+package rxweb.rx.reactor;
 
 import java.nio.ByteBuffer;
 
-import rx.Observable;
-import rx.RxReactiveStreams;
+import org.reactivestreams.Publisher;
+import reactor.io.buffer.Buffer;
+import reactor.rx.Streams;
 import rxweb.http.Status;
 import rxweb.http.Transfer;
 import rxweb.server.ServerRequest;
@@ -29,11 +30,11 @@ import rxweb.server.ServerResponseHeaders;
 /**
  * @author Sebastien Deleuze
  */
-public class RxJavaServerResponseAdapter implements RxJavaServerResponse {
+public class ReactorServerResponseAdapter implements ReactorServerResponse {
 
 	private ServerResponse serverReponse;
 
-	public RxJavaServerResponseAdapter(ServerResponse serverReponse) {
+	public ReactorServerResponseAdapter(ServerResponse serverReponse) {
 		this.serverReponse = serverReponse;
 	}
 
@@ -43,7 +44,7 @@ public class RxJavaServerResponseAdapter implements RxJavaServerResponse {
 	}
 
 	@Override
-	public RxJavaServerResponse status(Status status) {
+	public ReactorServerResponse status(Status status) {
 		this.serverReponse.status(status);
 		return this;
 	}
@@ -54,32 +55,32 @@ public class RxJavaServerResponseAdapter implements RxJavaServerResponse {
 	}
 
 	@Override
-	public RxJavaServerResponse header(String name, String value) {
+	public ReactorServerResponse header(String name, String value) {
 		this.serverReponse.header(name, value);
 		return this;
 	}
 
 	@Override
-	public RxJavaServerResponse addHeader(String name, String value) {
+	public ReactorServerResponse addHeader(String name, String value) {
 		this.serverReponse.addHeader(name, value);
 		return this;
 	}
 
 	@Override
-	public RxJavaServerResponse transfer(Transfer transfer) {
+	public ReactorServerResponse transfer(Transfer transfer) {
 		this.serverReponse.transfer(transfer);
 		return this;
 	}
 
 	@Override
-	public RxJavaServerResponse content(Observable<ByteBuffer> content) {
-		this.serverReponse.content(RxReactiveStreams.toPublisher(content));
+	public ReactorServerResponse content(Publisher<Buffer> content) {
+		this.serverReponse.content(Streams.create(content).map(buffer -> buffer.byteBuffer()));
 		return this;
 	}
 
 	@Override
-	public Observable<ByteBuffer> getContent() {
-		return RxReactiveStreams.toObservable(this.serverReponse.getContent());
+	public Publisher<Buffer> getContent() {
+		return (Streams.create(this.serverReponse.getContent()).map(buffer -> new Buffer(buffer)));
 	}
 
 	@Override

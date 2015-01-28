@@ -16,6 +16,8 @@
 
 package rxweb.engine.server.netty;
 
+import java.nio.ByteBuffer;
+
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -42,7 +44,7 @@ public class NettyServerResponseAdapter implements ServerResponse {
 	private final ServerRequest request;
 	private final ServerResponseHeaders headers;
 	// By default, empty content
-	private Publisher<?> content = Promises.prepare();
+	private Publisher<ByteBuffer> content = Promises.prepare();
 	private boolean statusAndHeadersSent = false;
 
 	public NettyServerResponseAdapter(NetChannel<ServerRequest, Object> channel, ServerRequest request) {
@@ -131,13 +133,13 @@ public class NettyServerResponseAdapter implements ServerResponse {
 	}
 
 	@Override
-	public ServerResponse content(Publisher<?> content) {
+	public ServerResponse content(Publisher<ByteBuffer> content) {
 		this.content = content;
 		return this;
 	}
 
 	@Override
-	public Publisher<?> getContent() {
+	public Publisher<ByteBuffer> getContent() {
 		return this.content;
 	}
 

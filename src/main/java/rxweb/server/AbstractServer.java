@@ -16,6 +16,7 @@
 
 package rxweb.server;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,13 +27,6 @@ import reactor.io.net.tcp.TcpServer;
 import reactor.rx.Promise;
 import reactor.rx.Streams;
 import rxweb.Server;
-import rxweb.converter.BufferConverter;
-import rxweb.converter.ByteBufferConverter;
-import rxweb.converter.Converter;
-import rxweb.converter.ConverterResolver;
-import rxweb.converter.DefaultConverterResolver;
-import rxweb.converter.JacksonJsonConverter;
-import rxweb.converter.StringConverter;
 import rxweb.http.Method;
 import rxweb.http.Request;
 import rxweb.mapping.Condition;
@@ -46,25 +40,21 @@ public abstract class AbstractServer implements Server {
 
 	protected final Environment env = new Environment();
 	protected final HandlerResolver handlerResolver = new DefaultHandlerResolver();
-	protected final ConverterResolver converterResolver = new DefaultConverterResolver();
 	protected TcpServer<ServerRequest, Object> server;
 	protected String host = "0.0.0.0";
 	protected int port = 8080;
 
 	public AbstractServer() {
-		initConverters();
 	}
 
 	public AbstractServer(String host, int port) {
 		this.host = host;
 		this.port = port;
-		initConverters();
 	}
 
 	protected void handleRequest(NetChannel<ServerRequest, Object> ch, ServerRequest request)  {
 		ServerResponse response = createResponse(ch, request);
-		List<Publisher<?>> publishers = this.handlerResolver.resolve(request).stream().map(handler -> {
-			request.setConverterResolver(this.converterResolver);
+		List<Publisher<ByteBuffer>> publishers = this.handlerResolver.resolve(request).stream().map(handler -> {
 			handler.handle(request, response);
 			return response.getContent();
 		}).collect(Collectors.toList());
@@ -75,11 +65,7 @@ public abstract class AbstractServer implements Server {
 		// (be careful if on the same single threaded dispatcher it is still executed sequentially,
 		// so maybe we need to specify another dispatcher if we decide to implement an "all handlers
 		// contribute at the same time" behavior)
-		Streams.concat(publishers).map(data -> {
-			// TODO: handle media type
-			Converter converter = this.converterResolver.resolveWriter(data.getClass(), null);
-			return converter.write(data, null);
-		}).flatMap(buffer -> {
+		Streams.concat(publishers).flatMap(buffer -> {
 			if (response.isStatusAndHeadersSent()) {
 				return ch.send(buffer);
 			}
@@ -101,13 +87,6 @@ public abstract class AbstractServer implements Server {
 	}
 
 	protected abstract ServerResponse createResponse(NetChannel<ServerRequest, Object> ch, ServerRequest request);
-
-	protected void initConverters() {
-		this.converterResolver.addConverter(new BufferConverter());
-		this.converterResolver.addConverter(new ByteBufferConverter());
-		this.converterResolver.addConverter(new StringConverter());
-		this.converterResolver.addConverter(new JacksonJsonConverter());
-	}
 
 	@Override
 	public void addHandler(final Condition<Request> condition, final ServerHandler handler) {

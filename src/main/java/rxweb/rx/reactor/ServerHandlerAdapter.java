@@ -33,6 +33,6 @@ public class ServerHandlerAdapter implements ServerHandler {
 
 	@Override
 	public void handle(ServerRequest request, ServerResponse response) {
-		this.reactorServerHandler.handle(new ReactorServerRequestAdapter(request), response);
+		this.reactorServerHandler.handle(new ReactorServerRequestAdapter(request), new ReactorServerResponseAdapter(response));
 	}
 }

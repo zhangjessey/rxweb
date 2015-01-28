@@ -21,7 +21,6 @@ import java.nio.ByteBuffer;
 import org.reactivestreams.Subscriber;
 import rx.Observable;
 import rx.RxReactiveStreams;
-import rxweb.converter.ConverterResolver;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.server.ServerRequest;
@@ -45,27 +44,7 @@ public class RxJavaServerRequestAdapter implements RxJavaServerRequest {
 
 	@Override
 	public Observable<ByteBuffer> getContent() {
-		return RxReactiveStreams.toObservable(this.serverRequest.getContent());
-	}
-
-	@Override
-	public <T> Observable<T> getContent(Class<T> clazz) {
-		return RxReactiveStreams.toObservable(this.serverRequest.getContent(clazz));
-	}
-
-	@Override
-	public Observable<ByteBuffer> getContentStream() {
-		return RxReactiveStreams.toObservable(this.serverRequest.getContentStream());
-	}
-
-	@Override
-	public <T> Observable<T> getContentStream(Class<T> clazz) {
-		return RxReactiveStreams.toObservable(this.serverRequest.getContentStream(clazz));
-	}
-
-	@Override
-	public void setConverterResolver(ConverterResolver converterResolver) {
-		this.serverRequest.setConverterResolver(converterResolver);
+		return RxReactiveStreams.toObservable(this.serverRequest);
 	}
 
 	@Override

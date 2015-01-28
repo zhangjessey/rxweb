@@ -22,13 +22,10 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import reactor.io.buffer.Buffer;
 import reactor.rx.Stream;
-import rxweb.converter.Converter;
-import rxweb.converter.ConverterResolver;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.server.ServerRequest;
 import rxweb.server.ServerRequestHeaders;
-import rxweb.support.Assert;
 
 import java.nio.ByteBuffer;
 
@@ -41,10 +38,9 @@ public class NettyServerRequestAdapter extends Stream<ByteBuffer> implements Ser
 
 	private final HttpRequest nettyRequest;
 	private final ServerRequestHeaders headers;
-	private ConverterResolver converterResolver;
-	private Stream<Buffer> contentStream;
+	private Stream<ByteBuffer> contentStream;
 
-	public NettyServerRequestAdapter(HttpRequest request, Stream<Buffer> contentStream) {
+	public NettyServerRequestAdapter(HttpRequest request, Stream<ByteBuffer> contentStream) {
 		this.nettyRequest = request;
 		this.headers = new NettyRequestHeadersAdapter(request);
 		this.contentStream = contentStream;
@@ -53,6 +49,10 @@ public class NettyServerRequestAdapter extends Stream<ByteBuffer> implements Ser
 	@Override
 	public void subscribe(Subscriber<? super ByteBuffer> subscriber) {
 		getContentStream().subscribe(subscriber);
+	}
+
+	private Publisher<ByteBuffer> getContentStream() {
+		return this.contentStream;
 	}
 
 	@Override
@@ -79,54 +79,6 @@ public class NettyServerRequestAdapter extends Stream<ByteBuffer> implements Ser
 	@Override
 	public ServerRequestHeaders getHeaders() {
 		return this.headers;
-	}
-
-	@Override
-	public void setConverterResolver(ConverterResolver converterResolver) {
-		this.converterResolver = converterResolver;
-	}
-
-	@Override
-	public Publisher<ByteBuffer> getContentStream() {
-		return this.contentStream.map(b -> b.byteBuffer());
-	}
-
-	@Override
-	public <T> Stream<T> getContentStream(Class<T> clazz) {
-		Assert.state(this.converterResolver != null);
-		return this.map(buffer -> this.convert(clazz, new Buffer(buffer)));
-	}
-
-	private <T> T convert(Class<T> clazz, Buffer buffer) {
-		// TODO: handle media type
-		Converter<Object> converter = this.converterResolver.resolveReader(clazz, null);
-		if(converter == null) {
-			throw new IllegalStateException("No relevant converter found.");
-		}
-		return converter.read(clazz, buffer);
-	}
-
-	@Override
-	public Publisher<ByteBuffer> getContent() {
-		return getContentInternal().map(Buffer::byteBuffer);
-	}
-
-	@Override
-	public <T> Publisher<T> getContent(Class<T> clazz) {
-		Assert.state(this.converterResolver != null);
-		return getContentInternal().map(buffer -> {
-			T value = this.convert(clazz, buffer);
-			return value;
-		});
-	}
-
-	private Stream<Buffer> getContentInternal() {
-		return buffer().map(bufferList -> {
-			Buffer buffer = new Buffer();
-			bufferList.stream().forEach(buffer::append);
-			buffer.flip();
-			return buffer;
-		});
 	}
 
 }

@@ -16,8 +16,11 @@
 
 package rxweb.engine.server.netty;
 
+import java.nio.ByteBuffer;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufHolder;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -39,7 +42,7 @@ public class NettyServerCodecHandlerAdapter extends ChannelDuplexHandler {
 
 	private final Environment env;
 	private ServerRequest request;
-	private Broadcaster<Buffer> requestContentStream;
+	private Broadcaster<ByteBuffer> requestContentStream;
 
 	public NettyServerCodecHandlerAdapter(Environment env) {
 		this.env = env;
@@ -59,7 +62,7 @@ public class NettyServerCodecHandlerAdapter extends ChannelDuplexHandler {
 		} else if (HttpContent.class.isAssignableFrom(messageClass)) {
 			Assert.notNull(this.request);
 			ByteBuf content = ((ByteBufHolder) msg).content();
-			this.requestContentStream.onNext(new Buffer(content.nioBuffer()));
+			this.requestContentStream.onNext(content.nioBuffer());
 			if (LastHttpContent.class.isAssignableFrom(messageClass)) {
 				this.requestContentStream.onComplete();
 			}
@@ -73,9 +76,9 @@ public class NettyServerCodecHandlerAdapter extends ChannelDuplexHandler {
 		if (NettyServerResponseAdapter.class.isAssignableFrom(messageClass)) {
 			NettyServerResponseAdapter response = (NettyServerResponseAdapter) msg;
 			super.write(ctx, response.getNettyResponse(), promise);
-		// Reactor Netty integration has already done the conversion from Reactor Buffer to netty ByteBuf
-		} else if (ByteBuf.class.isAssignableFrom(messageClass)) {
-			super.write(ctx, new DefaultHttpContent((ByteBuf)msg), promise);
+		} else if (ByteBuffer.class.isAssignableFrom(messageClass)) {
+			ByteBuf byteBuf = Unpooled.copiedBuffer((ByteBuffer) msg);
+			super.write(ctx, new DefaultHttpContent(byteBuf), promise);
 		} else {
 			super.write(ctx, msg, promise); // pass through, since we do not understand this message.
 		}

@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package rxweb.rx.rxjava;
+package rxweb.rx.reactor;
 
-import java.nio.ByteBuffer;
-
-import rx.Observable;
+import org.reactivestreams.Publisher;
+import reactor.io.buffer.Buffer;
 import rxweb.http.Response;
 import rxweb.http.Status;
 import rxweb.http.Transfer;
@@ -28,23 +27,23 @@ import rxweb.server.ServerResponseHeaders;
 /**
  * @author Sebastien Deleuze
  */
-public interface RxJavaServerResponse extends Response {
+public interface ReactorServerResponse extends Response {
 
 	ServerRequest getRequest();
 
-	RxJavaServerResponse status(Status status);
+	ReactorServerResponse status(Status status);
 
 	ServerResponseHeaders getHeaders();
 
-	RxJavaServerResponse header(String name, String value);
+	ReactorServerResponse header(String name, String value);
 
-	RxJavaServerResponse addHeader(String name, String value);
+	ReactorServerResponse addHeader(String name, String value);
 
-	RxJavaServerResponse transfer(Transfer transfer);
+	ReactorServerResponse transfer(Transfer transfer);
 
-	RxJavaServerResponse content(Observable<ByteBuffer> content);
+	ReactorServerResponse content(Publisher<Buffer> content);
 
-	Observable<ByteBuffer> getContent();
+	Publisher<Buffer> getContent();
 
 	boolean isStatusAndHeadersSent();
 

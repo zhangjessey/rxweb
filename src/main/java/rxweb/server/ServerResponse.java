@@ -16,6 +16,8 @@
 
 package rxweb.server;
 
+import java.nio.ByteBuffer;
+
 import org.reactivestreams.Publisher;
 import rxweb.http.Response;
 import rxweb.http.Status;
@@ -38,9 +40,9 @@ public interface ServerResponse extends Response {
 
 	ServerResponse transfer(Transfer transfer);
 
-	ServerResponse content(Publisher<?> content);
+	ServerResponse content(Publisher<ByteBuffer> content);
 
-	Publisher<?> getContent();
+	Publisher<ByteBuffer> getContent();
 
 	boolean isStatusAndHeadersSent();
 
