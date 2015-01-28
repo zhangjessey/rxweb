@@ -41,7 +41,9 @@ public interface RxJavaServerResponse extends Response {
 
 	RxJavaServerResponse transfer(Transfer transfer);
 
-	Observable<?> write(Object content);
+	RxJavaServerResponse content(Observable<?> content);
+
+	Observable<?> getContent();
 
 	boolean isStatusAndHeadersSent();
 

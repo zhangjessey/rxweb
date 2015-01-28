@@ -24,7 +24,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import reactor.io.buffer.Buffer;
+import rx.Observable;
 import rxweb.rx.rxjava.RxJavaNettyServer;
 import rxweb.rx.rxjava.RxJavaServer;
 
@@ -50,42 +50,42 @@ public class RxJavaServerTests {
 
 	@Test
 	public void writePojo() throws IOException {
-		server.get("/test", (request, response) -> response.status(HttpStatus.OK).write(new User("Brian", "Clozel")));
+		server.get("/test", (request, response) -> response.status(HttpStatus.OK).content(Observable.just(new User("Brian", "Clozel"))));
 		String content = Request.Get("http://localhost:8080/test").execute().returnContent().asString();
 		Assert.assertEquals("{\"firstname\":\"Brian\",\"lastname\":\"Clozel\"}", content);
 	}
 
 	@Test
 	public void writeByteBuffer() throws IOException {
-		server.get("/test", (request, response) -> response.status(HttpStatus.OK).write(Buffer.wrap("This is a test!").byteBuffer()));
+		server.get("/test", (request, response) -> response.status(HttpStatus.OK).content(Observable.just("This is a test!")));
 		String content = Request.Get("http://localhost:8080/test").execute().returnContent().asString();
 		Assert.assertEquals("This is a test!", content);
 	}
 
 	@Test
 	public void writeBuffer() throws IOException {
-		server.get("/test", (request, response) -> response.status(HttpStatus.OK).write(Buffer.wrap("This is a test!")));
+		server.get("/test", (request, response) -> response.status(HttpStatus.OK).content(Observable.just("This is a test!")));
 		String content = Request.Get("http://localhost:8080/test").execute().returnContent().asString();
 		Assert.assertEquals("This is a test!", content);
 	}
 
 	@Test
 	public void echoStream() throws IOException {
-		server.post("/test", (request, response) -> request.getContentStream());
+		server.post("/test", (request, response) -> response.content(request.getContentStream()));
 		String content = Request.Post("http://localhost:8080/test").bodyString("This is a test!", ContentType.TEXT_PLAIN).execute().returnContent().asString();
 		Assert.assertEquals("This is a test!", content);
 	}
 
 	@Test
 	public void echoCapitalizedStream() throws IOException {
-		server.post("/test", (request, response) -> request.getContentStream(String.class).map(s -> s.toUpperCase()));
+		server.post("/test", (request, response) -> response.content(request.getContentStream(String.class).map(s -> s.toUpperCase())));
 		String content = Request.Post("http://localhost:8080/test").bodyString("This is a test!", ContentType.TEXT_PLAIN).execute().returnContent().asString();
 		Assert.assertEquals("THIS IS A TEST!", content);
 	}
 
 	@Test
 	public void echo() throws IOException {
-		server.post("/test", (request, response) -> request.getContent());
+		server.post("/test", (request, response) -> response.content(request.getContent()));
 		String content = Request.Post("http://localhost:8080/test").bodyString("This is a test!", ContentType.TEXT_PLAIN).execute().returnContent().asString();
 		Assert.assertEquals("This is a test!", content);
 	}

@@ -66,7 +66,8 @@ public abstract class AbstractServer implements Server {
 		ServerResponse response = createResponse(ch, request);
 		List<Publisher<?>> publishers = this.handlerResolver.resolve(request).stream().map(handler -> {
 			request.setConverterResolver(this.converterResolver);
-			return handler.handle(request, response);
+			handler.handle(request, response);
+			return response.getContent();
 		}).collect(Collectors.toList());
 
 		// TODO: what behavior do we want to implement?

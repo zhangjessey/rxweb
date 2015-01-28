@@ -16,8 +16,6 @@
 
 package rxweb.server;
 
-import org.reactivestreams.Publisher;
-
 /**
  * Handle the HTTP request to produce a response.
  * @author Sebastien Deleuze
@@ -28,6 +26,6 @@ public interface ServerHandler {
 	 * @param request  The request object providing information about the HTTP request
 	 * @param response The response object providing functionality for modifying the response
 	 */
-	Publisher<?> handle(final ServerRequest request, ServerResponse response);
+	void handle(final ServerRequest request, ServerResponse response);
 
 }

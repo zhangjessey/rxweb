@@ -40,7 +40,9 @@ public interface ServerResponse extends Response {
 
 	ServerResponse transfer(Transfer transfer);
 
-	Publisher<?> write(Object content);
+	ServerResponse content(Publisher<?> content);
+
+	Publisher<?> getContent();
 
 	boolean isStatusAndHeadersSent();
 

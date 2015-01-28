@@ -16,7 +16,6 @@
 
 package rxweb.rx.reactor;
 
-import org.reactivestreams.Publisher;
 import rxweb.server.ServerHandler;
 import rxweb.server.ServerRequest;
 import rxweb.server.ServerResponse;
@@ -33,7 +32,7 @@ public class ServerHandlerAdapter implements ServerHandler {
 	}
 
 	@Override
-	public Publisher<?> handle(ServerRequest request, ServerResponse response) {
-		return this.reactorServerHandler.handle(new ReactorServerRequestAdapter(request), response);
+	public void handle(ServerRequest request, ServerResponse response) {
+		this.reactorServerHandler.handle(new ReactorServerRequestAdapter(request), response);
 	}
 }

@@ -71,8 +71,14 @@ public class RxJavaServerResponseAdapter implements RxJavaServerResponse {
 	}
 
 	@Override
-	public Observable<?> write(Object content) {
-		return RxReactiveStreams.toObservable(this.serverReponse.write(content));
+	public RxJavaServerResponse content(Observable<?> content) {
+		this.serverReponse.content(RxReactiveStreams.toPublisher(content));
+		return this;
+	}
+
+	@Override
+	public Observable<?> getContent() {
+		return RxReactiveStreams.toObservable(this.serverReponse.getContent());
 	}
 
 	@Override

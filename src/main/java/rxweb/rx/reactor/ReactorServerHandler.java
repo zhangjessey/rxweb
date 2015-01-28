@@ -16,7 +16,6 @@
 
 package rxweb.rx.reactor;
 
-import org.reactivestreams.Publisher;
 import rxweb.server.ServerResponse;
 
 /**
@@ -29,6 +28,6 @@ public interface ReactorServerHandler {
 	 * @param request  The request object providing information about the HTTP request
 	 * @param response The response object providing functionality for modifying the response
 	 */
-	Publisher<?> handle(final ReactorServerRequest request, ServerResponse response);
+	void handle(final ReactorServerRequest request, ServerResponse response);
 
 }

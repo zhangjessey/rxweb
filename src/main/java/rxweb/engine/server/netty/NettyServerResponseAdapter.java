@@ -41,6 +41,8 @@ public class NettyServerResponseAdapter implements ServerResponse {
 	private final HttpResponse nettyResponse;
 	private final ServerRequest request;
 	private final HttpHeaders headers;
+	// By default, empty content
+	private Publisher<?> content = Promises.prepare();
 	private boolean statusAndHeadersSent = false;
 
 	public NettyServerResponseAdapter(NetChannel<ServerRequest, Object> channel, ServerRequest request) {
@@ -132,8 +134,14 @@ public class NettyServerResponseAdapter implements ServerResponse {
 	}
 
 	@Override
-	public Publisher<?> write(Object content) {
-		return Promises.success(content);
+	public ServerResponse content(Publisher<?> content) {
+		this.content = content;
+		return this;
+	}
+
+	@Override
+	public Publisher<?> getContent() {
+		return this.content;
 	}
 
 	public HttpResponse getNettyResponse() {

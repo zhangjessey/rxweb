@@ -16,8 +16,6 @@
 
 package rxweb.rx.rxjava;
 
-import rx.Observable;
-
 /**
  * Handle the HTTP request to produce a response.
  * @author Sebastien Deleuze
@@ -28,6 +26,6 @@ public interface RxJavaServerHandler {
 	 * @param request  The request object providing information about the HTTP request
 	 * @param response The response object providing functionality for modifying the response
 	 */
-	Observable<?> handle(final RxJavaServerRequest request, RxJavaServerResponse response);
+	void handle(final RxJavaServerRequest request, RxJavaServerResponse response);
 
 }

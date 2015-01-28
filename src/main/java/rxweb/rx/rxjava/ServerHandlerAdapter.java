@@ -34,8 +34,7 @@ public class ServerHandlerAdapter implements ServerHandler {
 	}
 
 	@Override
-	public Publisher<?> handle(ServerRequest request, ServerResponse response) {
-		return RxReactiveStreams.toPublisher(this.reactorServerHandler.handle(
-				new RxJavaServerRequestAdapter(request), new RxJavaServerResponseAdapter(response)));
+	public void handle(ServerRequest request, ServerResponse response) {
+		this.reactorServerHandler.handle(new RxJavaServerRequestAdapter(request), new RxJavaServerResponseAdapter(response));
 	}
 }
