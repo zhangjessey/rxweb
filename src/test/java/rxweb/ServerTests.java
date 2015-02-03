@@ -17,6 +17,7 @@
 package rxweb;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
@@ -38,13 +39,15 @@ public class ServerTests {
 	private Server server;
 
 	@Before
-	public void setup() {
+	public void setup() throws ExecutionException, InterruptedException {
 		server = new NettyServer();
+		// TODO: replace by server.start().get() when we will use RxJava (it seems buggy with Reactor)
 		server.start();
 	}
 
 	@After
-	public void tearDown() {
+	public void tearDown() throws ExecutionException, InterruptedException {
+		// TODO: replace by server.stop().get() when we will use RxJava (it seems buggy with Reactor)
 		server.stop();
 	}
 

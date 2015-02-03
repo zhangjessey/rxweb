@@ -18,6 +18,7 @@ package rxweb;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
@@ -26,8 +27,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import reactor.io.buffer.Buffer;
-import reactor.rx.Promises;
-import rxweb.http.Status;
 import rxweb.rx.reactor.ReactorNettyServer;
 import rxweb.rx.reactor.ReactorServer;
 
@@ -39,29 +38,19 @@ public class ReactorServerTests {
 	private ReactorServer server;
 
 	@Before
-	public void setup() {
+	public void setup() throws ExecutionException, InterruptedException {
 		server = new ReactorNettyServer();
+		// TODO: replace by server.start().get() when we will use RxJava (it seems buggy with Reactor)
 		server.start();
 	}
 
 	@After
-	public void tearDown() {
+	public void tearDown() throws ExecutionException, InterruptedException {
+		// TODO: replace by server.stop().get() when we will use RxJava (it seems buggy with Reactor)
 		server.stop();
 	}
 
-	// FIXME @Test
-	public void writeBuffer() throws IOException {
-		server.get("/test", (request, response) -> response.status(Status.OK).content(Promises.success(Buffer.wrap("This is a test!"))));
-		String content = Request.Get("http://localhost:8080/test").execute().returnContent().asString();
-		Assert.assertEquals("This is a test!", content);
-	}
 
-	// FIXME @Test
-	public void echo() throws IOException {
-		server.post("/test", (request, response) -> response.content(request));
-		String content = Request.Post("http://localhost:8080/test").bodyString("This is a test!", ContentType.TEXT_PLAIN).execute().returnContent().asString();
-		Assert.assertEquals("This is a test!", content);
-	}
 
 	@Test
 	public void echoCapitalizedStream() throws IOException {

@@ -16,8 +16,7 @@
 
 package rxweb.rx.reactor;
 
-import reactor.rx.Promise;
-import reactor.rx.Streams;
+import java.util.concurrent.CompletableFuture;
 import rxweb.engine.server.netty.NettyServer;
 
 /**
@@ -36,13 +35,13 @@ public class ReactorNettyServer implements ReactorServer {
 	}
 
 	@Override
-	public Promise<Void> start() {
-		return Streams.create(this.server.start()).next();
+	public CompletableFuture<Void> start() {
+		return this.server.start();
 	}
 
 	@Override
-	public Promise<Void> stop() {
-		return Streams.create(this.server.stop()).next();
+	public CompletableFuture<Void> stop() {
+		return this.server.stop();
 	}
 
 	@Override

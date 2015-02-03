@@ -16,8 +16,8 @@
 
 package rxweb.rx.rxjava;
 
-import rx.Observable;
-import rx.RxReactiveStreams;
+import java.util.concurrent.CompletableFuture;
+
 import rxweb.engine.server.netty.NettyServer;
 
 /**
@@ -36,13 +36,13 @@ public class RxJavaNettyServer implements RxJavaServer {
 	}
 
 	@Override
-	public Observable<Void> start() {
-		return RxReactiveStreams.toObservable(this.server.start());
+	public CompletableFuture<Void> start() {
+		return this.server.start();
 	}
 
 	@Override
-	public Observable<Void> stop() {
-		return RxReactiveStreams.toObservable(this.server.stop());
+	public CompletableFuture<Void> stop() {
+		return this.server.stop();
 	}
 
 	@Override

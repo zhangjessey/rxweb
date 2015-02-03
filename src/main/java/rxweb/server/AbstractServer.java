@@ -18,13 +18,13 @@ package rxweb.server;
 
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.reactivestreams.Publisher;
 import reactor.Environment;
 import reactor.io.net.NetChannel;
 import reactor.io.net.tcp.TcpServer;
-import reactor.rx.Promise;
 import reactor.rx.Streams;
 import rxweb.Server;
 import rxweb.http.Method;
@@ -32,6 +32,7 @@ import rxweb.http.Request;
 import rxweb.mapping.Condition;
 import rxweb.mapping.HandlerResolver;
 import rxweb.mapping.MappingCondition;
+import rxweb.support.CompletableFutureUtils;
 
 /**
  * @author Sebastien Deleuze
@@ -114,13 +115,13 @@ public abstract class AbstractServer implements Server {
 	}
 
 	@Override
-	public Promise<Void> start() {
-		return this.server.start();
+	public CompletableFuture<Void> start() {
+		return CompletableFutureUtils.fromPromise(this.server.start());
 	}
 
 	@Override
-	public Promise<Void> stop() {
-		return this.server.shutdown();
+	public CompletableFuture<Void> stop() {
+		return CompletableFutureUtils.fromPromise(this.server.shutdown());
 	}
 
 }

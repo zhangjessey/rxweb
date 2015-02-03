@@ -16,7 +16,8 @@
 
 package rxweb.rx.rxjava;
 
-import rx.Observable;
+import java.util.concurrent.CompletableFuture;
+
 
 /**
  * @author Sebastien Deleuze
@@ -24,10 +25,10 @@ import rx.Observable;
 public interface RxJavaServer {
 
 	/** Complete when the server is started **/
-	Observable<Void> start();
+	CompletableFuture<Void> start();
 
 	/** Complete when the server is stopped **/
-	Observable<Void> stop();
+	CompletableFuture<Void> stop();
 
 	void get(final String path, final RxJavaServerHandler handler);
 

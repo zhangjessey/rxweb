@@ -16,7 +16,7 @@
 
 package rxweb.rx.reactor;
 
-import reactor.rx.Promise;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Sebastien Deleuze
@@ -24,10 +24,10 @@ import reactor.rx.Promise;
 public interface ReactorServer {
 
 	/** Complete when the server is started **/
-	Promise<Void> start();
+	CompletableFuture<Void> start();
 
 	/** Complete when the server is stopped **/
-	Promise<Void> stop();
+	CompletableFuture<Void> stop();
 
 	void get(final String path, final ReactorServerHandler handler);
 

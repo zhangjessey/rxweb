@@ -16,7 +16,8 @@
 
 package rxweb;
 
-import org.reactivestreams.Publisher;
+import java.util.concurrent.CompletableFuture;
+
 import rxweb.http.Request;
 import rxweb.mapping.HandlerRegistry;
 import rxweb.server.ServerHandler;
@@ -27,10 +28,10 @@ import rxweb.server.ServerHandler;
 public interface Server extends HandlerRegistry<Request> {
 
 	/** Complete when the server is started **/
-	Publisher<Void> start();
+	CompletableFuture<Void> start();
 
 	/** Complete when the server is stopped **/
-	Publisher<Void> stop();
+	CompletableFuture<Void> stop();
 
 	void get(final String path, final ServerHandler handler);
 
