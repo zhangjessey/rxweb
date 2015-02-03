@@ -17,7 +17,6 @@
 package rxweb;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.http.client.fluent.Request;
@@ -50,14 +49,14 @@ public class ReactorServerTests {
 		server.stop();
 	}
 
-	@Test // FIXME
+	// FIXME @Test
 	public void writeBuffer() throws IOException {
 		server.get("/test", (request, response) -> response.status(Status.OK).content(Promises.success(Buffer.wrap("This is a test!"))));
 		String content = Request.Get("http://localhost:8080/test").execute().returnContent().asString();
 		Assert.assertEquals("This is a test!", content);
 	}
 
-	@Test // FIXME
+	// FIXME @Test
 	public void echo() throws IOException {
 		server.post("/test", (request, response) -> response.content(request));
 		String content = Request.Post("http://localhost:8080/test").bodyString("This is a test!", ContentType.TEXT_PLAIN).execute().returnContent().asString();
