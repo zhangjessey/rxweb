@@ -36,7 +36,9 @@ package rxweb.support;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import reactor.rx.Promise;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import rx.Observable;
 
 /**
@@ -64,16 +66,24 @@ public class CompletableFutureUtils {
 		return future;
 	}
 
-	public static <T> CompletableFuture<T> fromPromise(Promise<T> promise) {
-		final CompletableFuture<T> future = new CompletableFuture<>();
-		promise.onSuccess(future::complete);
-		promise.onError(future::completeExceptionally);
-		return future;
-	}
-
 	public static <T> CompletableFuture<T> fromSingleObservable(Observable<T> observable) {
 		final CompletableFuture<T> future = new CompletableFuture<>();
 		observable.doOnError(future::completeExceptionally).single().forEach(future::complete);
+		return future;
+	}
+
+	public static CompletableFuture<Channel> fromChannelFuture(ChannelFuture channelFuture) {
+		final CompletableFuture<Channel> future = new CompletableFuture<>();
+		channelFuture.addListener(new ChannelFutureListener() {
+			@Override
+			public void operationComplete(ChannelFuture channelFuture) throws Exception {
+				if (!channelFuture.isSuccess()) {
+					future.completeExceptionally(channelFuture.cause());
+				} else {
+					future.complete(channelFuture.channel());
+				}
+			}
+		});
 		return future;
 	}
 

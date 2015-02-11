@@ -19,8 +19,6 @@ package rxweb.support;
 import java.io.Serializable;
 import java.util.*;
 
-import reactor.core.support.MultiValueMap;
-
 /**
  * Miscellaneous collection utility methods.
  * Mainly for internal use within the framework.
@@ -59,10 +57,10 @@ public abstract class CollectionUtils {
 	 * empty List.
 	 * @param source the (potentially primitive) array
 	 * @return the converted List result
-	 * @see reactor.core.support.ObjectUtils#toObjectArray(Object)
+	 * @see ObjectUtils#toObjectArray(Object)
 	 */
 	public static List arrayToList(Object source) {
-		return Arrays.asList(reactor.core.support.ObjectUtils.toObjectArray(source));
+		return Arrays.asList(ObjectUtils.toObjectArray(source));
 	}
 
 	/**
@@ -75,7 +73,7 @@ public abstract class CollectionUtils {
 		if (collection == null) {
 			throw new IllegalArgumentException("Collection must not be null");
 		}
-		Object[] arr = reactor.core.support.ObjectUtils.toObjectArray(array);
+		Object[] arr = ObjectUtils.toObjectArray(array);
 		for (Object elem : arr) {
 			collection.add(elem);
 		}
@@ -118,7 +116,7 @@ public abstract class CollectionUtils {
 		if (iterator != null) {
 			while (iterator.hasNext()) {
 				Object candidate = iterator.next();
-				if (reactor.core.support.ObjectUtils.nullSafeEquals(candidate, element)) {
+				if (ObjectUtils.nullSafeEquals(candidate, element)) {
 					return true;
 				}
 			}
@@ -136,7 +134,7 @@ public abstract class CollectionUtils {
 		if (enumeration != null) {
 			while (enumeration.hasMoreElements()) {
 				Object candidate = enumeration.nextElement();
-				if (reactor.core.support.ObjectUtils.nullSafeEquals(candidate, element)) {
+				if (ObjectUtils.nullSafeEquals(candidate, element)) {
 					return true;
 				}
 			}
@@ -238,7 +236,7 @@ public abstract class CollectionUtils {
 	 * or {@code null} if none or more than one such value found
 	 */
 	public static Object findValueOfType(Collection<?> collection, Class<?>[] types) {
-		if (isEmpty(collection) || reactor.core.support.ObjectUtils.isEmpty(types)) {
+		if (isEmpty(collection) || ObjectUtils.isEmpty(types)) {
 			return null;
 		}
 		for (Class<?> type : types) {
@@ -347,7 +345,7 @@ public abstract class CollectionUtils {
 	 * @return an unmodifiable view of the specified multi-value map.
 	 */
 	public static <K,V> MultiValueMap<K,V> unmodifiableMultiValueMap(MultiValueMap<? extends K, ? extends V> map) {
-		reactor.core.support.Assert.notNull(map, "'map' must not be null");
+		Assert.notNull(map, "'map' must not be null");
 		Map<K, List<V>> result = new LinkedHashMap<K, List<V>>(map.size());
 		for (Map.Entry<? extends K, ? extends List<? extends V>> entry : map.entrySet()) {
 			List<V> values = Collections.unmodifiableList(entry.getValue());

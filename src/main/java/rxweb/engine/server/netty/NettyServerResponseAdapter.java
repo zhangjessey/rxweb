@@ -18,13 +18,12 @@ package rxweb.engine.server.netty;
 
 import java.nio.ByteBuffer;
 
+import io.netty.channel.Channel;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
-import org.reactivestreams.Publisher;
-import reactor.io.net.NetChannel;
-import reactor.rx.Promises;
+import rx.Observable;
 import rxweb.http.ResponseHeaders;
 import rxweb.http.Protocol;
 import rxweb.http.Status;
@@ -39,19 +38,18 @@ import rxweb.support.Assert;
  */
 public class NettyServerResponseAdapter implements ServerResponse {
 
-	private final NetChannel<ServerRequest, Object>  channel;
 	private final HttpResponse nettyResponse;
 	private final ServerRequest request;
 	private final ServerResponseHeaders headers;
 	// By default, empty content
-	private Publisher<ByteBuffer> content = Promises.prepare();
+	private Observable<ByteBuffer> content;
 	private boolean statusAndHeadersSent = false;
 
-	public NettyServerResponseAdapter(NetChannel<ServerRequest, Object> channel, ServerRequest request) {
+	public NettyServerResponseAdapter(ServerRequest request) {
 		this.nettyResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
 		this.headers = new NettyResponseHeadersAdapter(this.nettyResponse);
-		this.channel = channel;
 		this.request = request;
+		this.content = UnicastContentSubject.createWithoutNoSubscriptionTimeout();
 	}
 
 	@Override
@@ -133,19 +131,18 @@ public class NettyServerResponseAdapter implements ServerResponse {
 	}
 
 	@Override
-	public ServerResponse content(Publisher<ByteBuffer> content) {
+	public ServerResponse content(Observable<ByteBuffer> content) {
 		this.content = content;
 		return this;
 	}
 
 	@Override
-	public Publisher<ByteBuffer> getContent() {
+	public Observable<ByteBuffer> getContent() {
 		return this.content;
 	}
 
 	public HttpResponse getNettyResponse() {
 		return nettyResponse;
 	}
-
 
 }

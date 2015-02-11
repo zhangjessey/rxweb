@@ -25,47 +25,47 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.http.*;
-import reactor.Environment;
-import reactor.core.dispatch.SynchronousDispatcher;
-import reactor.io.buffer.Buffer;
-import reactor.rx.broadcast.Broadcaster;
+import io.netty.util.ReferenceCountUtil;
 import rxweb.server.ServerRequest;
 import rxweb.support.Assert;
 
 /**
  * Conversion between Netty types ({@link HttpRequest}, {@link HttpResponse}, {@link HttpContent} and {@link LastHttpContent})
- * and Spring RxWeb types ({@link NettyServerResponseAdapter}, {@link NettyServerRequestAdapter} and {@link Buffer}).
+ * and Spring RxWeb types ({@link NettyServerResponseAdapter}, {@link NettyServerRequestAdapter} and {@link ByteBuffer}).
  *
  * @author Sebastien Deleuze
  */
 public class NettyServerCodecHandlerAdapter extends ChannelDuplexHandler {
 
-	private final Environment env;
 	private ServerRequest request;
-	private Broadcaster<ByteBuffer> requestContentStream;
+	private UnicastContentSubject<ByteBuffer> requestContent;
 
-	public NettyServerCodecHandlerAdapter(Environment env) {
-		this.env = env;
-		this.requestContentStream = Broadcaster.create(this.env, SynchronousDispatcher.INSTANCE);
+	public NettyServerCodecHandlerAdapter() {
+		this.requestContent = UnicastContentSubject.createWithoutNoSubscriptionTimeout();
 	}
 
 	/**
 	 * Create a {@link NettyServerRequestAdapter} when a {@link HttpRequest} is received, and use
-	 * @ {@link Broadcaster} to send the content as a request stream.
+	 * @ {@link UnicastContentSubject} to send the content as a request stream.
 	 */
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		Class<?> messageClass = msg.getClass();
 		if (HttpRequest.class.isAssignableFrom(messageClass)) {
-			this.request = new NettyServerRequestAdapter((HttpRequest) msg, this.requestContentStream);
-			super.channelRead(ctx, request);
+			this.request = new NettyServerRequestAdapter((HttpRequest) msg, this.requestContent);
+			super.channelRead(ctx, this.request);
 		} else if (HttpContent.class.isAssignableFrom(messageClass)) {
 			Assert.notNull(this.request);
 			ByteBuf content = ((ByteBufHolder) msg).content();
-			this.requestContentStream.onNext(content.nioBuffer());
+			ByteBuffer nioBuffer = content.nioBuffer();
+			this.requestContent.onNext(nioBuffer);
 			if (LastHttpContent.class.isAssignableFrom(messageClass)) {
-				this.requestContentStream.onComplete();
+				this.requestContent.onCompleted();
 			}
+			// FIXME I need to make it works without that ...
+			super.channelRead(ctx, this.request);
+		} else {
+			super.channelRead(ctx, msg);
 		}
 	}
 

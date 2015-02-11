@@ -16,8 +16,9 @@
 
 package rxweb.client;
 
-import org.reactivestreams.Publisher;
-import reactor.io.buffer.Buffer;
+import java.nio.ByteBuffer;
+
+import rx.Observable;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.http.Request;
@@ -41,10 +42,6 @@ public interface ClientRequest extends Request {
 
 	ClientRequest accept(String value);
 
-	/** For the moment, {@link Buffer} and {@link String} are supported **/
-	ClientRequest source(Publisher<Object> source);
-
-	/** For the moment, {@link Buffer} and {@link String} are supported **/
-	ClientRequest content(Object content);
+	ClientRequest content(Observable<ByteBuffer> content);
 
 }

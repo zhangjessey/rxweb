@@ -14,8 +14,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-import reactor.core.support.CollectionUtils;
-
 /**
  * Miscellaneous {@link String} utility methods.
  *

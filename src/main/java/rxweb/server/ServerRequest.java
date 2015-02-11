@@ -17,15 +17,17 @@
 package rxweb.server;
 
 import java.nio.ByteBuffer;
-import org.reactivestreams.Publisher;
 
+import rx.Observable;
 import rxweb.http.Request;
 
 /**
  * @author Sebastien Deleuze
  */
-public interface ServerRequest extends Request, Publisher<ByteBuffer> {
+public interface ServerRequest extends Request {
 
 	ServerRequestHeaders getHeaders();
+
+	Observable<ByteBuffer> getContent();
 
 }

@@ -18,10 +18,7 @@ package rxweb.engine.server.netty;
 
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import reactor.io.buffer.Buffer;
-import reactor.rx.Stream;
+import rx.Observable;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.server.ServerRequest;
@@ -34,25 +31,21 @@ import java.nio.ByteBuffer;
 /**
  * @author Sebastien Deleuze
  */
-public class NettyServerRequestAdapter extends Stream<ByteBuffer> implements ServerRequest {
+public class NettyServerRequestAdapter implements ServerRequest {
 
 	private final HttpRequest nettyRequest;
 	private final ServerRequestHeaders headers;
-	private Stream<ByteBuffer> contentStream;
+	private UnicastContentSubject<ByteBuffer> content;
 
-	public NettyServerRequestAdapter(HttpRequest request, Stream<ByteBuffer> contentStream) {
+	public NettyServerRequestAdapter(HttpRequest request, UnicastContentSubject<ByteBuffer> content) {
 		this.nettyRequest = request;
 		this.headers = new NettyRequestHeadersAdapter(request);
-		this.contentStream = contentStream;
+		this.content = content;
 	}
 
 	@Override
-	public void subscribe(Subscriber<? super ByteBuffer> subscriber) {
-		getContentStream().subscribe(subscriber);
-	}
-
-	private Publisher<ByteBuffer> getContentStream() {
-		return this.contentStream;
+	public Observable<ByteBuffer> getContent() {
+		return this.content;
 	}
 
 	@Override

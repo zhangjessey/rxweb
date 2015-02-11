@@ -16,9 +16,9 @@
 
 package rxweb.client;
 
-import org.reactivestreams.Publisher;
-import reactor.io.buffer.Buffer;
-import reactor.rx.Stream;
+import java.nio.ByteBuffer;
+
+import rx.Observable;
 import rxweb.http.AbstractRequest;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
@@ -30,7 +30,6 @@ import rxweb.http.RequestHeaders;
 public class DefaultClientRequest extends AbstractRequest implements ClientRequest {
 
 	protected final ClientRequestHeaders headers = new DefaultClientRequestHeaders();
-	protected Stream<Buffer> contentSource;
 
 	@Override
 	public ClientRequestHeaders getHeaders() {
@@ -74,12 +73,7 @@ public class DefaultClientRequest extends AbstractRequest implements ClientReque
 	}
 
 	@Override
-	public ClientRequest content(Object content) {
-		throw new UnsupportedOperationException("Not implemented yet");
-	}
-
-	@Override
-	public ClientRequest source(Publisher<Object> value) {
+	public ClientRequest content(Observable<ByteBuffer> content) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 }

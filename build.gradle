@@ -20,8 +20,6 @@ ext {
 }
 
 dependencies {
-  compile "io.projectreactor:reactor-core:${reactorVersion}"
-  compile "io.projectreactor:reactor-net:${reactorVersion}"
   compile "io.netty:netty-codec-http:${nettyVersion}"
   compile "io.netty:netty-transport-native-epoll:${nettyVersion}"
   compile "org.slf4j:slf4j-api:${slf4jVersion}"
