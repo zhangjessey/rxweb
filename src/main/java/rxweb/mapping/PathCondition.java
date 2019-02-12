@@ -22,6 +22,7 @@ import rxweb.support.PathMatcher;
 
 /**
  * @author Sebastien Deleuze
+ * @author zhangjessey
  */
 public class PathCondition implements Condition<Request> {
 
@@ -34,6 +35,6 @@ public class PathCondition implements Condition<Request> {
 
 	@Override
 	public boolean match(Request request) {
-		return this.pathMatcher.match(this.path, request.getUri());
+		return this.pathMatcher.match(this.path, request.getUri().split("\\?")[0]);
 	}
 }

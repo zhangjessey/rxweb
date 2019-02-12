@@ -16,31 +16,29 @@
 
 package rxweb.server;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import rxweb.http.Request;
 import rxweb.mapping.Condition;
 import rxweb.mapping.HandlerResolver;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author Sebastien Deleuze
+ * @author zhangjessey
  */
 public class DefaultHandlerResolver implements HandlerResolver {
 
-	private final Map<Condition<Request>, ServerHandler> handlers = new LinkedHashMap<>();
-
 	@Override
 	public void addHandler(final Condition<Request> condition, final ServerHandler handler) {
-		handlers.put(condition, handler);
+		Init.handlers.put(condition, handler);
 	}
 
 	@Override
 	public List<ServerHandler> resolve(Request request) {
 		List<ServerHandler> requestHandlers = new ArrayList<>();
-		for(Map.Entry<Condition<Request>, ServerHandler> entry : this.handlers.entrySet()) {
+		for (Map.Entry<Condition<Request>, ServerHandler> entry : Init.handlers.entrySet()) {
 			if(entry.getKey().match(request)) {
 				requestHandlers.add(entry.getValue());
 			}

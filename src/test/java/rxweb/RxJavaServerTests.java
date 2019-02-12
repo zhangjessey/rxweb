@@ -16,11 +16,6 @@
 
 package rxweb;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ExecutionException;
-
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
 import org.junit.After;
@@ -28,12 +23,17 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import rx.Observable;
-import rx.observables.ConnectableObservable;
 import rxweb.engine.server.netty.NettyServer;
 import rxweb.http.Status;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutionException;
+
 /**
  * @author Sebastien Deleuze
+ * @author zhangjessey
  */
 public class RxJavaServerTests {
 
@@ -55,6 +55,18 @@ public class RxJavaServerTests {
 		server.get("/test", (request, response) -> response.status(Status.OK).content(Observable.just(ByteBuffer.wrap("This is a test!".getBytes(StandardCharsets.UTF_8)))));
 		String content = Request.Get("http://localhost:8080/test").execute().returnContent().asString();
 		Assert.assertEquals("This is a test!", content);
+	}
+
+	@Test
+	public void controllerNoParam() throws IOException {
+		String content = Request.Get("http://localhost:8080/hi").execute().returnContent().asString();
+		Assert.assertEquals("hello", content);
+	}
+
+	@Test
+	public void controllerWithParam() throws IOException {
+		String content = Request.Get("http://localhost:8080/hehe?p1=1&p2=2").execute().returnContent().asString();
+		Assert.assertEquals("hahap1:p2", content);
 	}
 
 	// Fixme @Test
