@@ -1,5 +1,3 @@
-The project based on https://github.com/sdeleuze/rxweb,https://gitee.com/huangyong/smart-framework
+The project based on [rxweb](https://github.com/sdeleuze/rxweb) and [smart-framework](https://gitee.com/huangyong/smart-framework)
 
-It's a Reactor + Netty based micro web framework prototype
-
-I try to do something more.
+It's a Reactor + Netty based micro web framework
