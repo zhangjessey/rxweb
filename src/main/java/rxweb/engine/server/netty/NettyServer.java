@@ -16,11 +16,6 @@
 
 package rxweb.engine.server.netty;
 
-import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
-
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
@@ -49,6 +44,11 @@ import rxweb.server.ServerHandler;
 import rxweb.server.ServerRequest;
 import rxweb.server.ServerResponse;
 import rxweb.support.CompletableFutureUtils;
+
+import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Netty powered Spring RxWeb server
@@ -232,6 +232,13 @@ public class NettyServer implements Server {
 		ChannelFuture closeFuture = this.bindFuture.channel().close();
 		return CompletableFutureUtils.fromChannelFuture(closeFuture).thenRun(() -> {
 		});
+
+	}
+
+	public static void main(String[] args) throws Exception {
+		NettyServer server = new NettyServer();
+		server.start().get();
+
 
 	}
 }

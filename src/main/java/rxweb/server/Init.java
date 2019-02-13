@@ -1,13 +1,17 @@
 package rxweb.server;
 
 import org.reflections.Reflections;
+import rx.Observable;
 import rxweb.annotation.Controller;
 import rxweb.annotation.RequestMapping;
 import rxweb.http.Request;
+import rxweb.http.Status;
 import rxweb.mapping.Condition;
 import rxweb.mapping.MappingCondition;
 
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -40,6 +44,10 @@ public class Init {
             return o;
 
         }).filter(Objects::nonNull).collect(Collectors.toMap(Object::getClass, Function.identity()));
+
+        handlers.put(MappingCondition.Builder.from("/favicon.ico").method(rxweb.http.Method.GET).build(), ((request, response) -> {
+            response.status(Status.OK).content(Observable.just(ByteBuffer.wrap("no favicon.ico".getBytes(StandardCharsets.UTF_8))));
+        }));
 
         Init.ControllerClasses.forEach(aClass -> {
             Method[] methods = aClass.getMethods();
