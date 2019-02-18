@@ -16,16 +16,17 @@
 
 package rxweb.mapping;
 
-import java.util.List;
+import io.reactivex.netty.protocol.http.server.HttpServerRequest;
+import rxweb.server.Handler;
 
-import rxweb.server.ServerHandler;
-import rxweb.http.Request;
+import java.util.List;
 
 /**
  * @author Sebastien Deleuze
+ * @author zhangjessey
  */
-public interface HandlerResolver extends HandlerRegistry<Request> {
+public interface HandlerResolver extends HandlerRegistry<HttpServerRequest> {
 
-	List<ServerHandler> resolve(Request request);
+	List<Handler> resolve(HttpServerRequest request);
 
 }

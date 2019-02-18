@@ -16,6 +16,10 @@
 
 package rxweb.http;
 
+import rxweb.support.Assert;
+import rxweb.support.MimeTypeUtils;
+import rxweb.support.StringUtils;
+
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,10 +28,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import rxweb.support.Assert;
-import rxweb.support.MimeTypeUtils;
-import rxweb.support.StringUtils;
 
 /**
  * A sub-class of {@link MimeType} that adds support for quality parameters as defined

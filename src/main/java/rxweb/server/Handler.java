@@ -1,19 +1,22 @@
 package rxweb.server;
 
+import io.netty.buffer.ByteBuf;
+import io.reactivex.netty.protocol.http.server.HttpServerRequest;
+import io.reactivex.netty.protocol.http.server.HttpServerResponse;
+import io.reactivex.netty.protocol.http.server.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
+import static rx.Observable.just;
 
 import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 
 /**
  * @author huangyong
  * @author zhangjessey
  */
-public class Handler implements ServerHandler {
+public class Handler implements RequestHandler<ByteBuf, ByteBuf> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Class<?> actionClass;
     private Method actionMethod;
@@ -40,17 +43,18 @@ public class Handler implements ServerHandler {
         this.requestPathMatcher = requestPathMatcher;
     }
 
+
     @Override
-    public void handle(ServerRequest request, ServerResponse response) {
+    public Observable<Void> handle(HttpServerRequest<ByteBuf> request, HttpServerResponse<ByteBuf> response) {
         DefaultHandlerInvoker defaultHandlerInvoker = new DefaultHandlerInvoker();
         try {
-            Object o = defaultHandlerInvoker.invokeHandler(request, response, this);
+            Object o = defaultHandlerInvoker.invokeHandler(request, this);
             if (o instanceof String) {
-                response.content(Observable.just(ByteBuffer.wrap(((String) o).getBytes(StandardCharsets.UTF_8))));
+                return response.writeString(just((String) o));
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
-
+        return null;
     }
 }

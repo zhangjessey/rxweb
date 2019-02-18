@@ -16,18 +16,18 @@
 
 package rxweb.server;
 
-import java.nio.ByteBuffer;
-
-import rx.Observable;
 import rxweb.http.Request;
+
+import java.nio.ByteBuffer;
 
 /**
  * @author Sebastien Deleuze
+ * @author zhangjessey
  */
 public interface ServerRequest extends Request {
 
 	ServerRequestHeaders getHeaders();
 
-	Observable<ByteBuffer> getContent();
+	ByteBuffer getContent();
 
 }

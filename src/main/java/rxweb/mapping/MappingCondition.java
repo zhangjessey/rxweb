@@ -16,13 +16,14 @@
 
 package rxweb.mapping;
 
-import rxweb.http.Method;
-import rxweb.http.Request;
+import io.netty.handler.codec.http.HttpMethod;
+import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 
 /**
  * @author Sebastien Deleuze
+ * @author zhangjessey
  */
-public class MappingCondition implements Condition<Request> {
+public class MappingCondition implements Condition<HttpServerRequest> {
 
 	private final MethodCondition methodCondition;
 	private final PathCondition pathCondition;
@@ -33,7 +34,7 @@ public class MappingCondition implements Condition<Request> {
 	}
 
 	@Override
-	public boolean match(Request request) {
+	public boolean match(HttpServerRequest request) {
 		return this.methodCondition.match(request) && this.pathCondition.match(request);
 	}
 
@@ -54,19 +55,19 @@ public class MappingCondition implements Condition<Request> {
 			return builder;
 		}
 
-		public Builder method(Method method) {
+		public Builder method(HttpMethod method) {
 			this.methodCondition = new MethodCondition(method);
 			return this;
 		}
 
-		public Builder method(Method... methods) {
+		public Builder method(HttpMethod... methods) {
 			this.methodCondition = new MethodCondition(methods);
 			return this;
 		}
 
 		public MappingCondition build() {
 			if(this.methodCondition.getMethods().isEmpty()) {
-				this.methodCondition = new MethodCondition(Method.GET);
+				this.methodCondition = new MethodCondition(HttpMethod.GET);
 			}
 			return new MappingCondition(this);
 		}

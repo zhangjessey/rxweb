@@ -16,6 +16,9 @@
 
 package rxweb.support;
 
+import rxweb.http.InvalidMimeTypeException;
+import rxweb.http.MimeType;
+
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,9 +28,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import rxweb.http.InvalidMimeTypeException;
-import rxweb.http.MimeType;
 
 
 /**

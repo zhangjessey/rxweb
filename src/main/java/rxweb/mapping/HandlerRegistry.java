@@ -16,13 +16,14 @@
 
 package rxweb.mapping;
 
-import rxweb.server.ServerHandler;
+import rxweb.server.Handler;
 
 /**
  * @author Sebastien Deleuze
+ * @author zhangjessey
  */
 public interface HandlerRegistry<R> {
 
-	void addHandler(final Condition<R> condition, final ServerHandler handler);
+	void addHandler(final Condition<R> condition, final Handler handler);
 
 }

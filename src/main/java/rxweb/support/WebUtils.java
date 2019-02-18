@@ -3,9 +3,9 @@ package rxweb.support;
 
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rxweb.server.ServerRequest;
 
 import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
@@ -23,10 +23,10 @@ public class WebUtils {
     /**
      * 从请求中获取所有参数（当参数名重复时，用后者覆盖前者）
      */
-    public static Map<String, Object> getRequestParamMap(ServerRequest request) {
+    public static Map<String, Object> getRequestParamMap(HttpServerRequest request) {
         Map<String, Object> paramMap = new LinkedHashMap<String, Object>();
         try {
-            HttpMethod method = new HttpMethod(request.getMethod().getName());
+            HttpMethod method = request.getHttpMethod();
             if ((HttpMethod.GET.equals(method))) {
                 QueryStringDecoder queryDecoder = new QueryStringDecoder(request.getUri(), Charset.forName("UTF-8"));
                 Map<String, List<String>> uriAttributes = queryDecoder.parameters();

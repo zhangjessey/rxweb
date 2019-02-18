@@ -16,7 +16,7 @@
 
 package rxweb.server;
 
-import rxweb.http.Request;
+import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 import rxweb.mapping.Condition;
 import rxweb.mapping.HandlerResolver;
 
@@ -30,19 +30,27 @@ import java.util.Map;
  */
 public class DefaultHandlerResolver implements HandlerResolver {
 
+	private static DefaultHandlerResolver defaultHandlerResolver = new DefaultHandlerResolver();
+
+	public static DefaultHandlerResolver getSingleton() {
+		return defaultHandlerResolver;
+	}
+
 	@Override
-	public void addHandler(final Condition<Request> condition, final ServerHandler handler) {
+	public void addHandler(final Condition<HttpServerRequest> condition, final Handler handler) {
 		Init.handlers.put(condition, handler);
 	}
 
 	@Override
-	public List<ServerHandler> resolve(Request request) {
-		List<ServerHandler> requestHandlers = new ArrayList<>();
-		for (Map.Entry<Condition<Request>, ServerHandler> entry : Init.handlers.entrySet()) {
+	public List<Handler> resolve(HttpServerRequest request) {
+		List<Handler> requestHandlers = new ArrayList<>();
+		for (Map.Entry<Condition<HttpServerRequest>, Handler> entry : Init.handlers.entrySet()) {
 			if(entry.getKey().match(request)) {
 				requestHandlers.add(entry.getValue());
 			}
 		}
 		return requestHandlers;
 	}
+
+
 }

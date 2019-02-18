@@ -16,7 +16,7 @@
 
 package rxweb.mapping;
 
-import rxweb.http.Request;
+import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 import rxweb.support.AntPathMatcher;
 import rxweb.support.PathMatcher;
 
@@ -24,7 +24,7 @@ import rxweb.support.PathMatcher;
  * @author Sebastien Deleuze
  * @author zhangjessey
  */
-public class PathCondition implements Condition<Request> {
+public class PathCondition implements Condition<HttpServerRequest> {
 
 	private final PathMatcher pathMatcher = new AntPathMatcher();
 	private final String path;
@@ -34,7 +34,7 @@ public class PathCondition implements Condition<Request> {
 	}
 
 	@Override
-	public boolean match(Request request) {
+	public boolean match(HttpServerRequest request) {
 		return this.pathMatcher.match(this.path, request.getUri().split("\\?")[0]);
 	}
 }

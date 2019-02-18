@@ -1,5 +1,6 @@
 package rxweb.server;
 
+import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 import rxweb.bean.Params;
 import rxweb.support.WebUtils;
 
@@ -18,22 +19,27 @@ public class DefaultHandlerInvoker implements HandlerInvoker {
 
 
     @Override
-    public Object invokeHandler(ServerRequest request, ServerResponse response, Handler handler) throws Exception {
-        // 获取 Action 相关信息
-        Class<?> actionClass = handler.getActionClass();
-        Method actionMethod = handler.getActionMethod();
-        // 从 BeanHelper 中创建 Action 实例
-        Object actionInstance = Init.BeanMap.get(actionClass);
-        // 创建 Action 方法的参数列表
-        List<Object> actionMethodParamList = createActionMethodParamList(request, handler);
-        // 检查参数列表是否合法
-        checkParamList(actionMethod, actionMethodParamList);
-        // 调用 Action 方法
-        Object actionMethodResult = invokeActionMethod(actionMethod, actionInstance, actionMethodParamList);
-        return actionMethodResult;
+    public Object invokeHandler(HttpServerRequest request, Handler handler) {
+        try {
+            // 获取 Action 相关信息
+            Class<?> actionClass = handler.getActionClass();
+            Method actionMethod = handler.getActionMethod();
+            // 从 BeanHelper 中创建 Action 实例
+            Object actionInstance = Init.BeanMap.get(actionClass);
+            // 创建 Action 方法的参数列表
+            List<Object> actionMethodParamList = createActionMethodParamList(request, handler);
+            // 检查参数列表是否合法
+            checkParamList(actionMethod, actionMethodParamList);
+            // 调用 Action 方法
+            Object actionMethodResult = invokeActionMethod(actionMethod, actionInstance, actionMethodParamList);
+            return actionMethodResult;
+        } catch (Exception e) {
+            return null;
+        }
+
     }
 
-    public List<Object> createActionMethodParamList(ServerRequest request, Handler handler) throws Exception {
+    public List<Object> createActionMethodParamList(HttpServerRequest request, Handler handler) throws Exception {
         // 定义参数列表
         List<Object> paramList = new ArrayList<>();
         // 获取 Action 方法参数类型

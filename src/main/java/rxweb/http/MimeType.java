@@ -16,6 +16,11 @@
 
 package rxweb.http;
 
+import rxweb.support.Assert;
+import rxweb.support.CollectionUtils;
+import rxweb.support.LinkedCaseInsensitiveMap;
+import rxweb.support.MimeTypeUtils;
+
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.BitSet;
@@ -26,11 +31,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
-
-import rxweb.support.Assert;
-import rxweb.support.CollectionUtils;
-import rxweb.support.LinkedCaseInsensitiveMap;
-import rxweb.support.MimeTypeUtils;
 
 /**
  * Represents a MIME Type, as originally defined in RFC 2046 and subsequently used in

@@ -16,15 +16,15 @@
 
 package rxweb.server;
 
-import java.nio.ByteBuffer;
-
-import rx.Observable;
 import rxweb.http.Response;
 import rxweb.http.Status;
 import rxweb.http.Transfer;
 
+import java.nio.ByteBuffer;
+
 /**
  * @author Sebastien Deleuze
+ * @author zhangjessey
  */
 public interface ServerResponse extends Response {
 
@@ -40,9 +40,9 @@ public interface ServerResponse extends Response {
 
 	ServerResponse transfer(Transfer transfer);
 
-	ServerResponse content(Observable<ByteBuffer> content);
+	ServerResponse content(ByteBuffer content);
 
-	Observable<ByteBuffer> getContent();
+	ByteBuffer getContent();
 
 	boolean isStatusAndHeadersSent();
 

@@ -16,13 +16,13 @@
 
 package rxweb.client;
 
-import java.nio.ByteBuffer;
-
 import rx.Observable;
 import rxweb.http.AbstractRequest;
 import rxweb.http.Method;
 import rxweb.http.Protocol;
 import rxweb.http.RequestHeaders;
+
+import java.nio.ByteBuffer;
 
 /**
  * @author Sebastien Deleuze

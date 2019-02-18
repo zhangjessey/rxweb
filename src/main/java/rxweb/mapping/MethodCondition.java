@@ -16,34 +16,35 @@
 
 package rxweb.mapping;
 
+import io.netty.handler.codec.http.HttpMethod;
+import io.reactivex.netty.protocol.http.server.HttpServerRequest;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import rxweb.http.Method;
-import rxweb.http.Request;
-
 /**
  * @author Sebastien Deleuze
+ * @author zhangjessey
  */
-public class MethodCondition implements Condition<Request> {
+public class MethodCondition implements Condition<HttpServerRequest> {
 
-	private final Set<Method> methods = new HashSet<>();
+	private final Set<HttpMethod> methods = new HashSet<>();
 
-	public MethodCondition(Method method) {
+	public MethodCondition(HttpMethod method) {
 		this.methods.add(method);
 	}
 
-	public MethodCondition(Method... methods) {
+	public MethodCondition(HttpMethod... methods) {
 		Collections.addAll(this.methods, methods);
 	}
 
-	public Set<Method> getMethods() {
+	public Set<HttpMethod> getMethods() {
 		return methods;
 	}
 
 	@Override
-	public boolean match(Request request) {
-		return this.methods.contains(request.getMethod());
+	public boolean match(HttpServerRequest request) {
+		return this.methods.contains(request.getHttpMethod());
 	}
 }
