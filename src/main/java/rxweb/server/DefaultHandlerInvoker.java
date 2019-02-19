@@ -3,6 +3,7 @@ package rxweb.server;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
+import rx.Observable;
 import rxweb.bean.Params;
 import rxweb.support.WebUtils;
 
@@ -25,7 +26,7 @@ public class DefaultHandlerInvoker implements HandlerInvoker {
 
 
     @Override
-    public Object invokeHandler(HttpServerRequest request, Handler handler) {
+    public Observable<? extends Object> invokeHandler(HttpServerRequest request, Handler handler) {
         try {
             // 获取 Action 相关信息
             Class<?> actionClass = handler.getActionClass();
@@ -37,7 +38,7 @@ public class DefaultHandlerInvoker implements HandlerInvoker {
             // 检查参数列表是否合法,不合法则使其合法
             List<Object> realParamList = getRealParamList(actionMethod, actionMethodParamList);
             // 调用 Action 方法
-            Object actionMethodResult = invokeActionMethod(actionMethod, actionInstance, realParamList);
+            Observable<? extends Object> actionMethodResult = invokeActionMethod(actionMethod, actionInstance, realParamList);
             return actionMethodResult;
         } catch (Exception e) {
             return null;
@@ -95,10 +96,11 @@ public class DefaultHandlerInvoker implements HandlerInvoker {
         return multiMap;
     }
 
-    private Object invokeActionMethod(Method actionMethod, Object actionInstance, List<Object> actionMethodParamList) throws IllegalAccessException, InvocationTargetException {
+    private Observable<? extends Object> invokeActionMethod(Method actionMethod, Object actionInstance, List<Object> actionMethodParamList) throws IllegalAccessException, InvocationTargetException {
         // 通过反射调用 Action 方法
         actionMethod.setAccessible(true); // 取消类型安全检测（可提高反射性能）
-        return actionMethod.invoke(actionInstance, actionMethodParamList.toArray());
+        Object invoke = actionMethod.invoke(actionInstance, actionMethodParamList.toArray());
+        return (Observable<? extends Object>) invoke;
     }
 
     private List<Object> getRealParamList(Method actionMethod, Multimap<Class<?>, Object> actionMethodParamList) {

@@ -13,6 +13,10 @@ public class Params {
         this.map = map;
     }
 
+    public Params() {
+
+    }
+
     public Map<String, Object> getMap() {
         return map;
     }

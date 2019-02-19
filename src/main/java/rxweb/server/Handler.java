@@ -7,7 +7,7 @@ import io.reactivex.netty.protocol.http.server.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
-import static rx.Observable.just;
+import rxweb.support.DefaultConverter;
 
 import java.lang.reflect.Method;
 import java.util.regex.Matcher;
@@ -47,14 +47,17 @@ public class Handler implements RequestHandler<ByteBuf, ByteBuf> {
     @Override
     public Observable<Void> handle(HttpServerRequest<ByteBuf> request, HttpServerResponse<ByteBuf> response) {
         DefaultHandlerInvoker defaultHandlerInvoker = new DefaultHandlerInvoker();
-        try {
-            Object o = defaultHandlerInvoker.invokeHandler(request, this);
+        DefaultConverter defaultConverter = new DefaultConverter();
+        Observable<?> obs = defaultHandlerInvoker.invokeHandler(request, this);
+
+        return response.writeString(obs.map(o -> {
             if (o instanceof String) {
-                return response.writeString(just((String) o));
+                return (String) o;
+            } else {
+                return defaultConverter.serialize(o);
             }
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-        return null;
+
+        }));
+
     }
 }

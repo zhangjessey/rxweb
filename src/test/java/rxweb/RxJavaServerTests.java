@@ -39,15 +39,23 @@ public class RxJavaServerTests {
 	private NettyServer nettyServer;
 
 	@Before
-	public void setup() {
+	public void setup() throws Exception {
 		nettyServer = new NettyServer();
-		new Thread(() -> {nettyServer.start();}).start();
+
+		new Thread(() -> {
+			try {
+				nettyServer.start();
+			} catch (Exception e) {
+
+			}
+		}).start();
 
 	}
 
 	@After
-	public void tearDown() {
+	public void tearDown() throws Exception {
 		nettyServer.stop();
+		Thread.sleep(1000);
 	}
 
 	@Test
@@ -91,5 +99,15 @@ public class RxJavaServerTests {
 		String content = Request.Put("http://localhost:8080/postTest/10?a=1").execute().returnContent().asString();
 		Assert.assertEquals("echo110", content);
 	}
+
+	@Test
+	public void postTestBean() throws IOException {
+		//form-data暂不支持
+		List<BasicNameValuePair> list = Collections.singletonList(new BasicNameValuePair("b", "2"));
+		String content = Request.Post("http://localhost:8080/postTestBean/10?a=1").bodyForm(list, Charset.forName("UTF-8")).execute().returnContent().asString();
+		Assert.assertEquals("{\"map\":{\"a\":\"1\",\"b\":\"2\",\"c\":\"3\"}}", content);
+	}
+
+
 
 }

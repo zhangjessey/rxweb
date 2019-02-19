@@ -1,8 +1,11 @@
 package rxweb;
 
+import rx.Observable;
 import rxweb.annotation.Controller;
 import rxweb.annotation.RequestMapping;
 import rxweb.bean.Params;
+
+import java.util.HashMap;
 
 /**
  * @author zhangjessey
@@ -11,37 +14,50 @@ import rxweb.bean.Params;
 public class TestController {
 
     @RequestMapping.Get(value = "/hi")
-    public String testMethodNoParam() {
+    public Observable<String> testMethodNoParam() {
 
-        return "hello";
+        return Observable.just("hello");
     }
 
 
     @RequestMapping.Get(value = "/hehe")
-    public String testMethodWithParam(Params params) {
+    public Observable<String> testMethodWithParam(Params params) {
 
-        return "haha".concat(params.toString());
+        return Observable.just("haha".concat(params.toString()));
     }
 
     @RequestMapping.Post(value = "/postTest/{c}")
-    public String postTest(Params params, int c) {
+    public Observable<String> postTest(Params params, int c) {
         return getStr(params, c);
     }
 
     @RequestMapping.Delete(value = "/postTest/{c}")
-    public String deleteTest(Params params, int c) {
+    public Observable<String> deleteTest(Params params, int c) {
         return getStr(params, c);
     }
 
     @RequestMapping.Put(value = "/postTest/{c}")
-    public String putTest(Params params, int c) {
+    public Observable<String> putTest(Params params, int c) {
         return getStr(params, c);
     }
 
-    private String getStr(Params params, int c) {
+    private Observable<String> getStr(Params params, int c) {
         Object a = params.getMap().get("a");
         String paramValue = (String) (a);
         String pathValue = String.valueOf(c);
-        return "echo".concat(paramValue).concat(pathValue);
+        return Observable.just("echo".concat(paramValue).concat(pathValue));
+    }
+
+    @RequestMapping.Post(value = "/postTestBean/{c}")
+    public Observable<Params> postTestBean(int c, Params params) {
+        HashMap<String, Object> stringStringHashMap = new HashMap<>(3);
+        stringStringHashMap.put("a", "1");
+        stringStringHashMap.put("b", "2");
+        stringStringHashMap.put("c", "3");
+
+        Params p = new Params(stringStringHashMap);
+
+        return Observable.just(p);
+
     }
 }
