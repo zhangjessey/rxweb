@@ -16,7 +16,9 @@
 
 package rxweb;
 
+
 import org.apache.http.client.fluent.Request;
+import org.apache.http.message.BasicNameValuePair;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,6 +26,9 @@ import org.junit.Test;
 import rxweb.engine.server.netty.NettyServer;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Sebastien Deleuze
@@ -48,36 +53,31 @@ public class RxJavaServerTests {
 	@Test
 	public void writeBuffer() throws IOException {
 
-		//nettyServer.get("/test", (request, response) -> response.status(Status.OK).content(ByteBuffer.wrap("This is a test!".getBytes(StandardCharsets.UTF_8))));
 		String content = Request.Get("http://localhost:8080/test").execute().returnContent().asString();
 		Assert.assertEquals("no match!", content);
 	}
 
-	//
+
 	@Test
 	public void controllerNoParam() throws IOException {
 		String content = Request.Get("http://localhost:8080/hi").execute().returnContent().asString();
 		Assert.assertEquals("hello", content);
 	}
-	//
-	// @Test
-	// public void controllerWithParam() throws IOException {
-	// 	String content = Request.Get("http://localhost:8080/hehe?p1=1&p2=2").execute().returnContent().asString();
-	// 	Assert.assertEquals("hahap1:p2", content);
-	// }
 
-	// Fixme @Test
-	// public void echo() throws IOException {
-	// 	server.post("/test", (request, response) -> response.content(request.getContent()));
-	// 	String content = Request.Post("http://localhost:8080/test").bodyString("This is a test!", ContentType.TEXT_PLAIN).execute().returnContent().asString();
-	// 	Assert.assertEquals("This is a test!", content);
-	// }
+	@Test
+	public void controllerWithParam() throws IOException {
+		String content = Request.Get("http://localhost:8080/hehe?p1=1&p2=2").execute().returnContent().asString();
+		Assert.assertEquals("hahap1:p2", content);
+	}
 
-	// Fixme @Test
-	// public void echoCapitalizedStream() throws IOException {
-	// 	server.post("/test", (request, response) -> response.content(request.getContent().map(data -> ByteBuffer.wrap(new String(data.array(), StandardCharsets.UTF_8).toUpperCase().getBytes(StandardCharsets.UTF_8)))));
-	// 	String content = Request.Post("http://localhost:8080/test").bodyString("This is a test!", ContentType.TEXT_PLAIN).execute().returnContent().asString();
-	// 	Assert.assertEquals("THIS IS A TEST!", content);
-	// }
+	@Test
+	public void postTest() throws IOException {
+		//form-data暂不支持
+		List<BasicNameValuePair> list = Collections.singletonList(new BasicNameValuePair("b", "2"));
+		String content = Request.Post("http://localhost:8080/postTest/10?a=1").bodyForm(list, Charset.forName("UTF-8")).execute().returnContent().asString();
+		Assert.assertEquals("echo110", content);
+	}
+
+
 
 }

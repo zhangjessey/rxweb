@@ -1,13 +1,10 @@
 package rxweb.support;
 
 
-import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.QueryStringDecoder;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,19 +23,17 @@ public class WebUtils {
     public static Map<String, Object> getRequestParamMap(HttpServerRequest request) {
         Map<String, Object> paramMap = new LinkedHashMap<String, Object>();
         try {
-            HttpMethod method = request.getHttpMethod();
-            if ((HttpMethod.GET.equals(method))) {
-                QueryStringDecoder queryDecoder = new QueryStringDecoder(request.getUri(), Charset.forName("UTF-8"));
-                Map<String, List<String>> uriAttributes = queryDecoder.parameters();
-                //此处仅打印请求参数（你可以根据业务需求自定义处理）
-                for (Map.Entry<String, List<String>> attr : uriAttributes.entrySet()) {
-                    for (String attrVal : attr.getValue()) {
-                        //logger.info(attr.getKey() + "=" + attrVal);
-                        paramMap.put(attr.getKey(), attr.getValue());
-                    }
-                }
+            //HttpMethod method = request.getHttpMethod();
 
+            Map<String, List<String>> queryParameters = request.getQueryParameters();
+
+            //此处仅打印请求参数（你可以根据业务需求自定义处理）
+            for (Map.Entry<String, List<String>> attr : queryParameters.entrySet()) {
+                for (String attrVal : attr.getValue()) {
+                    paramMap.put(attr.getKey(), attrVal);
+                }
             }
+
             // if (method.equalsIgnoreCase("put") || method.equalsIgnoreCase("delete")) {
             //     String queryString = CodecUtil.decodeURL(StreamUtil.getString(request.getInputStream()));
             //     if (StringUtil.isNotEmpty(queryString)) {

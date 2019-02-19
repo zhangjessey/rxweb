@@ -6,7 +6,6 @@ import org.reflections.Reflections;
 import rxweb.annotation.Controller;
 import rxweb.annotation.RequestMapping;
 import rxweb.mapping.Condition;
-import rxweb.mapping.MappingCondition;
 
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
@@ -51,7 +50,10 @@ public class Init {
             for (Method method : methods) {
                 if (method.isAnnotationPresent(RequestMapping.Get.class)) {
                     String path = method.getAnnotation(RequestMapping.Get.class).value();
-                    handlers.put(MappingCondition.Builder.from(path).method(HttpMethod.GET).build(), new Handler(aClass, method));
+                    handlers.put(new Condition<HttpServerRequest>(HttpMethod.GET, path), new Handler(aClass, method));
+                } else if (method.isAnnotationPresent(RequestMapping.Post.class)) {
+                    String path = method.getAnnotation(RequestMapping.Post.class).value();
+                    handlers.put(new Condition<HttpServerRequest>(HttpMethod.POST, path), new Handler(aClass, method));
                 }
             }
 

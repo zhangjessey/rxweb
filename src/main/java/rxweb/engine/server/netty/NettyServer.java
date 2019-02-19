@@ -25,7 +25,6 @@ import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 import rxweb.Server;
 import rxweb.mapping.Condition;
 import rxweb.mapping.HandlerResolver;
-import rxweb.mapping.MappingCondition;
 import rxweb.server.DefaultHandlerResolver;
 import rxweb.server.Handler;
 
@@ -76,22 +75,22 @@ public class NettyServer implements Server {
 
     @Override
     public void get(String path, Handler handler) {
-        addHandler(MappingCondition.Builder.from(path).method(HttpMethod.GET).build(), handler);
+        addHandler(new Condition<>(HttpMethod.GET, path), handler);
     }
 
     @Override
     public void post(String path, Handler handler) {
-        addHandler(MappingCondition.Builder.from(path).method(HttpMethod.POST).build(), handler);
+        addHandler(new Condition<>(HttpMethod.POST, path), handler);
     }
 
     @Override
     public void put(String path, Handler handler) {
-        addHandler(MappingCondition.Builder.from(path).method(HttpMethod.PUT).build(), handler);
+        addHandler(new Condition<>(HttpMethod.PUT, path), handler);
     }
 
     @Override
     public void delete(String path, Handler handler) {
-        addHandler(MappingCondition.Builder.from(path).method(HttpMethod.DELETE).build(), handler);
+        addHandler(new Condition<>(HttpMethod.DELETE, path), handler);
     }
 
     @Override

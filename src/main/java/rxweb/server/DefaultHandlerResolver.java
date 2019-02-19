@@ -23,6 +23,8 @@ import rxweb.mapping.HandlerResolver;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Sebastien Deleuze
@@ -45,8 +47,19 @@ public class DefaultHandlerResolver implements HandlerResolver {
 	public List<Handler> resolve(HttpServerRequest request) {
 		List<Handler> requestHandlers = new ArrayList<>();
 		for (Map.Entry<Condition<HttpServerRequest>, Handler> entry : Init.handlers.entrySet()) {
-			if(entry.getKey().match(request)) {
-				requestHandlers.add(entry.getValue());
+			String path = entry.getKey().getUrl();
+			if (path.matches(".+\\{\\w+\\}.*")) {
+				// 将请求路径中的占位符 {\w+} 转换为正则表达式 (\\w+)
+				//path = StringUtil.replaceAll(path, "\\{\\w+\\}", "(\\\\w+)");
+				path = path.replaceAll("\\{\\w+\\}", "(\\\\w+)");
+			}
+			path = path.concat(".*");
+
+			Matcher matcher = Pattern.compile(path).matcher(request.getUri());
+			if (entry.getKey().getHttpMethod().equals(request.getHttpMethod()) && matcher.matches()) {
+				Handler value = entry.getValue();
+				value.setRequestPathMatcher(matcher);
+				requestHandlers.add(value);
 			}
 		}
 		return requestHandlers;

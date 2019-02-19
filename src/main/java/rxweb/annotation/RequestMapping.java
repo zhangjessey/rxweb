@@ -18,4 +18,11 @@ public @interface RequestMapping {
 
         String value();
     }
+
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Post {
+
+        String value();
+    }
 }

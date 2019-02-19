@@ -22,4 +22,12 @@ public class TestController {
 
         return "haha".concat(params.toString());
     }
+
+    @RequestMapping.Post(value = "/postTest/{c}")
+    public String postTest(Params params, int c) {
+        Object a = params.getMap().get("a");
+        String paramValue = (String) (a);
+        String pathValue = String.valueOf(c);
+        return "echo".concat(paramValue).concat(pathValue);
+    }
 }
