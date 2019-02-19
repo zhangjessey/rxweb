@@ -42,7 +42,8 @@ public class NettyServer implements Server {
     HttpServer<ByteBuf, ByteBuf> httpServer;
 
     public NettyServer() {
-        httpServer = HttpServer.newServer(8080).channelOption(ChannelOption.SO_KEEPALIVE, true).
+        httpServer = HttpServer.newServer(8080).
+                channelOption(ChannelOption.SO_KEEPALIVE, true).
                 channelOption(ChannelOption.SO_KEEPALIVE, true).
                 channelOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 
@@ -54,10 +55,7 @@ public class NettyServer implements Server {
     }
 
     public static void main(String[] args) {
-        HttpServer.newServer(8080).channelOption(ChannelOption.SO_KEEPALIVE, true).
-                channelOption(ChannelOption.SO_KEEPALIVE, true).
-                channelOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT).
-                start(new Dispatcher()).awaitShutdown();
+        new NettyServer().start();
     }
 
 

@@ -54,6 +54,12 @@ public class Init {
                 } else if (method.isAnnotationPresent(RequestMapping.Post.class)) {
                     String path = method.getAnnotation(RequestMapping.Post.class).value();
                     handlers.put(new Condition<HttpServerRequest>(HttpMethod.POST, path), new Handler(aClass, method));
+                } else if (method.isAnnotationPresent(RequestMapping.Put.class)) {
+                    String path = method.getAnnotation(RequestMapping.Put.class).value();
+                    handlers.put(new Condition<HttpServerRequest>(HttpMethod.PUT, path), new Handler(aClass, method));
+                } else if (method.isAnnotationPresent(RequestMapping.Delete.class)) {
+                    String path = method.getAnnotation(RequestMapping.Delete.class).value();
+                    handlers.put(new Condition<HttpServerRequest>(HttpMethod.DELETE, path), new Handler(aClass, method));
                 }
             }
 

@@ -78,6 +78,18 @@ public class RxJavaServerTests {
 		Assert.assertEquals("echo110", content);
 	}
 
+	@Test
+	public void deleteTest() throws IOException {
+		List<BasicNameValuePair> list = Collections.singletonList(new BasicNameValuePair("b", "2"));
+		String content = Request.Delete("http://localhost:8080/postTest/10?a=1").execute().returnContent().asString();
+		Assert.assertEquals("echo110", content);
+	}
 
+	@Test
+	public void putTest() throws IOException {
+		List<BasicNameValuePair> list = Collections.singletonList(new BasicNameValuePair("b", "2"));
+		String content = Request.Put("http://localhost:8080/postTest/10?a=1").execute().returnContent().asString();
+		Assert.assertEquals("echo110", content);
+	}
 
 }

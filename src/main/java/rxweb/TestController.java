@@ -25,6 +25,20 @@ public class TestController {
 
     @RequestMapping.Post(value = "/postTest/{c}")
     public String postTest(Params params, int c) {
+        return getStr(params, c);
+    }
+
+    @RequestMapping.Delete(value = "/postTest/{c}")
+    public String deleteTest(Params params, int c) {
+        return getStr(params, c);
+    }
+
+    @RequestMapping.Put(value = "/postTest/{c}")
+    public String putTest(Params params, int c) {
+        return getStr(params, c);
+    }
+
+    private String getStr(Params params, int c) {
         Object a = params.getMap().get("a");
         String paramValue = (String) (a);
         String pathValue = String.valueOf(c);
