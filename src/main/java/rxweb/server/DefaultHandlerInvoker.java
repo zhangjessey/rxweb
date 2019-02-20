@@ -88,25 +88,7 @@ public class DefaultHandlerInvoker implements HandlerInvoker {
 
     private Multimap<Class<?>, Object> createPathParamList(Matcher requestPathMatcher, Class<?>[] actionParamTypes) {
 
-
         Multimap<Class<?>, Object> multiMap = LinkedListMultimap.create();
-        // // 遍历正则表达式中所匹配的组
-        // for (int i = 1; i <= requestPathMatcher.groupCount(); i++) {
-        //     // 获取请求参数
-        //     String param = requestPathMatcher.group(i);
-        //     // 获取参数类型（注意：支持四种类型：int/Integer、long/Long、double/Double、String）
-        //     Class<?> paramType = actionParamTypes[i - 1];
-        //     if (paramType.equals(int.class) || paramType.equals(Integer.class)) {
-        //         multiMap.put(int.class, Integer.valueOf(param));
-        //     } else if (paramType.equals(long.class) || paramType.equals(Long.class)) {
-        //         multiMap.put(long.class, Long.valueOf(param));
-        //     } else if (paramType.equals(double.class) || paramType.equals(Double.class)) {
-        //         multiMap.put(double.class, Double.valueOf(param));
-        //     } else if (paramType.equals(String.class)) {
-        //         multiMap.put(String.class, param);
-        //     }
-        // }
-        // return multiMap;
 
         IntStream.rangeClosed(1, requestPathMatcher.groupCount()).forEach(i -> {
             String param = requestPathMatcher.group(i);

@@ -22,15 +22,6 @@ public class Dispatcher implements RequestHandler<ByteBuf, ByteBuf> {
     @Override
     public Observable<Void> handle(HttpServerRequest<ByteBuf> request, HttpServerResponse<ByteBuf> response) {
 
-        // List<Handler> resolve = handlerResolver.resolve(request);
-        //
-        // if (resolve != null && !resolve.isEmpty()) {
-        //     Handler handler = resolve.get(0);
-        //     return handler.handle(request, response);
-        // }
-        //
-        // return response.setStatus(NOT_FOUND);
-
         return Observable.from(handlerResolver.resolve(request)).
                 firstOrDefault(new NotFoundHandler(), handler -> true).flatMap(requestHandler -> requestHandler.handle(request, response));
 
