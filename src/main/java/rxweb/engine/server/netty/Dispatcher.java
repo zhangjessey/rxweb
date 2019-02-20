@@ -9,9 +9,7 @@ import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rxweb.mapping.HandlerResolver;
 import rxweb.server.DefaultHandlerResolver;
-import rxweb.server.Handler;
-
-import java.util.List;
+import rxweb.server.NotFoundHandler;
 
 /**
  * @author zhangjessey
@@ -24,14 +22,17 @@ public class Dispatcher implements RequestHandler<ByteBuf, ByteBuf> {
     @Override
     public Observable<Void> handle(HttpServerRequest<ByteBuf> request, HttpServerResponse<ByteBuf> response) {
 
-        List<Handler> resolve = handlerResolver.resolve(request);
+        // List<Handler> resolve = handlerResolver.resolve(request);
+        //
+        // if (resolve != null && !resolve.isEmpty()) {
+        //     Handler handler = resolve.get(0);
+        //     return handler.handle(request, response);
+        // }
+        //
+        // return response.setStatus(NOT_FOUND);
 
-        if (resolve != null && !resolve.isEmpty()) {
-            Handler handler = resolve.get(0);
-            return handler.handle(request, response);
-        }
-
-        return response.writeString(Observable.just("no match!"));
+        return Observable.from(handlerResolver.resolve(request)).
+                firstOrDefault(new NotFoundHandler(), handler -> true).flatMap(requestHandler -> requestHandler.handle(request, response));
 
     }
 }

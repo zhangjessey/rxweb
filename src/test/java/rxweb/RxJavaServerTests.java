@@ -59,10 +59,10 @@ public class RxJavaServerTests {
 	}
 
 	@Test
-	public void writeBuffer() throws IOException {
+	public void notfound() throws IOException {
 
-		String content = Request.Get("http://localhost:8080/test").execute().returnContent().asString();
-		Assert.assertEquals("no match!", content);
+		int code = Request.Get("http://localhost:8080/notfound").execute().returnResponse().getStatusLine().getStatusCode();
+		Assert.assertEquals(404, code);
 	}
 
 

@@ -17,6 +17,7 @@
 package rxweb.server;
 
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
+import io.reactivex.netty.protocol.http.server.RequestHandler;
 import rxweb.mapping.Condition;
 import rxweb.mapping.HandlerResolver;
 
@@ -44,8 +45,8 @@ public class DefaultHandlerResolver implements HandlerResolver {
 	}
 
 	@Override
-	public List<Handler> resolve(HttpServerRequest request) {
-		List<Handler> requestHandlers = new ArrayList<>();
+	public List<RequestHandler> resolve(HttpServerRequest request) {
+		List<RequestHandler> requestHandlers = new ArrayList<>();
 		for (Map.Entry<Condition<HttpServerRequest>, Handler> entry : Init.handlers.entrySet()) {
 			String path = entry.getKey().getUrl();
 			if (path.matches(".+\\{\\w+\\}.*")) {
@@ -53,6 +54,7 @@ public class DefaultHandlerResolver implements HandlerResolver {
 				//path = StringUtil.replaceAll(path, "\\{\\w+\\}", "(\\\\w+)");
 				path = path.replaceAll("\\{\\w+\\}", "(\\\\w+)");
 			}
+			//TODO
 			path = path.concat(".*");
 
 			Matcher matcher = Pattern.compile(path).matcher(request.getUri());
