@@ -23,6 +23,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rxweb.engine.server.netty.NettyServer;
 
 import java.io.IOException;
@@ -37,16 +39,17 @@ import java.util.List;
 public class RxJavaServerTests {
 
 	private NettyServer nettyServer;
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		nettyServer = new NettyServer();
 
 		new Thread(() -> {
 			try {
 				nettyServer.start();
 			} catch (Exception e) {
-
+				logger.error(e.getMessage());
 			}
 		}).start();
 
@@ -55,7 +58,7 @@ public class RxJavaServerTests {
 	@After
 	public void tearDown() throws Exception {
 		nettyServer.stop();
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 	}
 
 	@Test
