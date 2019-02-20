@@ -58,7 +58,7 @@ public class RxJavaServerTests {
 	@After
 	public void tearDown() throws Exception {
 		nettyServer.stop();
-		Thread.sleep(2000);
+		Thread.sleep(3000);
 	}
 
 	@Test
