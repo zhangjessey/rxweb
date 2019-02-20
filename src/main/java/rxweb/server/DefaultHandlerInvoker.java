@@ -3,6 +3,8 @@ package rxweb.server;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rxweb.bean.Params;
 import rxweb.support.WebUtils;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
  */
 public class DefaultHandlerInvoker implements HandlerInvoker {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public Observable<? extends Object> invokeHandler(HttpServerRequest request, Handler handler) {
@@ -41,6 +44,7 @@ public class DefaultHandlerInvoker implements HandlerInvoker {
             Observable<? extends Object> actionMethodResult = invokeActionMethod(actionMethod, actionInstance, realParamList);
             return actionMethodResult;
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return null;
         }
 

@@ -1,6 +1,7 @@
 package rxweb.support;
 
 
+import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ public class WebUtils {
     /**
      * 从请求中获取所有参数（当参数名重复时，用后者覆盖前者）
      */
-    public static Map<String, Object> getRequestParamMap(HttpServerRequest request) {
+    public static Map<String, Object> getRequestParamMap(HttpServerRequest<ByteBuf> request) {
         Map<String, Object> paramMap = new LinkedHashMap<String, Object>();
         try {
             //HttpMethod method = request.getHttpMethod();
