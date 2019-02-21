@@ -21,10 +21,18 @@ public class Handler implements RequestHandler<ByteBuf, ByteBuf> {
     private Class<?> actionClass;
     private Method actionMethod;
     private Matcher requestPathMatcher;
+    private Class<?> requestBodyClass;
+    private String requestBody;
 
     public Handler(Class<?> actionClass, Method actionMethod) {
         this.actionClass = actionClass;
         this.actionMethod = actionMethod;
+    }
+
+    public Handler(Class<?> actionClass, Method actionMethod, Class<?> requestBodyClass) {
+        this.actionClass = actionClass;
+        this.actionMethod = actionMethod;
+        this.requestBodyClass = requestBodyClass;
     }
 
     public Class<?> getActionClass() {
@@ -43,6 +51,13 @@ public class Handler implements RequestHandler<ByteBuf, ByteBuf> {
         this.requestPathMatcher = requestPathMatcher;
     }
 
+    public Class<?> getRequestBodyClass() {
+        return requestBodyClass;
+    }
+
+    public void setRequestBodyClass(Class<?> requestBodyClass) {
+        this.requestBodyClass = requestBodyClass;
+    }
 
     @Override
     public Observable<Void> handle(HttpServerRequest<ByteBuf> request, HttpServerResponse<ByteBuf> response) {
@@ -59,5 +74,13 @@ public class Handler implements RequestHandler<ByteBuf, ByteBuf> {
 
         }));
 
+    }
+
+    public String getRequestBody() {
+        return requestBody;
+    }
+
+    public void setRequestBody(String requestBody) {
+        this.requestBody = requestBody;
     }
 }

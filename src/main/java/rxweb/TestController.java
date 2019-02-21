@@ -2,6 +2,7 @@ package rxweb;
 
 import rx.Observable;
 import rxweb.annotation.Controller;
+import rxweb.annotation.RequestBody;
 import rxweb.annotation.RequestMapping;
 import rxweb.bean.Params;
 
@@ -48,16 +49,54 @@ public class TestController {
         return Observable.just("echo".concat(paramValue).concat(pathValue));
     }
 
-    @RequestMapping.Post(value = "/postTestBean/{c}")
-    public Observable<Params> postTestBean(int c, Params params) {
+    @RequestMapping.Post(value = "/postReturnBean/{c}")
+    public Observable<Params> postReturnBean(int c, Params params) {
         HashMap<String, Object> stringStringHashMap = new HashMap<>(3);
         stringStringHashMap.put("a", "1");
         stringStringHashMap.put("b", "2");
         stringStringHashMap.put("c", "3");
+        Params p = new Params(stringStringHashMap);
+        return Observable.just(p);
 
+    }
+
+    /**
+     * curl -X POST \
+     * 'http://localhost:8080/postBean/10?a=1' \
+     * -H 'Content-Type: application/json' \
+     * -d '{"id":1,"name":"hehe"}'
+     */
+    @RequestMapping.Post(value = "/postBean/{c}")
+    public Observable<Params> postBean(@RequestBody User user, int c, Params params) {
+        HashMap<String, Object> stringStringHashMap = new HashMap<>(3);
+        stringStringHashMap.put("result", "success");
         Params p = new Params(stringStringHashMap);
 
         return Observable.just(p);
 
+    }
+
+    public static class User {
+        private String id;
+        private String name;
+
+        public User() {
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
     }
 }

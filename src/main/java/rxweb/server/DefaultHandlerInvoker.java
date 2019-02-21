@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rxweb.bean.Params;
+import rxweb.support.DefaultConverter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -62,9 +63,17 @@ public class DefaultHandlerInvoker implements HandlerInvoker {
             Class<?>[] pathParamList = collect.toArray(new Class<?>[]{});
             pathParamMap = createPathParamList(handler.getRequestPathMatcher(), pathParamList);
         }
-
+        //获取普通请求参数列表
         Multimap<Class<?>, Object> requestParamMap = getRequestParamMap(request);
         pathParamMap.putAll(requestParamMap);
+
+        if (handler.getRequestBody() != null && handler.getRequestBodyClass() != null) {
+            DefaultConverter defaultConverter = new DefaultConverter();
+
+            //获取requestbody参数
+            Object deserialize = defaultConverter.deserialize((String) handler.getRequestBody(), handler.getRequestBodyClass());
+            pathParamMap.put(handler.getRequestBodyClass(), deserialize);
+        }
 
         // 返回参数列表
         return pathParamMap;

@@ -104,10 +104,10 @@ public class RxJavaServerTests {
 	}
 
 	@Test
-	public void postTestBean() throws IOException {
+	public void postReturnBean() throws IOException {
 		//form-data暂不支持
 		List<BasicNameValuePair> list = Collections.singletonList(new BasicNameValuePair("b", "2"));
-		String content = Request.Post("http://localhost:8080/postTestBean/10?a=1").bodyForm(list, Charset.forName("UTF-8")).execute().returnContent().asString();
+		String content = Request.Post("http://localhost:8080/postReturnBean/10?a=1").bodyForm(list, Charset.forName("UTF-8")).execute().returnContent().asString();
 		Assert.assertEquals("{\"map\":{\"a\":\"1\",\"b\":\"2\",\"c\":\"3\"}}", content);
 	}
 

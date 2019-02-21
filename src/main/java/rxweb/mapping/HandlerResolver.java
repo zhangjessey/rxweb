@@ -18,6 +18,7 @@ package rxweb.mapping;
 
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 import io.reactivex.netty.protocol.http.server.RequestHandler;
+import rxweb.bean.WebRequest;
 
 import java.util.List;
 
@@ -27,6 +28,6 @@ import java.util.List;
  */
 public interface HandlerResolver extends HandlerRegistry<HttpServerRequest> {
 
-	List<RequestHandler> resolve(HttpServerRequest request);
+	List<RequestHandler> resolve(WebRequest request);
 
 }
