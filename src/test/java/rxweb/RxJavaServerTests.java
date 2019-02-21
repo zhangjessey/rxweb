@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rx.Observable;
 import rxweb.engine.server.netty.NettyServer;
 
 import java.io.IOException;
@@ -58,7 +59,14 @@ public class RxJavaServerTests {
 	@After
 	public void tearDown() throws Exception {
 		nettyServer.stop();
-		Thread.sleep(3000);
+		Thread.sleep(5000);
+	}
+
+	@Test
+	public void functionalRoute() throws Exception {
+		nettyServer.get("/haha", (request, response) -> response.writeString(Observable.just("heiheihei")));
+		String content = Request.Get("http://localhost:8080/haha").execute().returnContent().asString();
+		Assert.assertEquals("heiheihei", content);
 	}
 
 	@Test

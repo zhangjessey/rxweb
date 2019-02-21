@@ -17,8 +17,8 @@
 package rxweb;
 
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
+import io.reactivex.netty.protocol.http.server.RequestHandler;
 import rxweb.mapping.HandlerRegistry;
-import rxweb.server.Handler;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -34,12 +34,12 @@ public interface Server extends HandlerRegistry<HttpServerRequest> {
 	/** Complete when the server is stopped **/
 	CompletableFuture<Void> stop();
 
-	void get(final String path, final Handler handler);
+	void get(final String path, final RequestHandler handler);
 
-	void post(final String path, final Handler handler);
+	void post(final String path, final RequestHandler handler);
 
-	void put(final String path, final Handler handler);
+	void put(final String path, final RequestHandler handler);
 
-	void delete(final String path, final Handler handler);
+	void delete(final String path, final RequestHandler handler);
 
 }

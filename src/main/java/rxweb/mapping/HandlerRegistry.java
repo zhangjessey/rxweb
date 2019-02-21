@@ -16,7 +16,7 @@
 
 package rxweb.mapping;
 
-import rxweb.server.Handler;
+import io.reactivex.netty.protocol.http.server.RequestHandler;
 
 /**
  * @author Sebastien Deleuze
@@ -24,6 +24,6 @@ import rxweb.server.Handler;
  */
 public interface HandlerRegistry<R> {
 
-	void addHandler(final Condition<R> condition, final Handler handler);
+	void addHandler(final Condition<R> condition, final RequestHandler handler);
 
 }

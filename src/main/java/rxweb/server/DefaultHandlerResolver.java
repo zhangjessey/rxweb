@@ -41,14 +41,14 @@ public class DefaultHandlerResolver implements HandlerResolver {
 	}
 
 	@Override
-	public void addHandler(final Condition<HttpServerRequest> condition, final Handler handler) {
+	public void addHandler(final Condition<HttpServerRequest> condition, final RequestHandler handler) {
 		Init.handlers.put(condition, handler);
 	}
 
 	@Override
 	public List<RequestHandler> resolve(WebRequest webRequest) {
 		List<RequestHandler> requestHandlers = new ArrayList<>();
-		for (Map.Entry<Condition<HttpServerRequest>, Handler> entry : Init.handlers.entrySet()) {
+		for (Map.Entry<Condition<HttpServerRequest>, RequestHandler> entry : Init.handlers.entrySet()) {
 			String path = entry.getKey().getUrl();
 			if (path.matches(".+\\{\\w+\\}.*")) {
 				// 将请求路径中的占位符 {\w+} 转换为正则表达式 (\\w+)
@@ -60,8 +60,12 @@ public class DefaultHandlerResolver implements HandlerResolver {
 
 			Matcher matcher = Pattern.compile(path).matcher(webRequest.getHttpServerRequest().getUri());
 			if (entry.getKey().getHttpMethod().equals(webRequest.getHttpServerRequest().getHttpMethod()) && matcher.matches()) {
-				Handler value = entry.getValue();
-				value.setRequestPathMatcher(matcher);
+				RequestHandler value = entry.getValue();
+				if (value.getClass().isAssignableFrom(RequestHandler.class) && (!(value instanceof Handler))) {
+					value = new Handler(matcher, value);
+				} else if (value instanceof Handler) {
+					((Handler) value).setRequestPathMatcher(matcher);
+				}
 				requestHandlers.add(value);
 			}
 		}

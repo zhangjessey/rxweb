@@ -2,6 +2,7 @@ package rxweb.server;
 
 import io.netty.handler.codec.http.HttpMethod;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
+import io.reactivex.netty.protocol.http.server.RequestHandler;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ public class Init {
 
     public static Set<Class<?>> ControllerClasses;
     public static Map<Class<?>, Object> BeanMap;
-    public static Map<Condition<HttpServerRequest>, Handler> handlers = new LinkedHashMap<>();
+    public static Map<Condition<HttpServerRequest>, RequestHandler> handlers = new LinkedHashMap<>();
 
 
     static {

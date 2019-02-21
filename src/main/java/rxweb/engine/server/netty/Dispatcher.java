@@ -39,15 +39,18 @@ public class Dispatcher implements RequestHandler<ByteBuf, ByteBuf> {
                 }
             }
             return wreq;
-        }).map(WebRequest -> {
-            List<RequestHandler> resolve = handlerResolver.resolve(WebRequest);
+        }).map(webRequest -> {
+            List<RequestHandler> resolve = handlerResolver.resolve(webRequest);
             if (resolve.isEmpty()) {
                 return new NotFoundHandler();
             }
-            Handler requestHandler = (Handler) resolve.get(0);
 
-            requestHandler.setRequestBody(WebRequest.getBody());
-            return requestHandler;
-        }).flatMap(requestHandler -> requestHandler.handle(request, response));
+            RequestHandler rh = resolve.get(0);
+            if (rh instanceof Handler) {
+                ((Handler) rh).setRequestBody(webRequest.getBody());
+            }
+
+            return rh;
+        }).flatMap(requestHandler -> (Observable<? extends Void>) requestHandler.handle(request, response));
     }
 }

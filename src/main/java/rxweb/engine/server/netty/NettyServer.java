@@ -22,11 +22,11 @@ import io.netty.channel.ChannelOption;
 import io.netty.handler.codec.http.HttpMethod;
 import io.reactivex.netty.protocol.http.server.HttpServer;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
+import io.reactivex.netty.protocol.http.server.RequestHandler;
 import rxweb.Server;
 import rxweb.mapping.Condition;
 import rxweb.mapping.HandlerResolver;
 import rxweb.server.DefaultHandlerResolver;
-import rxweb.server.Handler;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -71,27 +71,27 @@ public class NettyServer implements Server {
     }
 
     @Override
-    public void get(String path, Handler handler) {
+    public void get(String path, RequestHandler handler) {
         addHandler(new Condition<>(HttpMethod.GET, path), handler);
     }
 
     @Override
-    public void post(String path, Handler handler) {
+    public void post(String path, RequestHandler handler) {
         addHandler(new Condition<>(HttpMethod.POST, path), handler);
     }
 
     @Override
-    public void put(String path, Handler handler) {
+    public void put(String path, RequestHandler handler) {
         addHandler(new Condition<>(HttpMethod.PUT, path), handler);
     }
 
     @Override
-    public void delete(String path, Handler handler) {
+    public void delete(String path, RequestHandler handler) {
         addHandler(new Condition<>(HttpMethod.DELETE, path), handler);
     }
 
     @Override
-    public void addHandler(Condition<HttpServerRequest> condition, Handler handler) {
+    public void addHandler(Condition<HttpServerRequest> condition, RequestHandler handler) {
         this.handlerResolver.addHandler(condition, handler);
     }
 }
