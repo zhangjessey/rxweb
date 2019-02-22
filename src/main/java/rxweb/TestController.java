@@ -7,51 +7,48 @@ import rxweb.annotation.RequestMapping;
 import rxweb.bean.Params;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * 测试用Controller
+ *
  * @author zhangjessey
  */
 @Controller
 public class TestController {
 
     @RequestMapping.Get(value = "/hi")
-    public Observable<String> testMethodNoParam() {
+    public Observable<String> noParam() {
 
-        return Observable.just("hello");
+        return Observable.just("hello world");
     }
 
 
-    @RequestMapping.Get(value = "/hehe")
-    public Observable<String> testMethodWithParam(Params params) {
+    @RequestMapping.Get(value = "/withQueryParam")
+    public Observable<String> withQueryParam(Params params) {
 
-        return Observable.just("haha".concat(params.toString()));
+        return Observable.just("query name:".concat(params.toString()));
     }
 
-    @RequestMapping.Post(value = "/postTest/{c}")
-    public Observable<String> postTest(Params params, int c) {
+    @RequestMapping.Post(value = "/post/{c}")
+    public Observable<String> post(Params params, int c) {
         return getStr(params, c);
     }
 
-    @RequestMapping.Delete(value = "/postTest/{c}")
-    public Observable<String> deleteTest(Params params, int c) {
+    @RequestMapping.Delete(value = "/delete/{c}")
+    public Observable<String> delete(Params params, int c) {
         return getStr(params, c);
     }
 
-    @RequestMapping.Put(value = "/postTest/{c}")
-    public Observable<String> putTest(Params params, int c) {
+    @RequestMapping.Put(value = "/put/{c}")
+    public Observable<String> put(Params params, int c) {
         return getStr(params, c);
     }
 
-    private Observable<String> getStr(Params params, int c) {
-        Object a = params.getMap().get("a");
-        String paramValue = (String) (a);
-        String pathValue = String.valueOf(c);
-        return Observable.just("echo".concat(paramValue).concat(pathValue));
-    }
 
-    @RequestMapping.Post(value = "/postReturnBean/{c}")
-    public Observable<Params> postReturnBean(int c, Params params) {
+    @RequestMapping.Post(value = "/postAndReturnBean/{c}")
+    public Observable<Params> postAndReturnBean(int c, Params params) {
+
         HashMap<String, Object> stringStringHashMap = new HashMap<>(3);
         stringStringHashMap.put("a", "1");
         stringStringHashMap.put("b", "2");
@@ -64,12 +61,25 @@ public class TestController {
 
     @RequestMapping.Post(value = "/postBean/{c}")
     public Observable<Params> postBean(@RequestBody User user, int c, Params params) {
-        HashMap<String, Object> stringStringHashMap = new HashMap<>(3);
+
+        HashMap<String, Object> stringStringHashMap = new LinkedHashMap<>(5);
         stringStringHashMap.put("result", "success");
+        stringStringHashMap.put("id", user.getId());
+        stringStringHashMap.put("name", user.getName());
+        stringStringHashMap.put("pathValue", c);
+        stringStringHashMap.put("param_a_value", params.getMap().get("a"));
         Params p = new Params(stringStringHashMap);
 
         return Observable.just(p);
 
+    }
+
+
+    private Observable<String> getStr(Params params, int c) {
+
+        String a = String.join(":", params.getMap().keySet());
+        String pathValue = String.valueOf(c);
+        return Observable.just("query name:".concat(a).concat(",pathValue:").concat(pathValue));
     }
 
     public static class User {

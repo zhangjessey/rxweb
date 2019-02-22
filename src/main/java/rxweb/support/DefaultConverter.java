@@ -9,6 +9,7 @@ import java.io.IOException;
 
 /**
  * 默认转换器，使用Jackson
+ *
  * @author zhangjessey
  */
 public class DefaultConverter implements Converter {

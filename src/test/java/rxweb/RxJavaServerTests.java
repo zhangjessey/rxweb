@@ -19,7 +19,6 @@ package rxweb;
 
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicNameValuePair;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -30,12 +29,10 @@ import rx.Observable;
 import rxweb.engine.server.netty.NettyServer;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * 单元测试
+ *
  * @author Sebastien Deleuze
  * @author zhangjessey
  */
@@ -47,7 +44,9 @@ public class RxJavaServerTests {
 	@BeforeClass
 	public static void setup() {
 		nettyServer = new NettyServer();
-		nettyServer.get("/haha", (request, response) -> response.writeString(Observable.just("heiheihei")));
+
+		nettyServer.get("/functionalRoute", (request, response) -> response.writeString(Observable.<String>just("this is functionalRoute")));
+
 		new Thread(() -> {
 			try {
 				nettyServer.start();
@@ -59,16 +58,15 @@ public class RxJavaServerTests {
 	}
 
 	@AfterClass
-	public static void tearDown() throws Exception {
+	public static void tearDown() {
 		nettyServer.stop();
-		//Thread.sleep(5000);
 	}
 
 	@Test
 	public void functionalRoute() throws Exception {
 
-		String content = Request.Get("http://localhost:8080/haha").execute().returnContent().asString();
-		Assert.assertEquals("heiheihei", content);
+		String content = Request.Get("http://localhost:8080/functionalRoute").execute().returnContent().asString();
+		Assert.assertEquals("this is functionalRoute", content);
 	}
 
 	@Test
@@ -80,44 +78,38 @@ public class RxJavaServerTests {
 
 
 	@Test
-	public void controllerNoParam() throws IOException {
+	public void noParam() throws IOException {
 		String content = Request.Get("http://localhost:8080/hi").execute().returnContent().asString();
-		Assert.assertEquals("hello", content);
+		Assert.assertEquals("hello world", content);
 	}
 
 	@Test
-	public void controllerWithParam() throws IOException {
-		String content = Request.Get("http://localhost:8080/hehe?p1=1&p2=2").execute().returnContent().asString();
-		Assert.assertEquals("hahap1:p2", content);
+	public void withQueryParam() throws IOException {
+		String content = Request.Get("http://localhost:8080/withQueryParam?p1=1&p2=2").execute().returnContent().asString();
+		Assert.assertEquals("query name:p1:p2", content);
 	}
 
 	@Test
-	public void postTest() throws IOException {
-		//form-data暂不支持
-		List<BasicNameValuePair> list = Collections.singletonList(new BasicNameValuePair("b", "2"));
-		String content = Request.Post("http://localhost:8080/postTest/10?a=1").bodyForm(list, Charset.forName("UTF-8")).execute().returnContent().asString();
-		Assert.assertEquals("echo110", content);
+	public void post() throws IOException {
+		String content = Request.Post("http://localhost:8080/post/10?a=1").execute().returnContent().asString();
+		Assert.assertEquals("query name:a,pathValue:10", content);
 	}
 
 	@Test
-	public void deleteTest() throws IOException {
-		List<BasicNameValuePair> list = Collections.singletonList(new BasicNameValuePair("b", "2"));
-		String content = Request.Delete("http://localhost:8080/postTest/10?a=1").execute().returnContent().asString();
-		Assert.assertEquals("echo110", content);
+	public void delete() throws IOException {
+		String content = Request.Delete("http://localhost:8080/delete/10?a=1").execute().returnContent().asString();
+		Assert.assertEquals("query name:a,pathValue:10", content);
 	}
 
 	@Test
-	public void putTest() throws IOException {
-		List<BasicNameValuePair> list = Collections.singletonList(new BasicNameValuePair("b", "2"));
-		String content = Request.Put("http://localhost:8080/postTest/10?a=1").execute().returnContent().asString();
-		Assert.assertEquals("echo110", content);
+	public void put() throws IOException {
+		String content = Request.Put("http://localhost:8080/put/10?a=1").execute().returnContent().asString();
+		Assert.assertEquals("query name:a,pathValue:10", content);
 	}
 
 	@Test
-	public void postReturnBean() throws IOException {
-		//form-data暂不支持
-		List<BasicNameValuePair> list = Collections.singletonList(new BasicNameValuePair("b", "2"));
-		String content = Request.Post("http://localhost:8080/postReturnBean/10?a=1").bodyForm(list, Charset.forName("UTF-8")).execute().returnContent().asString();
+	public void postAndReturnBean() throws IOException {
+		String content = Request.Post("http://localhost:8080/postAndReturnBean/10?a=1").execute().returnContent().asString();
 		Assert.assertEquals("{\"map\":{\"a\":\"1\",\"b\":\"2\",\"c\":\"3\"}}", content);
 	}
 
@@ -127,8 +119,8 @@ public class RxJavaServerTests {
 		stringEntity.setContentEncoding("UTF-8");
 		stringEntity.setContentType("application/json");//发送json数据需要设置contentType
 
-		String content = Request.Post("http://localhost:8080//postBean/10?a=1").body(stringEntity).execute().returnContent().asString();
-		Assert.assertEquals("{\"map\":{\"result\":\"success\"}}", content);
+		String content = Request.Post("http://localhost:8080/postBean/10?a=1").body(stringEntity).execute().returnContent().asString();
+		Assert.assertEquals("{\"map\":{\"result\":\"success\",\"id\":\"1\",\"name\":\"hehe\",\"pathValue\":10,\"param_a_value\":\"1\"}}", content);
 	}
 
 

@@ -2,6 +2,7 @@ package rxweb.support;
 
 /**
  * 转换器，负责序列化与反序列化
+ *
  * @author zhangjessey
  */
 public interface Converter {

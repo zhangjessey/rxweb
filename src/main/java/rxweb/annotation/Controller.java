@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * 控制器注解
+ *
  * @author zhangjessey
  */
 @Target(ElementType.TYPE)

@@ -4,6 +4,7 @@ import java.util.Map;
 
 /**
  * url参数
+ *
  * @author zhangjessey
  */
 public class Params {

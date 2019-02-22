@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 /**
  * 初始化配置
+ *
  * @author zhangjessey
  */
 class BootstrapConfig {
