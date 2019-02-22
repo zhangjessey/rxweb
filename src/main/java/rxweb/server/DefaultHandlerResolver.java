@@ -58,10 +58,8 @@ public class DefaultHandlerResolver implements HandlerResolver {
 				// 将请求路径中的占位符 {\w+} 转换为正则表达式 (\\w+)
 				path = path.replaceAll("\\{\\w+}", "(\\\\w+)");
 			}
-			//TODO
-			path = path.concat(".*");
-
-			Matcher matcher = Pattern.compile(path).matcher(webRequest.getHttpServerRequest().getUri());
+			String decodedPath = webRequest.getHttpServerRequest().getDecodedPath();
+			Matcher matcher = Pattern.compile(path).matcher(decodedPath);
 			if (entry.getKey().getHttpMethod().equals(webRequest.getHttpServerRequest().getHttpMethod()) && matcher.matches()) {
 				RequestHandler<ByteBuf, ByteBuf> value = entry.getValue();
 				if (value.getClass().isAssignableFrom(RequestHandler.class) && (!(value instanceof Handler))) {
