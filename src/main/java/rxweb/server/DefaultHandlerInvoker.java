@@ -38,7 +38,7 @@ public class DefaultHandlerInvoker implements HandlerInvoker {
             Class<?> actionClass = handler.getActionClass();
             Method actionMethod = handler.getActionMethod();
             // 创建 Controller 实例
-            Object actionInstance = Init.BeanMap.get(actionClass);
+            Object actionInstance = BootstrapConfig.CONTROLLER_CLASS_OBJECT_MAP.get(actionClass);
             // 创建 Controller 方法的参数列表
             Multimap<Class<?>, Object> actionMethodParamList = createActionMethodParamList(request, handler);
             // 检查参数列表是否合法,不合法则使其合法

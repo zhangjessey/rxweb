@@ -24,20 +24,20 @@ import java.util.stream.Collectors;
 /**
  * @author zhangjessey
  */
-public class Init {
+public class BootstrapConfig {
 
-    public static Set<Class<?>> ControllerClasses;
-    public static Map<Class<?>, Object> BeanMap;
-    public static Map<Condition<HttpServerRequest>, RequestHandler> handlers = new LinkedHashMap<>();
+    private static Set<Class<?>> CONTROLLER_CLASS_SET;
+    static Map<Class<?>, Object> CONTROLLER_CLASS_OBJECT_MAP;
+    static Map<Condition<HttpServerRequest>, RequestHandler> CONDITION_REQUEST_HANDLER_MAP = new LinkedHashMap<>();
 
 
     static {
 
-        final Logger logger = LoggerFactory.getLogger(Init.class);
+        final Logger logger = LoggerFactory.getLogger(BootstrapConfig.class);
         Reflections reflections = new Reflections("rxweb.*");
-        ControllerClasses = reflections.getTypesAnnotatedWith(Controller.class);
+        CONTROLLER_CLASS_SET = reflections.getTypesAnnotatedWith(Controller.class);
 
-        BeanMap = ControllerClasses.stream().map(aClass -> {
+        CONTROLLER_CLASS_OBJECT_MAP = CONTROLLER_CLASS_SET.stream().map(aClass -> {
             Object o;
             try {
                 o = aClass.newInstance();
@@ -49,15 +49,12 @@ public class Init {
 
         }).filter(Objects::nonNull).collect(Collectors.toMap(Object::getClass, Function.identity()));
 
-        // handlers.put(MappingCondition.Builder.from("/favicon.ico").method(rxweb.http.Method.GET).build(), ((request, response) -> {
-        //     response.status(Status.OK).content(ByteBuffer.wrap("no favicon.ico".getBytes(StandardCharsets.UTF_8)));
-        // }));
 
-        Init.ControllerClasses.forEach(aClass -> {
+        BootstrapConfig.CONTROLLER_CLASS_SET.forEach(aClass -> {
             Method[] methods = aClass.getMethods();
             for (Method method : methods) {
-                String path = null;
-                Condition condition = null;
+                String path;
+                Condition<HttpServerRequest> condition = null;
 
                 Class<?> parameterType = null;
                 Annotation[][] parameterAnnotations = method.getParameterAnnotations();
@@ -82,22 +79,22 @@ public class Init {
 
                 if (method.isAnnotationPresent(RequestMapping.Get.class)) {
                     path = method.getAnnotation(RequestMapping.Get.class).value();
-                    condition = new Condition<HttpServerRequest>(HttpMethod.GET, path);
+                    condition = new Condition<>(HttpMethod.GET, path);
                 } else if (method.isAnnotationPresent(RequestMapping.Post.class)) {
                     path = method.getAnnotation(RequestMapping.Post.class).value();
-                    condition = new Condition<HttpServerRequest>(HttpMethod.POST, path);
+                    condition = new Condition<>(HttpMethod.POST, path);
                 } else if (method.isAnnotationPresent(RequestMapping.Put.class)) {
                     path = method.getAnnotation(RequestMapping.Put.class).value();
-                    condition = new Condition<HttpServerRequest>(HttpMethod.PUT, path);
+                    condition = new Condition<>(HttpMethod.PUT, path);
                 } else if (method.isAnnotationPresent(RequestMapping.Delete.class)) {
                     path = method.getAnnotation(RequestMapping.Delete.class).value();
-                    condition = new Condition<HttpServerRequest>(HttpMethod.DELETE, path);
+                    condition = new Condition<>(HttpMethod.DELETE, path);
                 } else {
                     needPut = false;
                 }
 
                 if (needPut) {
-                    handlers.put(condition, new Handler(aClass, method, parameterType));
+                    CONDITION_REQUEST_HANDLER_MAP.put(condition, new Handler(aClass, method, parameterType));
                 }
             }
 

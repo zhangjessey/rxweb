@@ -28,8 +28,6 @@ import rxweb.mapping.Condition;
 import rxweb.mapping.HandlerResolver;
 import rxweb.server.DefaultHandlerResolver;
 
-import java.util.concurrent.CompletableFuture;
-
 /**
  * RxNetty powered RxWeb server
  *
@@ -59,15 +57,13 @@ public class NettyServer implements Server {
 
 
     @Override
-    public CompletableFuture<Void> start() {
+    public void start() {
         httpServer.start(new Dispatcher()).awaitShutdown();
-        return null;
     }
 
     @Override
-    public CompletableFuture<Void> stop() {
+    public void stop() {
         httpServer.shutdown();
-        return null;
     }
 
     @Override

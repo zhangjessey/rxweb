@@ -34,26 +34,25 @@ import java.util.regex.Pattern;
  */
 public class DefaultHandlerResolver implements HandlerResolver {
 
-	private static DefaultHandlerResolver defaultHandlerResolver = new DefaultHandlerResolver();
+	private static DefaultHandlerResolver DEFAULT_HANDLER_RESOLVER = new DefaultHandlerResolver();
 
 	public static DefaultHandlerResolver getSingleton() {
-		return defaultHandlerResolver;
+		return DEFAULT_HANDLER_RESOLVER;
 	}
 
 	@Override
 	public void addHandler(final Condition<HttpServerRequest> condition, final RequestHandler handler) {
-		Init.handlers.put(condition, handler);
+		BootstrapConfig.CONDITION_REQUEST_HANDLER_MAP.put(condition, handler);
 	}
 
 	@Override
 	public List<RequestHandler> resolve(WebRequest webRequest) {
 		List<RequestHandler> requestHandlers = new ArrayList<>();
-		for (Map.Entry<Condition<HttpServerRequest>, RequestHandler> entry : Init.handlers.entrySet()) {
+		for (Map.Entry<Condition<HttpServerRequest>, RequestHandler> entry : BootstrapConfig.CONDITION_REQUEST_HANDLER_MAP.entrySet()) {
 			String path = entry.getKey().getUrl();
-			if (path.matches(".+\\{\\w+\\}.*")) {
+			if (path.matches(".+\\{\\w+}.*")) {
 				// 将请求路径中的占位符 {\w+} 转换为正则表达式 (\\w+)
-				//path = StringUtil.replaceAll(path, "\\{\\w+\\}", "(\\\\w+)");
-				path = path.replaceAll("\\{\\w+\\}", "(\\\\w+)");
+				path = path.replaceAll("\\{\\w+}", "(\\\\w+)");
 			}
 			//TODO
 			path = path.concat(".*");

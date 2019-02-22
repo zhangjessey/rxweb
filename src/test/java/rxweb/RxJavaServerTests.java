@@ -19,9 +19,9 @@ package rxweb;
 
 import org.apache.http.client.fluent.Request;
 import org.apache.http.message.BasicNameValuePair;
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,13 +39,13 @@ import java.util.List;
  */
 public class RxJavaServerTests {
 
-	private NettyServer nettyServer;
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private static NettyServer nettyServer;
+	private static final Logger logger = LoggerFactory.getLogger(RxJavaServerTests.class);
 
-	@Before
-	public void setup() {
+	@BeforeClass
+	public static void setup() {
 		nettyServer = new NettyServer();
-
+		nettyServer.get("/haha", (request, response) -> response.writeString(Observable.just("heiheihei")));
 		new Thread(() -> {
 			try {
 				nettyServer.start();
@@ -56,15 +56,15 @@ public class RxJavaServerTests {
 
 	}
 
-	@After
-	public void tearDown() throws Exception {
+	@AfterClass
+	public static void tearDown() throws Exception {
 		nettyServer.stop();
-		Thread.sleep(5000);
+		//Thread.sleep(5000);
 	}
 
 	@Test
 	public void functionalRoute() throws Exception {
-		nettyServer.get("/haha", (request, response) -> response.writeString(Observable.just("heiheihei")));
+
 		String content = Request.Get("http://localhost:8080/haha").execute().returnContent().asString();
 		Assert.assertEquals("heiheihei", content);
 	}

@@ -2,6 +2,8 @@ package rxweb.mapping;
 
 import io.netty.handler.codec.http.HttpMethod;
 
+import java.util.Objects;
+
 /**
  * @author zhangjessey
  */
@@ -28,5 +30,18 @@ public class Condition<T> {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Condition<?> condition = (Condition<?>) o;
+        return httpMethod.equals(condition.httpMethod) && url.equals(condition.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(httpMethod, url);
     }
 }
