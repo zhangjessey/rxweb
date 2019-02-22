@@ -44,8 +44,9 @@ public class DefaultHandlerResolver implements HandlerResolver {
 	}
 
 	@Override
-	public void addHandler(final Condition<HttpServerRequest> condition, final RequestHandler<ByteBuf, ByteBuf> handler) {
+	public HandlerResolver addHandler(final Condition<HttpServerRequest> condition, final RequestHandler<ByteBuf, ByteBuf> handler) {
 		BootstrapConfig.CONDITION_REQUEST_HANDLER_MAP.put(condition, handler);
+		return this;
 	}
 
 	@Override

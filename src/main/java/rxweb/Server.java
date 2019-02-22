@@ -41,21 +41,21 @@ public interface Server extends HandlerRegistry<HttpServerRequest> {
 	/**
 	 * 配置get方法
 	 */
-	void get(final String path, final RequestHandler handler);
+	Server get(final String path, final RequestHandler handler);
 
 	/**
 	 * 配置post方法
 	 */
-	void post(final String path, final RequestHandler handler);
+	Server post(final String path, final RequestHandler handler);
 
 	/**
 	 * 配置put方法
 	 */
-	void put(final String path, final RequestHandler handler);
+	Server put(final String path, final RequestHandler handler);
 
 	/**
 	 * 配置delete方法
 	 */
-	void delete(final String path, final RequestHandler handler);
+	Server delete(final String path, final RequestHandler handler);
 
 }

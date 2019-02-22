@@ -30,6 +30,6 @@ public interface HandlerRegistry<R> {
 	/**
 	 * 添加一个RequestHandler
 	 */
-	void addHandler(final Condition<R> condition, final RequestHandler<ByteBuf, ByteBuf> handler);
+	HandlerResolver addHandler(final Condition<R> condition, final RequestHandler<ByteBuf, ByteBuf> handler);
 
 }
