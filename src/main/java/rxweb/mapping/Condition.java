@@ -5,6 +5,7 @@ import io.netty.handler.codec.http.HttpMethod;
 import java.util.Objects;
 
 /**
+ * 请求条件，即method和url
  * @author zhangjessey
  */
 public class Condition<T> {

@@ -29,7 +29,7 @@ import rxweb.mapping.HandlerResolver;
 import rxweb.server.DefaultHandlerResolver;
 
 /**
- * RxNetty powered RxWeb server
+ * 启动类
  *
  * @author Sebastien Deleuze
  * @author zhangjessey

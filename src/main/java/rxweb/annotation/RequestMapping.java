@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 标记url及其method
  * @author zhangjessey
  */
 @Target(ElementType.METHOD)

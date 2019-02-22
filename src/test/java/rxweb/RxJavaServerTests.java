@@ -18,6 +18,7 @@ package rxweb;
 
 
 import org.apache.http.client.fluent.Request;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -34,6 +35,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * 单元测试
  * @author Sebastien Deleuze
  * @author zhangjessey
  */
@@ -117,6 +119,16 @@ public class RxJavaServerTests {
 		List<BasicNameValuePair> list = Collections.singletonList(new BasicNameValuePair("b", "2"));
 		String content = Request.Post("http://localhost:8080/postReturnBean/10?a=1").bodyForm(list, Charset.forName("UTF-8")).execute().returnContent().asString();
 		Assert.assertEquals("{\"map\":{\"a\":\"1\",\"b\":\"2\",\"c\":\"3\"}}", content);
+	}
+
+	@Test
+	public void postBean() throws Exception {
+		StringEntity stringEntity = new StringEntity("{\"id\":1,\"name\":\"hehe\"}");
+		stringEntity.setContentEncoding("UTF-8");
+		stringEntity.setContentType("application/json");//发送json数据需要设置contentType
+
+		String content = Request.Post("http://localhost:8080//postBean/10?a=1").body(stringEntity).execute().returnContent().asString();
+		Assert.assertEquals("{\"map\":{\"result\":\"success\"}}", content);
 	}
 
 

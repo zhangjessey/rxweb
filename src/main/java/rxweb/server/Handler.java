@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.util.regex.Matcher;
 
 /**
+ * 实际的请求处理器，对应一个注解方式的方法或者函数式路由的函数式接口
  * @author huangyong
  * @author zhangjessey
  */

@@ -21,6 +21,7 @@ import io.reactivex.netty.protocol.http.server.RequestHandler;
 import rxweb.mapping.HandlerRegistry;
 
 /**
+ * 服务器接口
  * @author Sebastien Deleuze
  * @author zhangjessey
  */

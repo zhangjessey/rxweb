@@ -9,6 +9,7 @@ import rxweb.bean.Params;
 import java.util.HashMap;
 
 /**
+ * 测试用Controller
  * @author zhangjessey
  */
 @Controller
@@ -60,12 +61,7 @@ public class TestController {
 
     }
 
-    /**
-     * curl -X POST \
-     * 'http://localhost:8080/postBean/10?a=1' \
-     * -H 'Content-Type: application/json' \
-     * -d '{"id":1,"name":"hehe"}'
-     */
+
     @RequestMapping.Post(value = "/postBean/{c}")
     public Observable<Params> postBean(@RequestBody User user, int c, Params params) {
         HashMap<String, Object> stringStringHashMap = new HashMap<>(3);

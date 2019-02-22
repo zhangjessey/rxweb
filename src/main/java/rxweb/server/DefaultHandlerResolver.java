@@ -29,6 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * 默认的HandlerResolver
  * @author Sebastien Deleuze
  * @author zhangjessey
  */

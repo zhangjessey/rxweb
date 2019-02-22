@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
+ * url参数
  * @author zhangjessey
  */
 public class Params {

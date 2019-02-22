@@ -23,6 +23,7 @@ import rxweb.bean.WebRequest;
 import java.util.List;
 
 /**
+ * 请求解析器，根据request找到对应的RequestHandler
  * @author Sebastien Deleuze
  * @author zhangjessey
  */

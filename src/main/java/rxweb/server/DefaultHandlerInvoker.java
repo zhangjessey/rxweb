@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
+ * 默认的HandlerInvoker
  * @author huangyong
  * @author zhangjessey
  */
@@ -60,8 +61,8 @@ public class DefaultHandlerInvoker implements HandlerInvoker {
         // 添加路径参数列表（请求路径中的带占位符参数）
         if (handler.getRequestPathMatcher() != null) {
             List<Class<?>> collect = Arrays.stream(actionParamTypes).filter(aClass -> !aClass.isAssignableFrom(Params.class)).collect(Collectors.toList());
-            Class<?>[] pathParamList = collect.toArray(new Class<?>[]{});
-            pathParamMap = createPathParamList(handler.getRequestPathMatcher(), pathParamList);
+            //Class<?>[] pathParamList = collect.toArray(new Class<?>[]{});
+            pathParamMap = createPathParamList(handler.getRequestPathMatcher(), collect);
         }
         //获取普通请求参数列表
         Multimap<Class<?>, Object> requestParamMap = getRequestParamMap(request);
@@ -95,22 +96,33 @@ public class DefaultHandlerInvoker implements HandlerInvoker {
 
     }
 
-    private Multimap<Class<?>, Object> createPathParamList(Matcher requestPathMatcher, Class<?>[] actionParamTypes) {
+    private Multimap<Class<?>, Object> createPathParamList(Matcher requestPathMatcher, List<Class<?>> actionParamTypes) {
 
         Multimap<Class<?>, Object> multiMap = LinkedListMultimap.create();
 
         IntStream.rangeClosed(1, requestPathMatcher.groupCount()).forEach(i -> {
             String param = requestPathMatcher.group(i);
-            Class<?> paramType = actionParamTypes[i - 1];
-            if (paramType.equals(int.class) || paramType.equals(Integer.class)) {
-                multiMap.put(int.class, Integer.valueOf(param));
-            } else if (paramType.equals(long.class) || paramType.equals(Long.class)) {
-                multiMap.put(long.class, Long.valueOf(param));
-            } else if (paramType.equals(double.class) || paramType.equals(Double.class)) {
-                multiMap.put(double.class, Double.valueOf(param));
-            } else if (paramType.equals(String.class)) {
-                multiMap.put(String.class, param);
+            //Class<?> paramType = actionParamTypes[i - 1];
+            for (Class<?> paramType : actionParamTypes) {
+                if (paramType.equals(int.class) || paramType.equals(Integer.class)) {
+                    multiMap.put(int.class, Integer.valueOf(param));
+                    actionParamTypes.remove(paramType);
+                    break;
+                } else if (paramType.equals(long.class) || paramType.equals(Long.class)) {
+                    multiMap.put(long.class, Long.valueOf(param));
+                    actionParamTypes.remove(paramType);
+                    break;
+                } else if (paramType.equals(double.class) || paramType.equals(Double.class)) {
+                    multiMap.put(double.class, Double.valueOf(param));
+                    actionParamTypes.remove(paramType);
+                    break;
+                } else if (paramType.equals(String.class)) {
+                    multiMap.put(String.class, param);
+                    actionParamTypes.remove(paramType);
+                    break;
+                }
             }
+
         });
         return multiMap;
     }
