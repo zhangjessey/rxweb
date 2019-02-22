@@ -37,7 +37,7 @@ import rxweb.server.DefaultHandlerResolver;
 public class NettyServer implements Server {
 
     private HandlerResolver handlerResolver = DefaultHandlerResolver.getSingleton();
-    HttpServer<ByteBuf, ByteBuf> httpServer;
+    private HttpServer<ByteBuf, ByteBuf> httpServer;
 
     public NettyServer() {
         httpServer = HttpServer.newServer(8080).
@@ -87,7 +87,7 @@ public class NettyServer implements Server {
     }
 
     @Override
-    public void addHandler(Condition<HttpServerRequest> condition, RequestHandler handler) {
+    public void addHandler(Condition<HttpServerRequest> condition, RequestHandler<ByteBuf, ByteBuf> handler) {
         this.handlerResolver.addHandler(condition, handler);
     }
 }

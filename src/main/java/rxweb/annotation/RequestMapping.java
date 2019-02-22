@@ -15,28 +15,28 @@ public @interface RequestMapping {
 
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface Get {
+    @interface Get {
 
         String value();
     }
 
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface Post {
+    @interface Post {
 
         String value();
     }
 
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface Put {
+    @interface Put {
 
         String value();
     }
 
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface Delete {
+    @interface Delete {
 
         String value();
     }

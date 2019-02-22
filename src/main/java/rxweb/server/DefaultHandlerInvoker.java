@@ -33,7 +33,7 @@ public class DefaultHandlerInvoker implements HandlerInvoker {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
-    public Observable<? extends Object> invokeHandler(HttpServerRequest request, Handler handler) {
+    public Observable<?> invokeHandler(HttpServerRequest request, Handler handler) {
         try {
             // 获取 Controller 相关信息
             Class<?> actionClass = handler.getActionClass();
@@ -53,7 +53,8 @@ public class DefaultHandlerInvoker implements HandlerInvoker {
 
     }
 
-    public Multimap<Class<?>, Object> createActionMethodParamList(HttpServerRequest request, Handler handler) {
+    @SuppressWarnings("unchecked")
+    private Multimap<Class<?>, Object> createActionMethodParamList(HttpServerRequest request, Handler handler) {
 
         Multimap<Class<?>, Object> pathParamMap = LinkedListMultimap.create();
         // 获取Controller方法参数类型
@@ -127,11 +128,12 @@ public class DefaultHandlerInvoker implements HandlerInvoker {
         return multiMap;
     }
 
-    private Observable<? extends Object> invokeActionMethod(Method actionMethod, Object actionInstance, List<Object> actionMethodParamList) throws IllegalAccessException, InvocationTargetException {
+    private Observable<?> invokeActionMethod(Method actionMethod, Object actionInstance, List<Object> actionMethodParamList) throws IllegalAccessException, InvocationTargetException {
         // 通过反射调用 Controller 方法
-        actionMethod.setAccessible(true); // 取消类型安全检测（可提高反射性能）
+        // 取消类型安全检测（可提高反射性能）
+        actionMethod.setAccessible(true);
         Object invoke = actionMethod.invoke(actionInstance, actionMethodParamList.toArray());
-        return (Observable<? extends Object>) invoke;
+        return (Observable<?>) invoke;
     }
 
     private List<Object> getRealParamList(Method actionMethod, Multimap<Class<?>, Object> actionMethodParamList) {

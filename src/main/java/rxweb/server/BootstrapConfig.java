@@ -1,5 +1,6 @@
 package rxweb.server;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpMethod;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 import io.reactivex.netty.protocol.http.server.RequestHandler;
@@ -25,11 +26,11 @@ import java.util.stream.Collectors;
  * 初始化配置
  * @author zhangjessey
  */
-public class BootstrapConfig {
+class BootstrapConfig {
 
     private static Set<Class<?>> CONTROLLER_CLASS_SET;
     static Map<Class<?>, Object> CONTROLLER_CLASS_OBJECT_MAP;
-    static Map<Condition<HttpServerRequest>, RequestHandler> CONDITION_REQUEST_HANDLER_MAP = new LinkedHashMap<>();
+    static Map<Condition<HttpServerRequest>, RequestHandler<ByteBuf, ByteBuf>> CONDITION_REQUEST_HANDLER_MAP = new LinkedHashMap<>();
 
 
     static {

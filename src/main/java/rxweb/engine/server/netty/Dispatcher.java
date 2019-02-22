@@ -4,8 +4,6 @@ import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 import io.reactivex.netty.protocol.http.server.HttpServerResponse;
 import io.reactivex.netty.protocol.http.server.RequestHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rxweb.bean.WebRequest;
 import rxweb.mapping.HandlerResolver;
@@ -24,8 +22,8 @@ import java.util.List;
 public class Dispatcher implements RequestHandler<ByteBuf, ByteBuf> {
 
     private HandlerResolver handlerResolver = DefaultHandlerResolver.getSingleton();
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    final String EMPTY_STRING = "";
+
+    private final String EMPTY_STRING = "";
 
     @Override
     public Observable<Void> handle(HttpServerRequest<ByteBuf> request, HttpServerResponse<ByteBuf> response) {
@@ -33,15 +31,15 @@ public class Dispatcher implements RequestHandler<ByteBuf, ByteBuf> {
         WebRequest<String> wreq = new WebRequest<>(request);
 
 
-        return Observable.defer(() -> request.getContent()).<String>map(bf -> bf.toString(Charset.defaultCharset())).reduce(EMPTY_STRING, (acc, value) -> new StringBuilder(acc).append(value).toString()).firstOrDefault(EMPTY_STRING).map(strRequestContent -> {
+        return Observable.defer(() -> request.getContent()).<String>map(bf -> bf.toString(Charset.defaultCharset())).reduce(EMPTY_STRING, (acc, value) -> acc.concat(value)).firstOrDefault(EMPTY_STRING).map(strRequestContent -> {
             if (strRequestContent != null && !strRequestContent.equals(EMPTY_STRING)) {
-                if (wreq.getRequestContentType().equals("application/json")) {
+                if ("application/json".equals(wreq.getRequestContentType())) {
                     wreq.setBody(strRequestContent);
                 }
             }
             return wreq;
         }).map(webRequest -> {
-            List<RequestHandler> resolve = handlerResolver.resolve(webRequest);
+            List<RequestHandler<ByteBuf, ByteBuf>> resolve = handlerResolver.resolve(webRequest);
             if (resolve.isEmpty()) {
                 return new NotFoundHandler();
             }
@@ -52,6 +50,6 @@ public class Dispatcher implements RequestHandler<ByteBuf, ByteBuf> {
             }
 
             return rh;
-        }).flatMap(requestHandler -> (Observable<? extends Void>) requestHandler.handle(request, response));
+        }).flatMap(requestHandler -> requestHandler.handle(request, response));
     }
 }

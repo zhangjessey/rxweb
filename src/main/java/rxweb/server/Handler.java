@@ -4,8 +4,6 @@ import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 import io.reactivex.netty.protocol.http.server.HttpServerResponse;
 import io.reactivex.netty.protocol.http.server.RequestHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rxweb.support.DefaultConverter;
 
@@ -18,7 +16,7 @@ import java.util.regex.Matcher;
  * @author zhangjessey
  */
 public class Handler implements RequestHandler<ByteBuf, ByteBuf> {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private Class<?> actionClass;
     private Method actionMethod;
     private Matcher requestPathMatcher;
@@ -30,11 +28,6 @@ public class Handler implements RequestHandler<ByteBuf, ByteBuf> {
     public Handler(Matcher requestPathMatcher, RequestHandler<ByteBuf, ByteBuf> requestHandler) {
         this.requestPathMatcher = requestPathMatcher;
         this.requestHandler = requestHandler;
-    }
-
-    public Handler(Class<?> actionClass, Method actionMethod) {
-        this.actionClass = actionClass;
-        this.actionMethod = actionMethod;
     }
 
     public Handler(Class<?> actionClass, Method actionMethod, Class<?> requestBodyClass) {

@@ -16,6 +16,7 @@
 
 package rxweb.mapping;
 
+import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.server.RequestHandler;
 
 /**
@@ -25,6 +26,9 @@ import io.reactivex.netty.protocol.http.server.RequestHandler;
  */
 public interface HandlerRegistry<R> {
 
-	void addHandler(final Condition<R> condition, final RequestHandler handler);
+	/**
+	 * 添加一个RequestHandler
+	 */
+	void addHandler(final Condition<R> condition, final RequestHandler<ByteBuf, ByteBuf> handler);
 
 }

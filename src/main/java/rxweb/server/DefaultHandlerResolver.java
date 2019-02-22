@@ -16,6 +16,7 @@
 
 package rxweb.server;
 
+import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 import io.reactivex.netty.protocol.http.server.RequestHandler;
 import rxweb.bean.WebRequest;
@@ -42,14 +43,14 @@ public class DefaultHandlerResolver implements HandlerResolver {
 	}
 
 	@Override
-	public void addHandler(final Condition<HttpServerRequest> condition, final RequestHandler handler) {
+	public void addHandler(final Condition<HttpServerRequest> condition, final RequestHandler<ByteBuf, ByteBuf> handler) {
 		BootstrapConfig.CONDITION_REQUEST_HANDLER_MAP.put(condition, handler);
 	}
 
 	@Override
-	public List<RequestHandler> resolve(WebRequest webRequest) {
-		List<RequestHandler> requestHandlers = new ArrayList<>();
-		for (Map.Entry<Condition<HttpServerRequest>, RequestHandler> entry : BootstrapConfig.CONDITION_REQUEST_HANDLER_MAP.entrySet()) {
+	public List<RequestHandler<ByteBuf, ByteBuf>> resolve(WebRequest webRequest) {
+		List<RequestHandler<ByteBuf, ByteBuf>> requestHandlers = new ArrayList<>();
+		for (Map.Entry<Condition<HttpServerRequest>, RequestHandler<ByteBuf, ByteBuf>> entry : BootstrapConfig.CONDITION_REQUEST_HANDLER_MAP.entrySet()) {
 			String path = entry.getKey().getUrl();
 			if (path.matches(".+\\{\\w+}.*")) {
 				// 将请求路径中的占位符 {\w+} 转换为正则表达式 (\\w+)
@@ -60,7 +61,7 @@ public class DefaultHandlerResolver implements HandlerResolver {
 
 			Matcher matcher = Pattern.compile(path).matcher(webRequest.getHttpServerRequest().getUri());
 			if (entry.getKey().getHttpMethod().equals(webRequest.getHttpServerRequest().getHttpMethod()) && matcher.matches()) {
-				RequestHandler value = entry.getValue();
+				RequestHandler<ByteBuf, ByteBuf> value = entry.getValue();
 				if (value.getClass().isAssignableFrom(RequestHandler.class) && (!(value instanceof Handler))) {
 					value = new Handler(matcher, value);
 				} else if (value instanceof Handler) {

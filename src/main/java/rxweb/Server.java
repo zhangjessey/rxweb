@@ -27,18 +27,34 @@ import rxweb.mapping.HandlerRegistry;
  */
 public interface Server extends HandlerRegistry<HttpServerRequest> {
 
-	/** Complete when the server is started **/
+	/**
+	 * 启动
+	 */
 	void start();
 
-	/** Complete when the server is stopped **/
+	/**
+	 * 关闭
+	 */
 	void stop();
 
+	/**
+	 * 配置get方法
+	 */
 	void get(final String path, final RequestHandler handler);
 
+	/**
+	 * 配置post方法
+	 */
 	void post(final String path, final RequestHandler handler);
 
+	/**
+	 * 配置put方法
+	 */
 	void put(final String path, final RequestHandler handler);
 
+	/**
+	 * 配置delete方法
+	 */
 	void delete(final String path, final RequestHandler handler);
 
 }

@@ -6,7 +6,13 @@ package rxweb.support;
  */
 public interface Converter {
 
+    /**
+     * 序列化为字符串
+     */
     public <T> String serialize(T t);
 
+    /**
+     * 反序列化为一个对象
+     */
     public <T> T deserialize(String string, Class<T> tClass);
 }

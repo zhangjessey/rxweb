@@ -9,5 +9,8 @@ import io.reactivex.netty.protocol.http.server.HttpServerRequest;
  */
 public interface HandlerInvoker {
 
+    /**
+     * 根据一个HttpServerRequest调用对应的Handler
+     */
     Object invokeHandler(HttpServerRequest request, Handler handler);
 }
