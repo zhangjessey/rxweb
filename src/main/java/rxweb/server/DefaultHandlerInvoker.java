@@ -5,10 +5,12 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
+import io.reactivex.netty.protocol.http.server.HttpServerResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rxweb.bean.Params;
+import rxweb.bean.WebRequest;
 import rxweb.support.DefaultConverter;
 
 import java.lang.reflect.InvocationTargetException;
@@ -29,42 +31,22 @@ import java.util.stream.IntStream;
  * @author huangyong
  * @author zhangjessey
  */
-public class DefaultHandlerInvoker implements HandlerInvoker {
+public class DefaultHandlerInvoker implements WebInvoker {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Override
-    public Observable<?> invokeHandler(HttpServerRequest request, Handler handler) {
-        try {
-            // 获取 Controller 相关信息
-            Class<?> actionClass = handler.getActionClass();
-            Method actionMethod = handler.getActionMethod();
-            // 创建 Controller 实例
-            Object actionInstance = BootstrapConfig.CONTROLLER_CLASS_OBJECT_MAP.get(actionClass);
-            // 创建 Controller 方法的参数列表
-            Multimap<Class<?>, Object> actionMethodParamList = createActionMethodParamList(request, handler);
-            // 检查参数列表是否合法,不合法则使其合法
-            List<Object> realParamList = getRealParamList(actionMethod, actionMethodParamList);
-            // 调用 Controller 方法
-            return invokeActionMethod(actionMethod, actionInstance, realParamList);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return null;
-        }
-
-    }
 
     @SuppressWarnings("unchecked")
-    private Multimap<Class<?>, Object> createActionMethodParamList(HttpServerRequest request, Handler handler) {
+    public Multimap<Class<?>, Object> createActionMethodParamList(HttpServerRequest request, Handler handler, Matcher requestPathMatcher) {
 
         Multimap<Class<?>, Object> pathParamMap = LinkedListMultimap.create();
         // 获取Controller方法参数类型
         Class<?>[] actionParamTypes = handler.getActionMethod().getParameterTypes();
         // 添加路径参数列表（请求路径中的带占位符参数）
-        if (handler.getRequestPathMatcher() != null) {
+        if (requestPathMatcher != null) {
             List<Class<?>> collect = Arrays.stream(actionParamTypes).filter(aClass -> !aClass.isAssignableFrom(Params.class)).collect(Collectors.toList());
             //Class<?>[] pathParamList = collect.toArray(new Class<?>[]{});
-            pathParamMap = createPathParamList(handler.getRequestPathMatcher(), collect);
+            pathParamMap = createPathParamList(requestPathMatcher, collect);
         }
         //获取普通请求参数列表
         Multimap<Class<?>, Object> requestParamMap = getRequestParamMap(request);
@@ -98,7 +80,7 @@ public class DefaultHandlerInvoker implements HandlerInvoker {
 
     }
 
-    private Multimap<Class<?>, Object> createPathParamList(Matcher requestPathMatcher, List<Class<?>> actionParamTypes) {
+    public Multimap<Class<?>, Object> createPathParamList(Matcher requestPathMatcher, List<Class<?>> actionParamTypes) {
 
         Multimap<Class<?>, Object> multiMap = LinkedListMultimap.create();
 
@@ -157,5 +139,27 @@ public class DefaultHandlerInvoker implements HandlerInvoker {
             }
         }
         return realParams;
+    }
+
+    @Override
+    public Observable<?> invokeHandler(WebRequest webRequest, Handler handler, HttpServerResponse<ByteBuf> response) {
+        Matcher requestPathMatcher = webRequest.getRequestPathMatcher();
+
+        try {
+            // 获取 Controller 相关信息
+            Class<?> actionClass = handler.getActionClass();
+            Method actionMethod = handler.getActionMethod();
+            // 创建 Controller 实例
+            Object actionInstance = BootstrapConfig.CONTROLLER_CLASS_OBJECT_MAP.get(actionClass);
+            // 创建 Controller 方法的参数列表
+            Multimap<Class<?>, Object> actionMethodParamList = createActionMethodParamList(webRequest.getHttpServerRequest(), handler, requestPathMatcher);
+            // 检查参数列表是否合法,不合法则使其合法
+            List<Object> realParamList = getRealParamList(actionMethod, actionMethodParamList);
+            // 调用 Controller 方法
+            return invokeActionMethod(actionMethod, actionInstance, realParamList);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return null;
+        }
     }
 }

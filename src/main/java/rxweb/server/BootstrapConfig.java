@@ -3,7 +3,6 @@ package rxweb.server;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpMethod;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
-import io.reactivex.netty.protocol.http.server.RequestHandler;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,17 +26,17 @@ import java.util.stream.Collectors;
  *
  * @author zhangjessey
  */
-class BootstrapConfig {
+public class BootstrapConfig {
 
     private static Set<Class<?>> CONTROLLER_CLASS_SET;
     static Map<Class<?>, Object> CONTROLLER_CLASS_OBJECT_MAP;
-    static Map<Condition<HttpServerRequest>, RequestHandler<ByteBuf, ByteBuf>> CONDITION_REQUEST_HANDLER_MAP = new LinkedHashMap<>();
+    public static Map<Condition<HttpServerRequest>, WebRequestHandler<ByteBuf, ByteBuf>> CONDITION_REQUEST_HANDLER_MAP = new LinkedHashMap<>();
 
 
     static {
 
         final Logger logger = LoggerFactory.getLogger(BootstrapConfig.class);
-        Reflections reflections = new Reflections("rxweb.*");
+        Reflections reflections = new Reflections("rxweb.sample.*");
         CONTROLLER_CLASS_SET = reflections.getTypesAnnotatedWith(Controller.class);
 
         CONTROLLER_CLASS_OBJECT_MAP = CONTROLLER_CLASS_SET.stream().map(aClass -> {

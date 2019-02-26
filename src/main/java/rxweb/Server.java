@@ -17,8 +17,8 @@
 package rxweb;
 
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
-import io.reactivex.netty.protocol.http.server.RequestHandler;
 import rxweb.mapping.HandlerRegistry;
+import rxweb.server.WebRequestHandler;
 
 /**
  * 服务器接口
@@ -41,21 +41,21 @@ public interface Server extends HandlerRegistry<HttpServerRequest> {
 	/**
 	 * 配置get方法
 	 */
-	Server get(final String path, final RequestHandler handler);
+	Server get(final String path, final WebRequestHandler handler);
 
 	/**
 	 * 配置post方法
 	 */
-	Server post(final String path, final RequestHandler handler);
+	Server post(final String path, final WebRequestHandler handler);
 
 	/**
 	 * 配置put方法
 	 */
-	Server put(final String path, final RequestHandler handler);
+	Server put(final String path, final WebRequestHandler handler);
 
 	/**
 	 * 配置delete方法
 	 */
-	Server delete(final String path, final RequestHandler handler);
+	Server delete(final String path, final WebRequestHandler handler);
 
 }

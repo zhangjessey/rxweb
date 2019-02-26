@@ -45,7 +45,8 @@ public class RxJavaServerTests {
 	public static void setup() {
 		nettyServer = new NettyServer();
 
-		nettyServer.get("/functionalRoute", (request, response) -> response.writeString(Observable.<String>just("this is functionalRoute"))).post("/functionalRoutePost", (request, response) -> response.writeString(Observable.<String>just("this is functionalRoutePost")));
+		nettyServer.get("/functionalRoute/{a}/{b}", (request, response) -> response.writeString(Observable.<String>just("this is functionalRoute".concat(request.getUrlParams().toString())))).
+				post("/functionalRoutePost", (request, response) -> response.writeString(Observable.<String>just("this is functionalRoutePost")));
 
 		new Thread(() -> {
 			try {
@@ -65,8 +66,8 @@ public class RxJavaServerTests {
 	@Test
 	public void functionalRoute() throws Exception {
 
-		String content = Request.Get("http://localhost:8080/functionalRoute").execute().returnContent().asString();
-		Assert.assertEquals("this is functionalRoute", content);
+		String content = Request.Get("http://localhost:8080/functionalRoute/3/4").execute().returnContent().asString();
+		Assert.assertEquals("this is functionalRoute[3, 4]", content);
 		content = Request.Post("http://localhost:8080/functionalRoutePost").execute().returnContent().asString();
 		Assert.assertEquals("this is functionalRoutePost", content);
 	}

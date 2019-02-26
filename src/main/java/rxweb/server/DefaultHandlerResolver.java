@@ -18,16 +18,13 @@ package rxweb.server;
 
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
-import io.reactivex.netty.protocol.http.server.RequestHandler;
 import rxweb.bean.WebRequest;
 import rxweb.mapping.Condition;
 import rxweb.mapping.HandlerResolver;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * 默认的HandlerResolver
@@ -44,34 +41,21 @@ public class DefaultHandlerResolver implements HandlerResolver {
 	}
 
 	@Override
-	public HandlerResolver addHandler(final Condition<HttpServerRequest> condition, final RequestHandler<ByteBuf, ByteBuf> handler) {
+	public HandlerResolver addHandler(final Condition<HttpServerRequest> condition, final WebRequestHandler<ByteBuf, ByteBuf> handler) {
 		BootstrapConfig.CONDITION_REQUEST_HANDLER_MAP.put(condition, handler);
 		return this;
 	}
 
 	@Override
-	public List<RequestHandler<ByteBuf, ByteBuf>> resolve(WebRequest webRequest) {
-		List<RequestHandler<ByteBuf, ByteBuf>> requestHandlers = new ArrayList<>();
-		for (Map.Entry<Condition<HttpServerRequest>, RequestHandler<ByteBuf, ByteBuf>> entry : BootstrapConfig.CONDITION_REQUEST_HANDLER_MAP.entrySet()) {
-			String path = entry.getKey().getUrl();
-			if (path.matches(".+\\{\\w+}.*")) {
-				// 将请求路径中的占位符 {\w+} 转换为正则表达式 (\\w+)
-				path = path.replaceAll("\\{\\w+}", "(\\\\w+)");
-			}
-			String decodedPath = webRequest.getHttpServerRequest().getDecodedPath();
-			Matcher matcher = Pattern.compile(path).matcher(decodedPath);
-			if (entry.getKey().getHttpMethod().equals(webRequest.getHttpServerRequest().getHttpMethod()) && matcher.matches()) {
-				RequestHandler<ByteBuf, ByteBuf> value = entry.getValue();
-				if (value.getClass().isAssignableFrom(RequestHandler.class) && (!(value instanceof Handler))) {
-					value = new Handler(matcher, value);
-				} else if (value instanceof Handler) {
-					((Handler) value).setRequestPathMatcher(matcher);
-				}
-				requestHandlers.add(value);
-			}
+	public List<WebRequestHandler<ByteBuf, ByteBuf>> resolve(WebRequest webRequest) {
+
+		Matcher matcher = webRequest.getRequestPathMatcher();
+		List<WebRequestHandler<ByteBuf, ByteBuf>> requestHandlers = new ArrayList<>();
+		if (matcher != null && matcher.matches()) {
+			WebRequestHandler<ByteBuf, ByteBuf> value = webRequest.getWebRequestHandler();
+			requestHandlers.add(value);
 		}
 		return requestHandlers;
 	}
-
 
 }

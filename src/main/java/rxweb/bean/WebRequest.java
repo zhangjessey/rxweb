@@ -19,6 +19,10 @@ package rxweb.bean;
 
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
+import rxweb.server.WebRequestHandler;
+
+import java.util.List;
+import java.util.regex.Matcher;
 
 /**
  * 内部请求对象，包裹HttpServerRequest
@@ -29,6 +33,12 @@ import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 public class WebRequest<T> {
 
     private final HttpServerRequest<ByteBuf> httpServerRequest;
+
+    private Matcher requestPathMatcher;
+
+    private List<Object> urlParams;
+
+    private WebRequestHandler<ByteBuf, ByteBuf> webRequestHandler;
 
     private T body;
 
@@ -66,5 +76,29 @@ public class WebRequest<T> {
 
     public String getResponseAcceptType() {
         return responseAcceptType;
+    }
+
+    public Matcher getRequestPathMatcher() {
+        return requestPathMatcher;
+    }
+
+    public void setRequestPathMatcher(Matcher requestPathMatcher) {
+        this.requestPathMatcher = requestPathMatcher;
+    }
+
+    public List<Object> getUrlParams() {
+        return urlParams;
+    }
+
+    public void setUrlParams(List<Object> urlParams) {
+        this.urlParams = urlParams;
+    }
+
+    public WebRequestHandler<ByteBuf, ByteBuf> getWebRequestHandler() {
+        return webRequestHandler;
+    }
+
+    public void setWebRequestHandler(WebRequestHandler<ByteBuf, ByteBuf> webRequestHandler) {
+        this.webRequestHandler = webRequestHandler;
     }
 }

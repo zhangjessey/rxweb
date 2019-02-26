@@ -1,4 +1,4 @@
-package rxweb;
+package rxweb.sample;
 
 import rx.Observable;
 import rxweb.annotation.Controller;

@@ -22,11 +22,11 @@ import io.netty.channel.ChannelOption;
 import io.netty.handler.codec.http.HttpMethod;
 import io.reactivex.netty.protocol.http.server.HttpServer;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
-import io.reactivex.netty.protocol.http.server.RequestHandler;
 import rxweb.Server;
 import rxweb.mapping.Condition;
 import rxweb.mapping.HandlerResolver;
 import rxweb.server.DefaultHandlerResolver;
+import rxweb.server.WebRequestHandler;
 
 /**
  * 启动类
@@ -67,31 +67,31 @@ public class NettyServer implements Server {
     }
 
     @Override
-    public NettyServer get(String path, RequestHandler handler) {
+    public NettyServer get(String path, WebRequestHandler handler) {
         addHandler(new Condition<>(HttpMethod.GET, path), handler);
         return this;
     }
 
     @Override
-    public NettyServer post(String path, RequestHandler handler) {
+    public NettyServer post(String path, WebRequestHandler handler) {
         addHandler(new Condition<>(HttpMethod.POST, path), handler);
         return this;
     }
 
     @Override
-    public NettyServer put(String path, RequestHandler handler) {
+    public NettyServer put(String path, WebRequestHandler handler) {
         addHandler(new Condition<>(HttpMethod.PUT, path), handler);
         return this;
     }
 
     @Override
-    public NettyServer delete(String path, RequestHandler handler) {
+    public NettyServer delete(String path, WebRequestHandler handler) {
         addHandler(new Condition<>(HttpMethod.DELETE, path), handler);
         return this;
     }
 
     @Override
-    public HandlerResolver addHandler(Condition<HttpServerRequest> condition, RequestHandler<ByteBuf, ByteBuf> handler) {
+    public HandlerResolver addHandler(Condition<HttpServerRequest> condition, WebRequestHandler<ByteBuf, ByteBuf> handler) {
         return this.handlerResolver.addHandler(condition, handler);
     }
 }
