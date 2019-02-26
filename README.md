@@ -1,12 +1,11 @@
-rxweb
-==================
-# Overview
+# rxweb
+
 *[rxweb](https://github.com/zhangjessey/rxweb)* based on [rxweb](https://github.com/sdeleuze/rxweb) , [smart-framework](https://gitee.com/huangyong/smart-framework) and [nano-rxnetty-mvc-server](https://bitbucket.org/gt_tech/nano-rxnetty-mvc-server/)
 
 It's a RxJava + RxNetty based micro web framework
 
 
-# Features
+## Features
 * Annotated Route and Functional route
 * Supported HTTP methods - GET, POST, PUT, DELETE
 * Maintains non-blocking feature of RxNetty
@@ -14,7 +13,7 @@ It's a RxJava + RxNetty based micro web framework
 * MVC framework current support is limited to JSON request and responses
 * Supports REST URI Path variables (automatically detect path variables to be extracted from HTTP Request URI based on path definition in annotated Route or functional Route)
 
-# Dependencies
+## Dependencies
 * Jackson (for JSON support)
 * RxNetty (w/ *rxnetty-http* and transitive *netty* dependencies)
 * RxJava
@@ -22,12 +21,12 @@ It's a RxJava + RxNetty based micro web framework
 * Reflections
 * Google Guava
 
-# Ways to use
+## Ways to use
 
 * Run as a standalone app
     * User application will be required to satisfy all dependencies and start the server
 
-# How to use
+## How to use
 ### Annotated Route
 
 ```java
@@ -53,11 +52,15 @@ public class TestController {
 ### Functional Route
 
 ```java
-nettyServer.get("/functionalRoute/{a}/{b}", (request, response) -> response.writeString(Observable.<String>just("this is functionalRoute".concat(request.getUrlParams().toString())))).
-				post("/functionalRoutePost", (request, response) -> response.writeString(Observable.<String>just("this is functionalRoutePost")));
+nettyServer.get("/functionalRoute/{a}/{b}", 
+	(request, response) -> 
+		response.writeString(Observable.<String>just("this is functionalRoute".concat(request.getUrlParams().toString())))).
+post("/functionalRoutePost", 
+	(request, response) -> 
+		response.writeString(Observable.<String>just("this is functionalRoutePost")));
 ```
 
-# Future potential enhancements
+## Future potential enhancements
 *(time-permitting and if there's interest)*
 
 * @RequestMapping support multi method,not contains just one method
@@ -66,12 +69,12 @@ nettyServer.get("/functionalRoute/{a}/{b}", (request, response) -> response.writ
 * SpringBoot starter
 * Support for other Mime/Types
 
-# Contributing
+## Contributing
 Contributions are highly appreciated, it is encouraged to submit a PULL request.
 
 Contributors must ensure that existing test cases pass (or are modified to adjust to their changes)
 
-# LICENSE
+## LICENSE
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
