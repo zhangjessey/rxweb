@@ -3,4 +3,5 @@ jdk: oraclejdk8
 script:
   gradle test
 after_success:
-  - codecov
+  - gradle jacocoTestReport
+  - bash <(curl -s https://codecov.io/bash)
