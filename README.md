@@ -1,5 +1,7 @@
 # rxweb
 
+[![Build Status](https://travis-ci.org/zhangjessey/rxweb.svg?branch=master)](https://travis-ci.org/zhangjessey/rxweb)
+
 *[rxweb](https://github.com/zhangjessey/rxweb)* based on [rxweb](https://github.com/sdeleuze/rxweb) , [smart-framework](https://gitee.com/huangyong/smart-framework) and [nano-rxnetty-mvc-server](https://bitbucket.org/gt_tech/nano-rxnetty-mvc-server/)
 
 It's a RxJava + RxNetty based micro web framework
