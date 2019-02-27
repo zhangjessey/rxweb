@@ -28,3 +28,7 @@ dependencies {
   testCompile "org.apache.httpcomponents:fluent-hc:4.5.7"
 
 }
+
+tasks.matching {it instanceof Test}.all {
+  testLogging.events = ["failed", "passed", "skipped"]
+}
