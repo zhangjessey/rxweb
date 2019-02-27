@@ -4,6 +4,7 @@
 
 It's a RxJava + RxNetty based micro web framework
 
+## [中文README](https://github.com/zhangjessey/rxweb/blob/master/README-CN.md)
 
 ## Features
 * Annotated Route and Functional route
@@ -15,7 +16,7 @@ It's a RxJava + RxNetty based micro web framework
 
 ## Dependencies
 * Jackson (for JSON support)
-* RxNetty (w/ *rxnetty-http* and transitive *netty* dependencies)
+* RxNetty (includes *netty* dependencies)
 * RxJava
 * SLF4J (with static binding to Logback)
 * Reflections
@@ -63,14 +64,14 @@ post("/functionalRoutePost",
 ## Future potential enhancements
 *(time-permitting and if there's interest)*
 
-* @RequestMapping support multi method,not contains just one method
+* @RequestMapping support multi method,not contains just one method，just like Get...
 * Interceptors support
 * Websocket support
 * SpringBoot starter
 * Support for other Mime/Types
 
 ## Contributing
-Contributions are highly appreciated, it is encouraged to submit a PULL request.
+Contributions are highly appreciated, it is encouraged to submit a PULL request or issue.
 
 Contributors must ensure that existing test cases pass (or are modified to adjust to their changes)
 
