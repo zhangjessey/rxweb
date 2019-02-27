@@ -1,6 +1,8 @@
 # rxweb
 
-[![Build Status](https://travis-ci.org/zhangjessey/rxweb.svg?branch=master)](https://travis-ci.org/zhangjessey/rxweb) [![codecov](https://codecov.io/gh/zhangjessey/rxweb/branch/master/graph/badge.svg)](https://codecov.io/gh/zhangjessey/rxweb)
+[![Build Status](https://travis-ci.org/zhangjessey/rxweb.svg?branch=master)](https://travis-ci.org/zhangjessey/rxweb)
+[![codecov](https://codecov.io/gh/zhangjessey/rxweb/branch/master/graph/badge.svg)](https://codecov.io/gh/zhangjessey/rxweb)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 *[rxweb](https://github.com/zhangjessey/rxweb)* based on [rxweb](https://github.com/sdeleuze/rxweb) , [smart-framework](https://gitee.com/huangyong/smart-framework) and [nano-rxnetty-mvc-server](https://bitbucket.org/gt_tech/nano-rxnetty-mvc-server/)
 
