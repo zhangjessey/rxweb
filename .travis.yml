@@ -1,3 +1,9 @@
 language: java
 jdk: oraclejdk8
-script: gradle test
+before_script:
+  - chmod +x gradlew
+script:
+  - ./gradlew check
+  - ./gradlew codeCoverageReport
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
