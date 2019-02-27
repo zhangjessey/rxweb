@@ -1,5 +1,7 @@
 # rxweb
 
+[![Build Status](https://travis-ci.org/zhangjessey/rxweb.svg?branch=master)](https://travis-ci.org/zhangjessey/rxweb)[![codecov](https://codecov.io/gh/zhangjessey/rxweb/branch/master/graph/badge.svg)](https://codecov.io/gh/zhangjessey/rxweb)
+
 *[rxweb](https://github.com/zhangjessey/rxweb)* 基于 [rxweb](https://github.com/sdeleuze/rxweb) , [smart-framework](https://gitee.com/huangyong/smart-framework) and [nano-rxnetty-mvc-server](https://bitbucket.org/gt_tech/nano-rxnetty-mvc-server/)
 
 这是一个基于 RxJava + RxNetty 的微型web框架
