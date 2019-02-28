@@ -1,7 +1,7 @@
 language: java
 jdk: oraclejdk8
 script:
-  gradle clean test
+  ./gradlew clean test
 after_success:
-  - gradle jacocoTestReport
+  - ./gradlew jacocoTestReport
   - bash <(curl -s https://codecov.io/bash)
