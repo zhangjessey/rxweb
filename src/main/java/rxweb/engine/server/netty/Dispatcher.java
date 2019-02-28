@@ -15,6 +15,7 @@ import rxweb.server.DefaultHandlerResolver;
 import rxweb.server.Handler;
 import rxweb.server.NotFoundHandler;
 import rxweb.server.WebRequestHandler;
+import static rxweb.support.Constants.JSON;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -45,7 +46,7 @@ public class Dispatcher implements RequestHandler<ByteBuf, ByteBuf> {
 
         return Observable.defer(() -> request.getContent()).<String>map(bf -> bf.toString(Charset.defaultCharset())).reduce(EMPTY_STRING, (acc, value) -> acc.concat(value)).firstOrDefault(EMPTY_STRING).map(strRequestContent -> {
             if (strRequestContent != null && !strRequestContent.equals(EMPTY_STRING)) {
-                if ("application/json".equals(wreq.getRequestContentType())) {
+                if (JSON.equals(wreq.getRequestContentType())) {
                     wreq.setBody(strRequestContent);
                 }
             }

@@ -1,5 +1,9 @@
 package rxweb.bean;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Map;
 
 /**
@@ -7,19 +11,15 @@ import java.util.Map;
  *
  * @author zhangjessey
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Params {
     private Map<String, Object> map;
-
-    public Params(Map<String, Object> map) {
-        this.map = map;
-    }
-
-    public Map<String, Object> getMap() {
-        return map;
-    }
 
     @Override
     public String toString() {
         return String.join(":", map.keySet());
     }
 }
+

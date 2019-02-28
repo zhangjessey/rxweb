@@ -10,5 +10,8 @@ import rxweb.bean.WebRequest;
  * @author zhangjessey
  */
 public interface WebInvoker {
+    /**
+     * 调用具体Handler
+     */
     Object invokeHandler(WebRequest request, Handler handler, HttpServerResponse<ByteBuf> response);
 }

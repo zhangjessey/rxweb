@@ -19,6 +19,8 @@ package rxweb.bean;
 
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import rxweb.server.WebRequestHandler;
 
 import java.util.List;
@@ -30,6 +32,8 @@ import java.util.regex.Matcher;
  * @author gt_tech
  * @author zhangjessey
  */
+@Data
+@AllArgsConstructor
 public class WebRequest<T> {
 
     private final HttpServerRequest<ByteBuf> httpServerRequest;
@@ -56,49 +60,4 @@ public class WebRequest<T> {
     }
 
 
-    public HttpServerRequest<ByteBuf> getHttpServerRequest() {
-        return httpServerRequest;
-    }
-
-
-    public T getBody() {
-        return body;
-    }
-
-
-    public void setBody(T body) {
-        this.body = body;
-    }
-
-    public String getRequestContentType() {
-        return requestContentType;
-    }
-
-    public String getResponseAcceptType() {
-        return responseAcceptType;
-    }
-
-    public Matcher getRequestPathMatcher() {
-        return requestPathMatcher;
-    }
-
-    public void setRequestPathMatcher(Matcher requestPathMatcher) {
-        this.requestPathMatcher = requestPathMatcher;
-    }
-
-    public List<Object> getUrlParams() {
-        return urlParams;
-    }
-
-    public void setUrlParams(List<Object> urlParams) {
-        this.urlParams = urlParams;
-    }
-
-    public WebRequestHandler<ByteBuf, ByteBuf> getWebRequestHandler() {
-        return webRequestHandler;
-    }
-
-    public void setWebRequestHandler(WebRequestHandler<ByteBuf, ByteBuf> webRequestHandler) {
-        this.webRequestHandler = webRequestHandler;
-    }
 }

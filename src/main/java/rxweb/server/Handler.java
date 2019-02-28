@@ -2,6 +2,7 @@ package rxweb.server;
 
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.server.HttpServerResponse;
+import lombok.Data;
 import rx.Observable;
 import rxweb.bean.WebRequest;
 import rxweb.support.DefaultConverter;
@@ -14,6 +15,7 @@ import java.lang.reflect.Method;
  * @author huangyong
  * @author zhangjessey
  */
+@Data
 public class Handler implements WebRequestHandler<ByteBuf, ByteBuf> {
 
     private Class<?> actionClass;
@@ -29,23 +31,7 @@ public class Handler implements WebRequestHandler<ByteBuf, ByteBuf> {
         this.requestBodyClass = requestBodyClass;
     }
 
-    public Class<?> getActionClass() {
-        return actionClass;
-    }
 
-    public Method getActionMethod() {
-        return actionMethod;
-    }
-
-
-
-    public Class<?> getRequestBodyClass() {
-        return requestBodyClass;
-    }
-
-    public void setRequestBodyClass(Class<?> requestBodyClass) {
-        this.requestBodyClass = requestBodyClass;
-    }
 
     @Override
     public Observable<Void> handle(WebRequest<ByteBuf> webRequest, HttpServerResponse<ByteBuf> response) {
@@ -64,11 +50,4 @@ public class Handler implements WebRequestHandler<ByteBuf, ByteBuf> {
         }));
     }
 
-    public String getRequestBody() {
-        return requestBody;
-    }
-
-    public void setRequestBody(String requestBody) {
-        this.requestBody = requestBody;
-    }
 }

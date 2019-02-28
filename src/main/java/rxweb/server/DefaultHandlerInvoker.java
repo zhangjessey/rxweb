@@ -45,7 +45,6 @@ public class DefaultHandlerInvoker implements WebInvoker {
         // 添加路径参数列表（请求路径中的带占位符参数）
         if (requestPathMatcher != null) {
             List<Class<?>> collect = Arrays.stream(actionParamTypes).filter(aClass -> !aClass.isAssignableFrom(Params.class)).collect(Collectors.toList());
-            //Class<?>[] pathParamList = collect.toArray(new Class<?>[]{});
             pathParamMap = createPathParamList(requestPathMatcher, collect);
         }
         //获取普通请求参数列表

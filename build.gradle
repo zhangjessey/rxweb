@@ -28,6 +28,9 @@ dependencies {
   testCompile "junit:junit:4.13-beta-2"
   testCompile "org.apache.httpcomponents:fluent-hc:4.5.7"
 
+  compileOnly 'org.projectlombok:lombok:1.18.6'
+  annotationProcessor 'org.projectlombok:lombok:1.18.6'
+
 }
 
 tasks.matching {it instanceof Test}.all {
