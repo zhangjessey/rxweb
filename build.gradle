@@ -29,14 +29,14 @@ dependencies {
 
   compile "io.reactivex:rxjava:1.3.8"
 
-  compileOnly "org.projectlombok:lombok:1.18.6"
-  annotationProcessor "org.projectlombok:lombok:1.18.6"
+  compile 'org.projectlombok:lombok:1.18.6'
+  annotationProcessor 'org.projectlombok:lombok:1.18.6'
   //testCompileOnly "org.projectlombok:lombok:1.18.6"
   //testAnnotationProcessor "org.projectlombok:lombok:1.18.6"
-  
+
   testCompile "junit:junit:4.13-beta-2"
   testCompile "org.apache.httpcomponents:fluent-hc:4.5.7"
-  
+
 
 }
 
