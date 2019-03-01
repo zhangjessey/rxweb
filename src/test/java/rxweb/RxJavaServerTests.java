@@ -46,7 +46,9 @@ public class RxJavaServerTests {
 		nettyServer = new NettyServer();
 
 		nettyServer.get("/functionalRoute/{a}/{b}", (request, response) -> response.writeString(Observable.<String>just("this is functionalRoute".concat(request.getUrlParams().toString())))).
-				post("/functionalRoutePost", (request, response) -> response.writeString(Observable.<String>just("this is functionalRoutePost")));
+				post("/functionalRoutePost", (request, response) -> response.writeString(Observable.<String>just("this is functionalRoutePost"))).
+				put("/functionalRoutePut", (request, response) -> response.writeString(Observable.<String>just("this is functionalRoutePut"))).
+				delete("/functionalRouteDelete", (request, response) -> response.writeString(Observable.<String>just("this is functionalRouteDelete")));
 
 		new Thread(() -> {
 			try {

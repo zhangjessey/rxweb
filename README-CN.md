@@ -25,6 +25,7 @@
 * SLF4J (静态绑定到Logback)
 * Reflections
 * Google Guava
+* lombok
 
 ## 启动方式
 

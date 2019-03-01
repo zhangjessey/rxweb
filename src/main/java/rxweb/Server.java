@@ -16,6 +16,7 @@
 
 package rxweb;
 
+import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 import rxweb.mapping.HandlerRegistry;
 import rxweb.server.WebRequestHandler;
@@ -40,22 +41,34 @@ public interface Server extends HandlerRegistry<HttpServerRequest> {
 
 	/**
 	 * 配置get方法
+	 * @param path 路径
+	 * @param handler 具体的WebRequestHandler
+	 * @return Server对象，可以链式调用
 	 */
-	Server get(final String path, final WebRequestHandler handler);
+	Server get(final String path, final WebRequestHandler<ByteBuf, ByteBuf> handler);
 
 	/**
 	 * 配置post方法
+	 * @param path 路径
+	 * @param handler 具体的WebRequestHandler
+	 * @return Server对象，可以链式调用
 	 */
-	Server post(final String path, final WebRequestHandler handler);
+	Server post(final String path, final WebRequestHandler<ByteBuf, ByteBuf> handler);
 
 	/**
 	 * 配置put方法
+	 * @param path 路径
+	 * @param handler 具体的WebRequestHandler
+	 * @return Server对象，可以链式调用
 	 */
-	Server put(final String path, final WebRequestHandler handler);
+	Server put(final String path, final WebRequestHandler<ByteBuf, ByteBuf> handler);
 
 	/**
 	 * 配置delete方法
+	 * @param path 路径
+	 * @param handler 具体的WebRequestHandler
+	 * @return Server对象，可以链式调用
 	 */
-	Server delete(final String path, final WebRequestHandler handler);
+	Server delete(final String path, final WebRequestHandler<ByteBuf, ByteBuf> handler);
 
 }

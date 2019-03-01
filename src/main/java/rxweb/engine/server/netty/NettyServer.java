@@ -67,25 +67,25 @@ public class NettyServer implements Server {
     }
 
     @Override
-    public NettyServer get(String path, WebRequestHandler handler) {
+    public NettyServer get(String path, WebRequestHandler<ByteBuf, ByteBuf> handler) {
         addHandler(new Condition<>(HttpMethod.GET, path), handler);
         return this;
     }
 
     @Override
-    public NettyServer post(String path, WebRequestHandler handler) {
+    public NettyServer post(String path, WebRequestHandler<ByteBuf, ByteBuf> handler) {
         addHandler(new Condition<>(HttpMethod.POST, path), handler);
         return this;
     }
 
     @Override
-    public NettyServer put(String path, WebRequestHandler handler) {
+    public NettyServer put(String path, WebRequestHandler<ByteBuf, ByteBuf> handler) {
         addHandler(new Condition<>(HttpMethod.PUT, path), handler);
         return this;
     }
 
     @Override
-    public NettyServer delete(String path, WebRequestHandler handler) {
+    public NettyServer delete(String path, WebRequestHandler<ByteBuf, ByteBuf> handler) {
         addHandler(new Condition<>(HttpMethod.DELETE, path), handler);
         return this;
     }

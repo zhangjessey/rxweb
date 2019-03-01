@@ -25,6 +25,7 @@ It's a RxJava + RxNetty based micro web framework
 * SLF4J (with static binding to Logback)
 * Reflections
 * Google Guava
+* lombok
 
 ## Ways to use
 

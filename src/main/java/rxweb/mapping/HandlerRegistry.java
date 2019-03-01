@@ -29,6 +29,9 @@ public interface HandlerRegistry<R> {
 
 	/**
 	 * 添加一个RequestHandler
+	 * @param condition 某一个WebRequestHandler的匹配条件
+	 * @param handler 具体的WebRequestHandler
+	 * @return 解析器对象
 	 */
 	HandlerResolver addHandler(final Condition<R> condition, final WebRequestHandler<ByteBuf, ByteBuf> handler);
 

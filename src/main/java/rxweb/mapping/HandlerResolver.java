@@ -33,6 +33,8 @@ public interface HandlerResolver extends HandlerRegistry<HttpServerRequest> {
 
 	/**
 	 * 根据request找到对应的RequestHandler
+	 * @param request 内部请求对象
+	 * @return 符合要求的WebRequestHandler列表
 	 */
 	List<WebRequestHandler<ByteBuf, ByteBuf>> resolve(WebRequest request);
 
